@@ -46,6 +46,8 @@ AWS Services that will be used:
 
 ## Proposed Weekly Schedule
 
+![Final Year Project Strategy Plan](https://github.com/user-attachments/assets/3a08ce72-1754-4c6a-bb22-f249cb4bc61a)
+
 **Semester 1**\
 Week 2 - Week 6: Research\
 Week 5 - Recess: Wireframe (UI/UX) and Database Design\
@@ -54,13 +56,13 @@ Week 8 - Week 10: First Iteration of the feature\
 Week 10 - Week 12: Second Iteration of the feature (merge)\
 Week 12 - Week 13: Interim Report\
 Reading Week: Integration and Testing\
-Winter Break: Refinement and Adjustment\
+Winter Break: Refinement and Adjustment
 
 **Semester 2**\
 Week 1 - Week 3: Start the second feature\
 Week 3 - Week 5: Second Iteration\
 Week 5 - Recess: Finalise and refinement\
-Recess - Week 12: Integration and Testing\
+Recess - Week 12: Integration and Testing
 
 
 ## Git Commit Conventions
