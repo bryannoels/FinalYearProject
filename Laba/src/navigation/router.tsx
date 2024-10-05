@@ -9,7 +9,7 @@ import Login from "../pages/login/Login.tsx"
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
-    <Route path="/" element={<Layout />}>
+      <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="login" element={<Login />} />
       </Route>
