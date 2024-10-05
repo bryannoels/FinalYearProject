@@ -23,9 +23,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Navigate to Laba directory
-        run: cd ./Laba
-
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
