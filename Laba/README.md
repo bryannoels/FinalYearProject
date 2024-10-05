@@ -57,4 +57,19 @@ Week 3 - Week 5: Second Iteration
 Week 5 - Recess: Finalise and refinement
 Recess - Week 12: Integration and Testing
 
+## Git Commit Conventions
+
+Inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) and [Angular Commit Guidelines](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines).
+
+- **build:** Modifications impacting the build system or external dependencies (e.g., gulp, broccoli, npm).
+- **ci:** Adjustments made to our continuous integration (CI) configuration files and scripts (e.g., Travis, Circle, BrowserStack, SauceLabs).
+- **docs:** Revisions solely related to documentation.
+- **feat:** Introduction of a new feature.
+- **fix:** Rectification of a software bug.
+- **perf:** Alterations in code to enhance performance.
+- **refactor:** Code adjustments that neither resolve a bug nor introduce a new feature.
+- **style:** Modifications that don't influence the code's semantics (e.g., white-space, formatting, missing semi-colons, etc.).
+- **test:** Inclusion of tests that were previously absent or correction of existing tests.
+
+**Created on 16 September 2024**
 
