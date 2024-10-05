@@ -79,5 +79,11 @@ Inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0
 - **style:** Modifications that don't influence the code's semantics (e.g., white-space, formatting, missing semi-colons, etc.).
 - **test:** Inclusion of tests that were previously absent or correction of existing tests.
 
+## How to run the project
+
+1. cd Laba
+2. yarn
+3. yarn dev
+
 **Created on 16 September 2024**
 
