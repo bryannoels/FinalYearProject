@@ -1,0 +1,31 @@
+.banner{
+    position: relative;
+    background-color: var(--primary-blue);
+    width: calc(100vw - 40px);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 0px;
+}
+
+.banner__heading{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--primary-white);
+}
+
+.banner__subheading{
+    color: var(--primary-white);
+    font-size: 18px;
+    margin: 20px;
+    margin-left: 0px;
+}
+
+.banner__button{
+    width: 100%;
+    background-color: var(--secondary-blue);
+    border-radius: 10px;
+    color: var(--primary-white);
+}
