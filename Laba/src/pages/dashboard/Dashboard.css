@@ -5,12 +5,54 @@
     padding: 20px;
 }
 
-.dashboard__title{
+.dashboard__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.dashboard__title {
     font-size: 28px;
     font-weight: bold;
-    margin-top: 10px;
-    margin-bottom: 0px;
 }
+
+.dashboard__search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard__search-icon {
+    position: absolute;
+    left: 10px;
+    font-size: 16px;
+    color: #888;
+}
+
+.dashboard__search {
+    height: 35px;
+    padding: 5px 10px 5px 10px; /* Add padding-left to make space for the icon */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    max-width: 200px;
+    background-color: rgba(255, 255, 255, 0.5); /* Transparent background */
+    backdrop-filter: blur(5px); /* Optional: For more advanced effect */
+    color: #333;
+}
+
+.dashboard__search::placeholder {
+    color: #888;
+}
+
+.dashboard__search-box input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
 
 .dashboard__item{
     background-color: var(--primary-white);
