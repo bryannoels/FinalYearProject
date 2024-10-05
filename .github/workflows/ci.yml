@@ -33,7 +33,7 @@ jobs:
       - run: yarn install
         working-directory: ./Laba
 
-      - run: yarn build --if-present
+      - run: yarn build
         working-directory: ./Laba
 
       - run: yarn test
