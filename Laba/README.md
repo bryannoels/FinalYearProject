@@ -1,50 +1,60 @@
-# React + TypeScript + Vite
+# LABA
+Leveraging Analytics for Building Assets
+Developed by Bryan Noel Salindeho and Frewin Suriono (2024)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Main Objectives
+Develop an android web portal optimised for android view with English interface where the users are able to find the best stock investment that is suited for them by giving recommendations based on user selected criteria.
 
-Currently, two official plugins are available:
+## Background
+More people are realising the importance of investment. This project aims to provide easy access for users to make informed decisions and manage their investment portfolio by giving predictions of stock value. According to BankMyCell [1], Android users make up 69.9% of the quarterly market share in Q1 2024. Therefore, by choosing to focus our development on the Android platform, we will be able to reach most of the mobile users. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The increase of investors over the recent years are mostly retail investors, which refers to people with lacking financial knowledge or unprofessional investors. To help bridge the gap of knowledge, this project will provide information, such as data of the company performance and prediction, to the users for them to make informed-decisions on their investment portfolio. The prediction will be based on past trends, market value, company profits, and earnings per share consistency.
 
-## Expanding the ESLint configuration
+**References**
+[1] BankMyCell, "Android vs iPhone market share: 2023 statistics," Jul. 2023. [Online]. Available: https://www.bankmycell.com/blog/android-vs-apple-market-share/. [Accessed: Sep. 14, 2024].
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Proposed Way of Carrying Out Project Tasks
 
-- Configure the top-level `parserOptions` property like this:
+**Front End**
+The frontend consists of two key sections: a login page and a dashboard. The login page is designed for secure access, featuring intuitive input fields for username and password, with options like "Forgot Password" and "Remember Me" for convenience. Once logged in, users are greeted by a dashboard that displays the current stock information along with their intrinsic values. The dashboard presents stock details such as names, symbols, and real-time market prices, enhanced with charts or tables for better visualisation. Users can interact with the dashboard to filter or search for specific stocks to gain deeper insights into market performance.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Programming language that will be used: 
+- Web portal: HTML, CSS, JavaScript, React
+- Library for charts/graph
+- Gson library to convert and manage json object
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+**Back End**
+Based on research, development and testing for backend is estimated to still be within AWS services free-tier plan. Therefore, we will leverage on AWS services free-tier plan for backend hosting as AWS Services are able to provide infrastructure, auto-scaling and pay-on-demand. Auto-scaling and pay-on-demand features are useful when the web portal is commercialised.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Programming languages that will be used:
+- Python
+- Express (JavaScript)
+- SQL/mySQL
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+AWS Services that will be used:
+- IAM (required)
+- API Gateway
+- Lambda Function
+- EC2
+- S3 bucket
+- MongoDB
+
+## Proposed Weekly Schedule
+
+**Semester 1**
+Week 2 - Week 6: Research
+Week 5 - Recess: Wireframe (UI/UX) and Database Design
+Recess - Week 8: Setup backend, database, repository (simple functionality)
+Week 8 - Week 10: First Iteration of the feature
+Week 10 - Week 12: Second Iteration of the feature (merge)
+Week 12 - Week 13: Interim Report
+Reading Week: Integration and Testing
+Winter Break: Refinement and Adjustment
+
+**Semester 2**
+Week 1 - Week 3: Start the second feature
+Week 3 - Week 5: Second Iteration
+Week 5 - Recess: Finalise and refinement
+Recess - Week 12: Integration and Testing
+
+
