@@ -32,25 +32,25 @@
 .dashboard__item__left{
     padding: 0px;
     margin-left: 20px;
-    max-width: calc(100vw - 280px);
+    width: calc(100vw - 300px);
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .dashboard__item__name{
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     margin: 0px;
 }
 
 .dashboard__item__symbol{
-    font-size: 16px;
+    font-size: 12px;
     margin: 0px;
 }
 
 .dashboard__item__right{
-    max-width: 150px;
+    width: 110px;
     margin-left: auto;
     display: flex;
     flex-direction: column;
