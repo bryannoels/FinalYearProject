@@ -3,7 +3,7 @@ import {
     createRoutesFromElements,
     Route
   } from "react-router-dom";
-import Layout from '../Layout';
+import Layout from '../Layout.tsx';
 import Dashboard from "../pages/dashboard/Dashboard.tsx";
 import Login from "../pages/login/Login.tsx"
 
