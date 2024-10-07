@@ -33,7 +33,7 @@ Based on research, development and testing for backend is estimated to still be 
 Programming languages that will be used:
 - Python
 - Express (JavaScript)
-- SQL/mySQL
+- MongoDB
 
 AWS Services that will be used:
 - IAM (required)
@@ -81,9 +81,13 @@ Inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0
 
 ## How to run the project
 
-1. cd Laba
+**Run Front End**\
+1. cd client
 2. yarn
 3. yarn dev
 
-**Created on 16 September 2024**
+**Run Back End**\
+1. cd server
+2. node server.js
 
+**Created on 16 September 2024**
