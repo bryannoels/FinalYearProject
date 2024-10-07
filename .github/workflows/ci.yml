@@ -18,21 +18,21 @@ jobs:
         with:
           path: |
             ~/.cache/yarn
-            ./Laba/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./Laba/yarn.lock') }}
+            ./client/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('./client/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          cache-dependency-path: ./Laba/yarn.lock
+          cache-dependency-path: ./client/yarn.lock
           node-version: 20.x
           cache: 'yarn'
 
       - run: yarn install
-        working-directory: ./Laba
+        working-directory: ./client
 
       - run: yarn build
-        working-directory: ./Laba
+        working-directory: ./client
         
