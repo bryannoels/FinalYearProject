@@ -81,12 +81,12 @@ Inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0
 
 ## How to run the project
 
-**Run Front End**\
+**Run Front End**
 1. cd client
 2. yarn
 3. yarn dev
 
-**Run Back End**\
+**Run Back End**
 1. cd server
 2. node server.js
 
