@@ -1,22 +1,42 @@
 import labaLogo from '../../assets/LabaLogo.png';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Dashboard.css';
 
+type Stock = {
+  icon: string;
+  name: string;
+  symbol: string;
+  price: number;
+  change: number;
+  percentChange: number;
+};
+
+const createStockObject = (stockData: any): Stock => ({
+  icon: labaLogo,
+  name: stockData['Company Name'] || 'Unknown Company',
+  symbol: stockData['Symbol'] || 'N/A',
+  price: parseFloat(stockData['Price']) || 0,
+  change: parseFloat(stockData['Change'].replace(/[+,%]/g, '')) || 0,
+  percentChange: parseFloat(stockData['Change%'].replace(/[+,%]/g, '')) || 0,
+});
+
 function Dashboard() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [stockList, setStockList] = useState<Stock[]>([]);
 
-  const stockList = [
-    { icon: labaLogo, name: 'Apple Inc.', symbol: 'AAPL', price: 432.21, change: 2.53, percentChange: 0.58 },
-    { icon: labaLogo, name: 'Amazon.com Inc.', symbol: 'AMZN', price: 245.89, change: -0.32, percentChange: -0.13 },
-    { icon: labaLogo, name: 'Tesla Inc.', symbol: 'TSLA', price: 213.22, change: 2.49, percentChange: 1.18 },
-    { icon: labaLogo, name: 'Meta Platforms Inc.', symbol: 'META', price: 821.87, change: -21.30, percentChange: -2.52 },
-    { icon: labaLogo, name: 'Microsoft Corporation', symbol: 'MSFT', price: 245.32, change: 3.21, percentChange: 1.32 },
-    { icon: labaLogo, name: 'Alphabet Inc.', symbol: 'GOOGL', price: 421.98, change: -12.40, percentChange: -2.87 },
-    { icon: labaLogo, name: 'NVIDIA Corporation', symbol: 'NVDA', price: 507.94, change: 15.32, percentChange: 3.11 },
-    { icon: labaLogo, name: 'Advanced Micro Devices Inc.', symbol: 'AMD', price: 102.35, change: 1.22, percentChange: 1.21 }
-  ];
+  useEffect(() => {
+    fetch('http://localhost:8000/api/stocks/most-active')
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedData: Stock[] = data.map(createStockObject);
+        setStockList(formattedData);
+      })
+      .catch((error) => {
+        console.error('Error fetching stock data:', error);
+      });
+  }, []);
 
-  const filteredStocks = stockList.filter(stock =>
+  const filteredStocks = stockList.filter((stock: Stock) =>
     stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -35,17 +55,17 @@ function Dashboard() {
           />
         </div>
       </div>
-      {filteredStocks.map((stock) => (
+      {filteredStocks.map((stock: Stock) => (
         <div className="dashboard__item" key={stock.symbol}>
-          <img src={stock.icon} alt={stock.name} className="dashboard__item__icon" />
+          {/* <img src={stock.icon} alt={stock.name} className="dashboard__item__icon" /> */}
           <div className="dashboard__item__left">
             <p className="dashboard__item__name">{stock.name}</p>
             <p className="dashboard__item__symbol">{stock.symbol}</p>
           </div>
           <div className="dashboard__item__right">
-            <p className="dashboard__item__price">${stock.price}</p>
+            <p className="dashboard__item__price">${stock.price.toFixed(2)}</p>
             <p className={`dashboard__item__change ${stock.change >= 0 ? 'stock-up' : 'stock-down'}`}>
-              {stock.change} ({stock.percentChange}%)
+              {stock.change.toFixed(2)} ({stock.percentChange.toFixed(2)}%)
             </p>
           </div>
         </div>
