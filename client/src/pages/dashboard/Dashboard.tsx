@@ -57,7 +57,6 @@ function Dashboard() {
       </div>
       {filteredStocks.map((stock: Stock) => (
         <div className="dashboard__item" key={stock.symbol}>
-          {/* <img src={stock.icon} alt={stock.name} className="dashboard__item__icon" /> */}
           <div className="dashboard__item__left">
             <p className="dashboard__item__name">{stock.name}</p>
             <p className="dashboard__item__symbol">{stock.symbol}</p>
