@@ -11,6 +11,13 @@ def get_stock_data(stock_symbol):
         soup = BeautifulSoup(response.text, 'html.parser')
         stock_data = {}
 
+        company_name_tag = soup.find('h1', class_='yf-xxbei9')
+        if company_name_tag:
+            company_name = company_name_tag.text.split(' (')[0]
+            stock_data['Company Name'] = company_name
+        else:
+            stock_data['Company Name'] = "Not found"
+
         fields = {
             'Current Price': 'regularMarketPrice',
             'Opening Price': 'regularMarketOpen',
