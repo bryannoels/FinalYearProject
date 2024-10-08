@@ -1,6 +1,6 @@
 .dashboard{
     background-color: var(--light-gray);
-    height: 100vh;
+    min-height: 100vh;
     margin: 0px;
     padding: 20px;
 }
@@ -34,13 +34,13 @@
 
 .dashboard__search {
     height: 35px;
-    padding: 5px 10px 5px 10px; /* Add padding-left to make space for the icon */
+    padding: 5px 10px 5px 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
     max-width: 200px;
-    background-color: rgba(255, 255, 255, 0.5); /* Transparent background */
-    backdrop-filter: blur(5px); /* Optional: For more advanced effect */
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
     color: #333;
 }
 
@@ -60,6 +60,7 @@
     flex-direction: row;
     align-items: center;
     padding: 20px;
+    padding-right: 10px;
     margin: 20px;
     border-radius: 10px;
     height: 30px;
@@ -92,7 +93,7 @@
 }
 
 .dashboard__item__right{
-    width: 110px;
+    width: 120px;
     margin-left: auto;
     display: flex;
     flex-direction: column;
@@ -107,6 +108,7 @@
 }
 
 .dashboard__item__change{
+    font-size: 16px;
     margin: 0px;
 }
 
