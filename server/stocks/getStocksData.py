@@ -6,7 +6,7 @@ import json
 def get_stock_data(stock_symbol):
     url = f'https://finance.yahoo.com/quote/{stock_symbol}'
     response = requests.get(url)
-    
+
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         stock_data = {}

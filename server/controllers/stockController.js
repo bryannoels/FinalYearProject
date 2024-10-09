@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 
 const getStockData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['stocks/stocksData.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['stocks/getStocksData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -48,8 +48,60 @@ const getTop10MostActiveStocks = (req, res) => {
     });
 };
 
+const getAnalysis = (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['stocks/getAnalysis.py', stockSymbol]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const analysisData = JSON.parse(data.toString());
+            res.json(analysisData);
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to parse response' });
+        }
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        res.status(500).json({ error: 'Error retrieving analysis data' });
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
+const getVerdict = (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['stocks/getVerdict.py', stockSymbol]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const verdictData = JSON.parse(data.toString());
+            res.json(verdictData);
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to parse response' });
+        }
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        res.status(500).json({ error: 'Error retrieving verdict data' });
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 
 module.exports = {
     getStockData,
-    getTop10MostActiveStocks
+    getTop10MostActiveStocks,
+    getAnalysis,
+    getVerdict
 };
