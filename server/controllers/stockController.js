@@ -7,8 +7,8 @@ const getStockData = (req, res) => {
     pythonProcess.stdout.on('data', (data) => {
         try {
             console.log(data.toString());
-            const historicalData = JSON.parse(data.toString());
-            res.json(historicalData);
+            const stockData = JSON.parse(data.toString());
+            res.json(stockData);
         } catch (error) {
             res.status(500).json({ error: 'Failed to parse response' });
         }
@@ -102,7 +102,9 @@ const getVerdict = (req, res) => {
 
 const getHistoricalData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['stocks/getHistoricalData.py', stockSymbol]);
+    const rangeParam = req.query.range || '1d';
+
+    const pythonProcess = spawn('python3', ['stocks/getHistoricalData.py', stockSymbol, rangeParam]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
