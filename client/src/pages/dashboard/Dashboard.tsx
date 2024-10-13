@@ -1,15 +1,8 @@
 import labaLogo from '../../assets/LabaLogo.png';
 import { useState, useEffect } from 'react';
+import { Stock } from '../../types/stocks';
+import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import './Dashboard.css';
-
-type Stock = {
-  icon: string;
-  name: string;
-  symbol: string;
-  price: number;
-  change: number;
-  percentChange: number;
-};
 
 const createStockObject = (stockData: any): Stock => ({
   icon: labaLogo,
@@ -56,18 +49,7 @@ function Dashboard() {
         </div>
       </div>
       {filteredStocks.map((stock: Stock) => (
-        <div className="dashboard__item" key={stock.symbol}>
-          <div className="dashboard__item__left">
-            <p className="dashboard__item__name">{stock.name}</p>
-            <p className="dashboard__item__symbol">{stock.symbol}</p>
-          </div>
-          <div className="dashboard__item__right">
-            <p className="dashboard__item__price">${stock.price.toFixed(2)}</p>
-            <p className={`dashboard__item__change ${stock.change >= 0 ? 'stock-up' : 'stock-down'}`}>
-              {stock.change.toFixed(2)} ({stock.percentChange.toFixed(2)}%)
-            </p>
-          </div>
-        </div>
+        <DashboardItem key={stock.symbol} {...stock} />
       ))}
     </div>
   );
