@@ -8,7 +8,7 @@ const Layout = () => {
   return (
     <div>
       <Navbar />
-      { !login && <Banner />}
+      {/* { !login && <Banner />} */}
       <Outlet />
     </div>
   );
