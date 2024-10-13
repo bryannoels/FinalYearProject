@@ -9,17 +9,20 @@ import './StockDetails.css';
 
 
 type StockDetail = {
-  name: string;
-  symbol: string;
-  currentPrice: number;
-  priceChange: number;
-  percentChange: number;
-  volume: string;
-  marketCap: string;
-  eps: string;
-  peRatio: string;
-  dividendYield: string;
-};
+    companyName: string;
+    currentPrice: string;
+    openingPrice: string;
+    previousClose: string;
+    daysRange: string;
+    week52Range: string;
+    volume: string;
+    marketCap: string;
+    peRatio: string;
+    eps: string;
+    priceSales: string;
+    priceBook: string;
+  };
+  
 
 const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
@@ -31,17 +34,37 @@ const StockDetails = () => {
         percentChange: -0.27
     }
     const currentStockDetail: StockDetail = {
-        name: 'Apple Inc.',
-        symbol: 'AAPL',
-        currentPrice: 149.15,
-        priceChange: -0.41,
-        percentChange: -0.27,
-        volume: '72.8M',
-        marketCap: '2.5T',
-        eps: '5.1',
-        peRatio: '29.3',
-        dividendYield: '0.58%'
-    };
+        companyName: "Alphabet Inc.",
+        currentPrice: "163.24",
+        openingPrice: "162.13",
+        previousClose: "162.08",
+        daysRange: "161.24 - 163.90",
+        week52Range: "120.21 - 191.75",
+        volume: "15,279,647",
+        marketCap: "2.017T",
+        peRatio: "23.42",
+        eps: "6.97",
+        priceSales: "6.26",
+        priceBook: "6.68"
+      };
+
+      const labels = {
+        "Opening Price": currentStockDetail.openingPrice,
+        "Previous Close": currentStockDetail.previousClose,
+        "Day's Range": currentStockDetail.daysRange,
+        "52-Week Range": currentStockDetail.week52Range,
+        "Volume": currentStockDetail.volume,
+        "Market Cap": currentStockDetail.marketCap,
+        "PE Ratio (TTM)": currentStockDetail.peRatio,
+        "EPS (TTM)": currentStockDetail.eps,
+        "Price/Sales (TTM)": currentStockDetail.priceSales,
+        "Price/Book (MRQ)": currentStockDetail.priceBook,
+      };
+      
+    const stockDetailKeyValue = Object.entries(currentStockDetail).map(([key, value]) => ({
+        key: key,
+        value: value
+      }));
 
     return(
         <div className = "stock-details">
@@ -51,16 +74,22 @@ const StockDetails = () => {
                         <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true"/>
                     </button>
                     <div className = "stock-details__name">
-                        {currentStockDetail.symbol}
+                        {symbol}
                     </div>
                 </div>
                 <DashboardItem key={currentStock.symbol} {...currentStock} />
             </div>
             <div className = "stock-details__chart">
-                
+
             </div>
+            <p className="stock-details__title">Valuation measures</p>
             <div className = "stock-details__table">
-                
+                {Object.entries(labels).map(([label, value]) => (
+                    <div className="stock-details__table__row" key={label}>
+                        <div className="stock-details__table__label">{label}</div>
+                        <div className="stock-details__table__value">{value}</div>
+                    </div>
+                ))}
             </div>
             <div className = "stock-details__verdict">
                 
