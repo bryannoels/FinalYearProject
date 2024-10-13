@@ -59,6 +59,21 @@ const StockDetails = () => {
         "Price/Book (MRQ)": currentStockDetail.priceBook,
       };
 
+      const currentVerdict = {
+        verdict: "BUY",
+        count: {
+            positive: 3,
+            neutral: 2,
+            negative: 1
+        }
+      }
+
+      const verdictClass =
+        currentVerdict.verdict === "BUY" ? "buy" :
+        currentVerdict.verdict === "HOLD" ? "hold" :
+        currentVerdict.verdict === "SELL" ? "sell" :
+        "";
+
     return(
         <div className = "stock-details">
             <div className = "stock-details__top">
@@ -75,7 +90,7 @@ const StockDetails = () => {
             <div className = "stock-details__chart">
 
             </div>
-            <p className="stock-details__title">Valuation measures</p>
+            <p className="stock-details__title">Valuation Measures</p>
             <div className = "stock-details__table">
                 {Object.entries(labels).map(([label, value]) => (
                     <div className="stock-details__table__row" key={label}>
@@ -84,8 +99,25 @@ const StockDetails = () => {
                     </div>
                 ))}
             </div>
+            <p className="stock-details__title">Analysts' Recommendation</p>
             <div className = "stock-details__verdict">
-                
+                <div className = "stock-detailss__verdict__left">
+                    <p className = {`stock-detailss__verdict__left__text ${verdictClass}`}>{currentVerdict.verdict}</p>
+                </div>
+                <div className = "stock-detailss__verdict__right">
+                    <div className = "stock-detailss__verdict__positive">
+                        <div className = "stock-detailss__verdict__value">{currentVerdict.count.positive}</div>
+                        <div className = "stock-detailss__verdict__text">positive</div>
+                    </div>
+                    <div className = "stock-detailss__verdict__neutral">
+                        <div className = "stock-detailss__verdict__value">{currentVerdict.count.neutral}</div>
+                        <div className = "stock-detailss__verdict__text">neutral</div>
+                    </div>
+                    <div className = "stock-detailss__verdict__negative">
+                        <div className = "stock-detailss__verdict__value">{currentVerdict.count.negative}</div>
+                        <div className = "stock-detailss__verdict__text">negative</div>
+                    </div>
+                </div>
             </div>
             <div className = "stock-details__recommendation">
                 

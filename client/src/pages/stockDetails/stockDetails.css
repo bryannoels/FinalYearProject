@@ -45,10 +45,10 @@
 }
 
 .stock-details__title{
-    font-size: 30px;
+    font-size: 24px;
     font-weight: bold;
     margin-top: 20px;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
     width: 85%;
 }
 
@@ -60,7 +60,6 @@
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    margin-top: 5px;
 }
 
 .stock-details__table__row{
@@ -81,4 +80,86 @@
     font-size: 16px;
     margin-right: 20px;
     font-weight: bold;
+}
+
+.stock-details__verdict{
+    background-color: var(--primary-white);
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    height: 100px;
+}
+
+.stock-detailss__verdict__left{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.stock-detailss__verdict__left__text{
+    font-size: 32px;
+    font-weight: bold;
+    width: 150px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    border-radius: 10px;
+    color: var(--primary-white)
+}
+
+.stock-detailss__verdict__right{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.stock-detailss__verdict__positive{
+    color: var(--primary-green);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.stock-detailss__verdict__neutral{
+    color: var(--primary-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.stock-detailss__verdict__negative{
+    color: var(--primary-red);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.stock-detailss__verdict__value{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.stock-detailss__verdict__left__text.buy {
+    background-color: var(--primary-green);
+}
+
+.stock-detailss__verdict__left__text.hold {
+    background-color: var(--primary-blue);
+}
+
+.stock-detailss__verdict__left__text.sell {
+    background-color: var(--primary-red);
 }
