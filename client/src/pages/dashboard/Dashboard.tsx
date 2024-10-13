@@ -5,7 +5,6 @@ import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import './Dashboard.css';
 
 const createStockObject = (stockData: any): Stock => ({
-  icon: labaLogo,
   name: stockData['Company Name'] || 'Unknown Company',
   symbol: stockData['Symbol'] || 'N/A',
   price: parseFloat(stockData['Price']) || 0,

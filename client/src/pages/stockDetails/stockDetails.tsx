@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
-import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import { Stock } from '../../types/stocks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import './StockDetails.css';
 
 
@@ -60,11 +58,6 @@ const StockDetails = () => {
         "Price/Sales (TTM)": currentStockDetail.priceSales,
         "Price/Book (MRQ)": currentStockDetail.priceBook,
       };
-      
-    const stockDetailKeyValue = Object.entries(currentStockDetail).map(([key, value]) => ({
-        key: key,
-        value: value
-      }));
 
     return(
         <div className = "stock-details">
