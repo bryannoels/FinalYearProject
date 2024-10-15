@@ -20,6 +20,12 @@ type StockDetail = {
     priceSales: string;
     priceBook: string;
   };
+
+interface StockRating {
+    Firm: string;
+    Rating: string;
+    Action: number;
+  }
   
 
 const StockDetails = () => {
@@ -67,12 +73,48 @@ const StockDetails = () => {
             negative: 1
         }
       }
+      
+      const stockRatings: StockRating[] = [
+        {
+          Firm: "Cantor Fitzgerald",
+          Rating: "Neutral",
+          Action: 0,
+        },
+        {
+          Firm: "BMO Capital",
+          Rating: "Outperform",
+          Action: 1,
+        },
+        {
+          Firm: "Wells Fargo",
+          Rating: "Equal-Weight",
+          Action: 0,
+        },
+        {
+          Firm: "Piper Sandler",
+          Rating: "Overweight",
+          Action: 1,
+        },
+        {
+          Firm: "Tigress Financial",
+          Rating: "Strong Buy",
+          Action: 1,
+        },
+        {
+            Firm: "Barclays",
+            Rating: "Underweight",
+            Action: -1,
+         },
+      ];
+      
 
       const verdictClass =
         currentVerdict.verdict === "BUY" ? "buy" :
         currentVerdict.verdict === "HOLD" ? "hold" :
         currentVerdict.verdict === "SELL" ? "sell" :
         "";
+
+        
 
     return(
         <div className = "stock-details">
@@ -100,27 +142,41 @@ const StockDetails = () => {
                 ))}
             </div>
             <p className="stock-details__title">Analysts' Recommendation</p>
-            <div className = "stock-details__verdict">
-                <div className = "stock-detailss__verdict__left">
-                    <p className = {`stock-detailss__verdict__left__text ${verdictClass}`}>{currentVerdict.verdict}</p>
+            <div className= "stock-details__recommendation"> 
+                <div className = "stock-details__verdict">
+                    <div className = "stock-detailss__verdict__left">
+                        <p className = {`stock-detailss__verdict__left__text ${verdictClass}`}>{currentVerdict.verdict}</p>
+                    </div>
+                    <div className = "stock-detailss__verdict__right">
+                        <div className = "stock-detailss__verdict__positive">
+                            <div className = "stock-detailss__verdict__value">{currentVerdict.count.positive}</div>
+                            <div className = "stock-detailss__verdict__text">positive</div>
+                        </div>
+                        <div className = "stock-detailss__verdict__neutral">
+                            <div className = "stock-detailss__verdict__value">{currentVerdict.count.neutral}</div>
+                            <div className = "stock-detailss__verdict__text">neutral</div>
+                        </div>
+                        <div className = "stock-detailss__verdict__negative">
+                            <div className = "stock-detailss__verdict__value">{currentVerdict.count.negative}</div>
+                            <div className = "stock-detailss__verdict__text">negative</div>
+                        </div>
+                    </div>
                 </div>
-                <div className = "stock-detailss__verdict__right">
-                    <div className = "stock-detailss__verdict__positive">
-                        <div className = "stock-detailss__verdict__value">{currentVerdict.count.positive}</div>
-                        <div className = "stock-detailss__verdict__text">positive</div>
-                    </div>
-                    <div className = "stock-detailss__verdict__neutral">
-                        <div className = "stock-detailss__verdict__value">{currentVerdict.count.neutral}</div>
-                        <div className = "stock-detailss__verdict__text">neutral</div>
-                    </div>
-                    <div className = "stock-detailss__verdict__negative">
-                        <div className = "stock-detailss__verdict__value">{currentVerdict.count.negative}</div>
-                        <div className = "stock-detailss__verdict__text">negative</div>
-                    </div>
+                <hr className = "stock-details__analysts__divider" />
+                <div className = "stock-details__analysts-recommendation">
+                    {stockRatings.map((item) => {
+                        const ratingClass =
+                        item.Action === 1 ? "green-rating" :
+                        item.Action === 0 ? "blue-rating" :
+                        "red-rating";
+    
+                        return(
+                        <div className="stock-details__analysts__row" key={item.Firm}>
+                            <div className="stock-details__analysts__firm">{item.Firm}</div>
+                            <div className={`stock-details__analysts__rating ${ratingClass}`}>{item.Rating}</div>
+                        </div>
+                    )})}
                 </div>
-            </div>
-            <div className = "stock-details__recommendation">
-                
             </div>
         </div>
     );

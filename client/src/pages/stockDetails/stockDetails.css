@@ -47,7 +47,7 @@
 .stock-details__title{
     font-size: 24px;
     font-weight: bold;
-    margin-top: 20px;
+    margin-top: 50px;
     margin-bottom: 10px;
     width: 85%;
 }
@@ -82,15 +82,19 @@
     font-weight: bold;
 }
 
-.stock-details__verdict{
+.stock-details__recommendation{
     background-color: var(--primary-white);
+    border-radius: 10px;
     width: 90%;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+.stock-details__verdict{
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    margin-bottom: 20px;
     height: 100px;
 }
 
@@ -162,4 +166,48 @@
 
 .stock-detailss__verdict__left__text.sell {
     background-color: var(--primary-red);
+}
+
+.stock-details__analysts__divider{
+    width: 90%;
+}
+
+.stock-details__analysts-recommendation{
+    width: 100%;
+}
+
+.stock-details__analysts__row{
+    width: calc(100% - 20px); 
+    margin-left: 20px;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-details__analysts__firm{
+    font-size: 16px;
+    margin-left: 20px;
+    width: 60%;
+}
+
+.stock-details__analysts__rating{
+    font-size: 16px;
+    margin-right: 20px;
+    font-weight: bold;
+    text-align: center;
+    width: 40%;
+}
+
+.green-rating {
+    color: green;
+}
+
+.blue-rating {
+    color: blue;
+}
+
+.red-rating {
+    color: red;
 }
