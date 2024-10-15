@@ -127,11 +127,37 @@ const getHistoricalData = (req, res) => {
     });
 };
 
+const getEPSData = (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['stocks/getEPSData.py', stockSymbol]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const epsData = JSON.parse(data.toString());
+            res.json(epsData);
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to parse response' });
+        }
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        res.status(500).json({ error: 'Error retrieving EPS data' });
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 
 module.exports = {
     getStockData,
     getTop10MostActiveStocks,
     getAnalysis,
     getVerdict,
-    getHistoricalData
+    getHistoricalData,
+    getEPSData
 };
