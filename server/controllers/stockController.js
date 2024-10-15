@@ -104,9 +104,14 @@ const getVerdict = (req, res) => {
 const getAnalystRatings = async (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
     const url = `https://production.dataviz.cnn.io/quote/analystratings/${stockSymbol}`;
+    const headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        'Accept': 'application/json'
+    };
 
     try {
-        const response = await axios.get(url);
+        const response = await axios.get(url, { headers });
+        console.log(response.data);
         res.json(response.data);
     } catch (error) {
         console.error('Error fetching data from CNN:', error);
@@ -141,6 +146,23 @@ const getHistoricalData = (req, res) => {
     });
 };
 
+const getForecastData = async (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const url = `https://production.dataviz.cnn.io/quote/forecast/${stockSymbol}`;
+    const headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+        'Accept': 'application/json'
+    };
+
+    try {
+        const response = await axios.get(url, { headers });
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching forecast data from CNN:', error);
+        res.status(500).json({ error: 'Failed to fetch forecast data' });
+    }
+};
+
 const getEPSData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
     const pythonProcess = spawn('python3', ['stocks/getEPSData.py', stockSymbol]);
@@ -172,7 +194,8 @@ module.exports = {
     getTop10MostActiveStocks,
     getAnalysis,
     getVerdict,
+    getAnalystRatings,
     getHistoricalData,
-    getEPSData,
-    getAnalystRatings
+    getForecastData,
+    getEPSData
 };
