@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const axios = require('axios');
 
 const getStockData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
@@ -100,6 +101,19 @@ const getVerdict = (req, res) => {
     });
 };
 
+const getAnalystRatings = async (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const url = `https://production.dataviz.cnn.io/quote/analystratings/${stockSymbol}`;
+
+    try {
+        const response = await axios.get(url);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching data from CNN:', error);
+        res.status(500).json({ error: 'Failed to fetch analyst ratings' });
+    }
+};
+
 const getHistoricalData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
     const rangeParam = req.query.range || '1d';
@@ -159,5 +173,6 @@ module.exports = {
     getAnalysis,
     getVerdict,
     getHistoricalData,
-    getEPSData
+    getEPSData,
+    getAnalystRatings
 };
