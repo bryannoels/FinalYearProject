@@ -13,7 +13,7 @@ def get_top_10_most_active_stocks():
 
         rows = soup.find_all('tr', attrs={'class': 'yf-1dbt8wv'})
         
-        for row in rows[1:11]:
+        for row in rows[1:26]:
             stock = {}
             
             symbol_tag = row.find('span', attrs={'class': 'symbol'})
