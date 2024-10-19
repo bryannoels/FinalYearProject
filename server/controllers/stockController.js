@@ -7,7 +7,6 @@ const getStockData = (req, res) => {
 
     pythonProcess.stdout.on('data', (data) => {
         try {
-            console.log(data.toString());
             const stockData = JSON.parse(data.toString());
             res.json(stockData);
         } catch (error) {
@@ -16,7 +15,6 @@ const getStockData = (req, res) => {
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
         res.status(500).json({ error: 'Error retrieving historical data' });
     });
 
@@ -40,7 +38,6 @@ const getTop10MostActiveStocks = (req, res) => {
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
         res.status(500).json({ error: 'Error retrieving stock data' });
     });
 
@@ -51,58 +48,7 @@ const getTop10MostActiveStocks = (req, res) => {
     });
 };
 
-const getAnalysis = (req, res) => {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['stocks/getAnalysis.py', stockSymbol]);
-
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const analysisData = JSON.parse(data.toString());
-            res.json(analysisData);
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to parse response' });
-        }
-    });
-
-    pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        res.status(500).json({ error: 'Error retrieving analysis data' });
-    });
-
-    pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-};
-
-const getVerdict = (req, res) => {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['stocks/getVerdict.py', stockSymbol]);
-
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const verdictData = JSON.parse(data.toString());
-            res.json(verdictData);
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to parse response' });
-        }
-    });
-
-    pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        res.status(500).json({ error: 'Error retrieving verdict data' });
-    });
-
-    pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-};
-
-const getAnalystRatings = async (req, res) => {
-    const stockSymbol = req.params.symbol.toUpperCase();
+const handleGetVerdict = async (stockSymbol) => {
     const url = `https://production.dataviz.cnn.io/quote/analystratings/${stockSymbol}`;
     const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
@@ -111,12 +57,71 @@ const getAnalystRatings = async (req, res) => {
 
     try {
         const response = await axios.get(url, { headers });
-        console.log(response.data);
-        res.json(response.data);
+        const data = response.data[0];
+
+        let verdict = '';
+        const { percent_buys, percent_holds, percent_sells } = data;
+
+        if (percent_buys >= percent_holds && percent_buys >= percent_sells) {
+            verdict = 'buy';
+        } else if (percent_holds >= percent_buys && percent_holds >= percent_sells) {
+            verdict = 'hold';
+        } else if (percent_sells >= percent_buys && percent_sells >= percent_holds) {
+            verdict = 'sell';
+        }
+
+        return { ...data, verdict };
     } catch (error) {
-        console.error('Error fetching data from CNN:', error);
-        res.status(500).json({ error: 'Failed to fetch analyst ratings' });
+        throw new Error('Failed to fetch analyst ratings');
     }
+};
+
+const getVerdict = async (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    
+    try {
+        const verdictData = await handleGetVerdict(stockSymbol);
+        res.json(verdictData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getAnalysis = (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+
+    handleGetVerdict(stockSymbol)
+        .then((verdictData) => {
+            const { num_of_buys, num_of_holds, num_of_sells } = verdictData;
+            const pythonProcess = spawn('python3', ['stocks/getAnalysis.py', stockSymbol]);
+
+            pythonProcess.stdout.on('data', (data) => {
+                try {
+                    const analysisData = JSON.parse(data.toString());
+                    const combinedAnalysis = [
+                        ...analysisData.filter(item => item.Action === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
+                        ...analysisData.filter(item => item.Action === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
+                        ...analysisData.filter(item => item.Action === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
+                    ];
+                    res.json(combinedAnalysis);
+                } catch (error) {
+                    res.status(500).json({ error: 'Failed to parse response' });
+                }
+            });
+
+            pythonProcess.stderr.on('data', (data) => {
+                res.status(500).json({ error: 'Error retrieving analysis data' });
+            });
+
+            pythonProcess.on('close', (code) => {
+                if (code !== 0) {
+                    res.status(500).json({ error: 'Python script exited with code ' + code });
+                }
+            });
+        })
+        .catch((error) => {
+            res.status(500).json({ error: 'Failed to fetch verdict data' });
+        });
 };
 
 const getHistoricalData = (req, res) => {
@@ -135,7 +140,6 @@ const getHistoricalData = (req, res) => {
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
         res.status(500).json({ error: 'Error retrieving historical data' });
     });
 
@@ -158,7 +162,6 @@ const getForecastData = async (req, res) => {
         const response = await axios.get(url, { headers });
         res.json(response.data);
     } catch (error) {
-        console.error('Error fetching forecast data from CNN:', error);
         res.status(500).json({ error: 'Failed to fetch forecast data' });
     }
 };
@@ -177,7 +180,6 @@ const getEPSData = (req, res) => {
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
         res.status(500).json({ error: 'Error retrieving EPS data' });
     });
 
@@ -194,7 +196,6 @@ module.exports = {
     getTop10MostActiveStocks,
     getAnalysis,
     getVerdict,
-    getAnalystRatings,
     getHistoricalData,
     getForecastData,
     getEPSData

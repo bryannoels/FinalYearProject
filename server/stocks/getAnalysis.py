@@ -5,9 +5,9 @@ import json
 
 def categorize_rating(rating):
     rating = rating.lower()
-    if any(keyword in rating for keyword in ['outperform', 'buy', 'overweight', 'positive', '']):
+    if any(keyword in rating for keyword in ['outperform', 'buy', 'overweight', 'positive']):
         return 1
-    elif any(keyword in rating for keyword in ['sell', 'underweight', 'underperform', 'negative']):
+    elif any(keyword in rating for keyword in ['sell', 'underweight', 'underperform', 'negative', 'reduce']):
         return -1
     else:
         return 0
