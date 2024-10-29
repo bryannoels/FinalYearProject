@@ -36,6 +36,10 @@ def get_top_10_most_active_stocks():
     else:
         return {"error": "Failed to retrieve data."}
 
+def lambda_handler(event, context): # Event and context required by AWS Lambda function
+    top_10_stocks = get_top_10_most_active_stocks()
+    return json.dumps(top_10_stocks, indent=2)
+
 if __name__ == "__main__":
     top_10_stocks = get_top_10_most_active_stocks()
     print(json.dumps(top_10_stocks, indent=2))

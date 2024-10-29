@@ -39,6 +39,11 @@ def get_stock_data(stock_symbol):
     else:
         return {"error": "Failed to retrieve data."}
 
+def lambda_handler(event, context): # Event and context required by AWS Lambda function
+    stock_symbol = event.get("stock_symbol", "AAPL")  # Default to "AAPL" if not provided
+    stock_data = get_stock_data(stock_symbol)
+    return json.dumps(stock_data)
+
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
     stock_data = get_stock_data(stock_symbol)

@@ -25,10 +25,10 @@ function Dashboard() {
   const [stockList, setStockList] = useState<Stock[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/stocks/most-active')
+    fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/getTop10Stocks')
       .then((response) => response.json())
       .then((data) => {
-        const formattedData: Stock[] = data.map(createStockObject);
+        const formattedData: Stock[] = JSON.parse(data).map(createStockObject);
         setStockList(formattedData);
       })
       .catch((error) => {
