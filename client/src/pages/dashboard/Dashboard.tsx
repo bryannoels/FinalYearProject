@@ -20,11 +20,10 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchStocks = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/stocks/most-active');
-        const data = await response.json();
-        const formattedData: Stock[] = data.map(createStockObject);
+    fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/getTop10Stocks')
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedData: Stock[] = JSON.parse(data).map(createStockObject);
         setStockList(formattedData);
       } catch (error) {
         console.error('Error fetching stock data:', error);
