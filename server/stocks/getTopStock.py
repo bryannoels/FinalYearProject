@@ -18,7 +18,7 @@ def get_top_10_most_active_stocks():
                 symbol_tag = row.find('span', attrs={'class': 'symbol'})
                 stock['Symbol'] = symbol_tag.text.strip() if symbol_tag else 'N/A'
                 
-                name_tag = row.find('div', attrs={'class': 'yf-h8l7j7'})
+                name_tag = row.find_all('td')[1].find('div')
                 stock['Company Name'] = name_tag.text if name_tag else 'N/A'
                 
                 price_tag = row.find('fin-streamer', attrs={'data-field': 'regularMarketPrice'})
