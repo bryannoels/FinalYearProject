@@ -18,11 +18,9 @@ def get_historical_data(stock_symbol, range_param):
     interval = interval_mapping.get(range_param, '1d')
     
     historical_url = f'https://query1.finance.yahoo.com/v8/finance/chart/{stock_symbol}?interval={interval}&range={range_param}'
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36'}
+
     response = requests.get(historical_url, headers=headers)
-    
     if response.status_code == 200:
         data = response.json()
         prices = []

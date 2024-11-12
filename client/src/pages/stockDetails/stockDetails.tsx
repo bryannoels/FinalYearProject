@@ -47,7 +47,6 @@ const StockDetails = () => {
     const [_error, setError] = useState(null);
 
     useEffect(() => {
-        console.log(symbol);
 
         const fetchStockData = async () => {
             try {
@@ -84,6 +83,10 @@ const StockDetails = () => {
             }
         };
 
+        fetchStockData();
+    }, [symbol]);
+
+    useEffect(() => {
         const fetchStockPriceData = async () => {
             try {
                 const response = await fetch(`http://localhost:8000/api/stocks/historical/${symbol}`);
@@ -106,7 +109,6 @@ const StockDetails = () => {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                console.log(data);
                 setCurrentAnalysis(data);
             } catch (error: any) {
                 setError(error);
@@ -122,7 +124,6 @@ const StockDetails = () => {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                console.log(data);
                 setForecastData(data);
             } catch (error: any) {
                 setError(error);
@@ -138,7 +139,6 @@ const StockDetails = () => {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                console.log(data);
                 setEpsData(data.EPS_Data);
             } catch (error: any) {
                 setError(error);
@@ -147,12 +147,11 @@ const StockDetails = () => {
             }
         }
 
-        fetchStockData();
         fetchStockPriceData();
         fetchAnalysisData();
         fetchForecastData();
         fetchEpsData();
-    }, [symbol]);
+    }, [currentStock]);
 
     const labels = {
         "Opening Price": currentStockDetail?.openingPrice,
@@ -168,12 +167,7 @@ const StockDetails = () => {
     };
 
         useEffect(() => {
-            if (!chartRef.current || stockPriceData.length === 0) return;
-        
-            const parsedStockPriceData = stockPriceData.map(d => ({
-                ...d,
-                dateTime: new Date(`${d.date}T${d.time}`)
-            }));
+            if (!chartRef.current || stockPriceData === null || stockPriceData.length === 0) return;
         
             const svg = d3.select(chartRef.current);
             const width = 450;
@@ -183,13 +177,13 @@ const StockDetails = () => {
             svg.attr("width", width).attr("height", height);
         
             const x = d3.scaleTime()
-                .domain(d3.extent(parsedStockPriceData, d => d.dateTime) as [Date, Date])
+                .domain(d3.extent(stockPriceData, d => new Date(`${d.date}T${d.time}`)) as [Date, Date])
                 .range([margin.left, width - margin.right]);
         
             const y = d3.scaleLinear()
                 .domain([
-                    Math.min(...parsedStockPriceData.map(d => d.close)) - 1,
-                    Math.max(...parsedStockPriceData.map(d => d.close)) + 1
+                    Math.min(...stockPriceData.map(d => d.close)) - 1,
+                    Math.max(...stockPriceData.map(d => d.close)) + 1
                 ])
                 .range([height - margin.bottom, margin.top]);
         
@@ -210,7 +204,7 @@ const StockDetails = () => {
         
             const renderLine = () => {
                 svg.append("path")
-                    .datum(parsedStockPriceData)
+                    .datum(stockPriceData)
                     .attr("fill", "none")
                     .attr("stroke", "#0033AA")
                     .attr("stroke-width", 2)
@@ -242,7 +236,7 @@ const StockDetails = () => {
                 const tooltip = d3.select(".tooltip");
         
                 svg.selectAll(".dot")
-                    .data(parsedStockPriceData)
+                    .data(stockPriceData)
                     .enter().append("circle")
                     .attr("class", "dot")
                     .attr("cx", (d: StockPrice) => x(new Date(`${d.date}T${d.time}`)))
@@ -263,9 +257,9 @@ const StockDetails = () => {
                     });
             };
         
-            const maxPrice = Math.max(...parsedStockPriceData.map(d => d.close));
-            const currentPrice = parsedStockPriceData[parsedStockPriceData.length-1].close;
-            const minPrice = Math.min(...parsedStockPriceData.map(d => d.close));
+            const maxPrice = Math.max(...stockPriceData.map(d => d.close));
+            const currentPrice = stockPriceData[stockPriceData.length-1].close;
+            const minPrice = Math.min(...stockPriceData.map(d => d.close));
 
             drawDashedLine(maxPrice, "green", `Max Price - ${maxPrice.toFixed(2)}`, 100, 8, true);
             drawDashedLine(currentPrice, "blue", `Current Price - ${currentPrice.toFixed(2)}`, 118, 8, (maxPrice - currentPrice) / (maxPrice-minPrice) * 100 > 10);
@@ -297,11 +291,9 @@ const StockDetails = () => {
                 .padding(0.1);
         
             const y = d3.scaleLinear()
-                .domain([minimumValue < 0 ? minimumValue * 1.1 : minimumValue, maximumValue])
+                .domain([minimumValue < 0 ? minimumValue * 1.1 : 0, maximumValue])
                 .nice()
                 .range([height - margin.bottom, margin.top]);
-            
-                console.log((d3.min(epsData, d => d.EPS) as number)*0.9)
         
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -328,7 +320,6 @@ const StockDetails = () => {
                         .style('top', `${event.pageY - 80}px`)
                         .classed('hidden', false)
                         .html(`Year: ${d.Year}<br>EPS: ${d.EPS}`);
-                    console.log(event.pageX, event.pageY);
                 })
                 .on("mouseout", function () {
                     d3.select(this).attr("opacity", 1);
