@@ -398,7 +398,7 @@ const StockDetails = () => {
                                 <div className="stock-details__eps__table">
                                     {epsData?.map((item) => (
                                         <div className="stock-details__eps__row" key={item.Year}>
-                                            <div className="stock-details __eps__label">{item.Year}</div>
+                                            <div className="stock-details__eps__label">{item.Year}</div>
                                             <div className="stock-details__eps__value">{item.EPS}</div>
                                         </div>
                                     ))}
