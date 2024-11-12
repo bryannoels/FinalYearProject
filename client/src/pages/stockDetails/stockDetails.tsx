@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/dashboardItem';
@@ -37,6 +37,28 @@ const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
     const chartRef = useRef<SVGSVGElement | null>(null);
     const epsChartRef = useRef<SVGSVGElement | null>(null);
+    const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
+    const [_loading, setLoading] = useState(true);
+    const [_error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStockPriceData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/stocks/historical/${symbol}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setStockPriceData(data.prices);
+            } catch (error: any) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStockPriceData();
+    }, [symbol]);
 
     const currentStock: Stock = {
         name: 'Apple Inc.',
@@ -97,77 +119,7 @@ const StockDetails = () => {
         percent_median_price: 11.721857264155155,
         percent_low_price: -17.772713053581807,
         last_updated: "2024-11-12T08:06:38.491440+00:00"
-    };
-
-        const stockPriceData = [
-            { date: "2024-11-11", time: "09:30:00", close: 223.85009765625 },
-            { date: "2024-11-11", time: "09:35:00", close: 224.13999938964844 },
-            { date: "2024-11-11", time: "09:40:00", close: 224.19000244140625 },
-            { date: "2024-11-11", time: "09:45:00", close: 223.9199981689453 },
-            { date: "2024-11-11", time: "09:50:00", close: 223.41000366210938 },
-            { date: "2024-11-11", time: "09:55:00", close: 222.89500427246094 },
-            { date: "2024-11-11", time: "10:00:00", close: 223.2100067138672 },
-            { date: "2024-11-11", time: "10:05:00", close: 223.27999877929688 },
-            { date: "2024-11-11", time: "10:10:00", close: 223.08990478515625 },
-            { date: "2024-11-11", time: "10:15:00", close: 223.27499389648438 },
-            { date: "2024-11-11", time: "10:20:00", close: 223.10760498046875 },
-            { date: "2024-11-11", time: "10:25:00", close: 222.80499267578125 },
-            { date: "2024-11-11", time: "10:30:00", close: 223.07000732421875 },
-            { date: "2024-11-11", time: "10:35:00", close: 223.67999267578125 },
-            { date: "2024-11-11", time: "10:40:00", close: 223.19000244140625 },
-            { date: "2024-11-11", time: "10:45:00", close: 223.0800018310547 },
-            { date: "2024-11-11", time: "10:50:00", close: 222.97999572753906 },
-            { date: "2024-11-11", time: "10:55:00", close: 222.75 },
-            { date: "2024-11-11", time: "11:00:00", close: 223.27000427246094 },
-            { date: "2024-11-11", time: "11:05:00", close: 223.16009521484375 },
-            { date: "2024-11-11", time: "11:10:00", close: 222.99000549316406 },
-            { date: "2024-11-11", time: "11:15:00", close: 222.86700439453125 },
-            { date: "2024-11-11", time: "11:20:00", close: 222.8699951171875 },
-            { date: "2024-11-11", time: "11:25:00", close: 222.77000427246094 },
-            { date: "2024-11-11", time: "11:30:00", close: 222.8300018310547 },
-            { date: "2024-11-11", time: "11:35:00", close: 222.97999572753906 },
-            { date: "2024-11-11", time: "11:40:00", close: 222.80999755859375 },
-            { date: "2024-11-11", time: "11:45:00", close: 222.94850158691406 },
-            { date: "2024-11-11", time: "11:50:00", close: 222.7100067138672 },
-            { date: "2024-11-11", time: "11:55:00", close: 222.7799072265625 },
-            { date: "2024-11-11", time: "12:00:00", close: 222.7899932861328 },
-            { date: "2024-11-11", time: "12:05:00", close: 222.69869995117188 },
-            { date: "2024-11-11", time: "12:10:00", close: 222.50999450683594 },
-            { date: "2024-11-11", time: "12:15:00", close: 222.27999877929688 },
-            { date: "2024-11-11", time: "12:20:00", close: 222.1999969482422 },
-            { date: "2024-11-11", time: "12:25:00", close: 222.19500732421875 },
-            { date: "2024-11-11", time: "12:30:00", close: 222.11610412597656 },
-            { date: "2024-11-11", time: "12:35:00", close: 221.92999267578125 },
-            { date: "2024-11-11", time: "12:40:00", close: 221.90499877929688 },
-            { date: "2024-11-11", time: "12:45:00", close: 221.74000549316406 },
-            { date: "2024-11-11", time: "12:50:00", close: 221.9600067138672 },
-            { date: "2024-11-11", time: "12:55:00", close: 221.86000061035156 },
-            { date: "2024-11-11", time: "13:00:00", close: 221.7200927734375 },
-            { date: "2024-11-11", time: "13:05:00", close: 221.7050018310547 },
-            { date: "2024-11-11", time: "13:10:00", close: 221.7949981689453 },
-            { date: "2024-11-11", time: "13:15:00", close: 221.94500732421875 },
-            { date: "2024-11-11", time: "13:20:00", close: 222.14999389648438 },
-            { date: "2024-11-11", time: "13:25:00", close: 222.4600067138672 },
-            { date: "2024-11-11", time: "13:30:00", close: 222.42889404296875 },
-            { date: "2024-11-11", time: "13:35:00", close: 222.4799041748047 },
-            { date: "2024-11-11", time: "13:40:00", close: 222.7451934814453 },
-            { date: "2024-11-11", time: "13:45:00", close: 222.83340454101562 },
-            { date: "2024-11-11", time: "13:50:00", close: 222.87010192871094 },
-            { date: "2024-11-11", time: "13:55:00", close: 222.89999389648438 },
-            { date: "2024-11-11", time: "14:00:00", close: 222.94000244140625 },
-            { date: "2024-11-11", time: "14:05:00", close: 222.9600067138672 },
-            { date: "2024-11-11", time: "14:10:00", close: 222.98500061035156 },
-            { date: "2024-11-11", time: "14:15:00", close: 222.94009399414062 },
-            { date: "2024-11-11", time: "14:20:00", close: 222.9499969482422 },
-            { date: "2024-11-11", time: "14:25:00", close: 223.05999755859375 },
-            { date: "2024-11-11", time: "14:30:00", close: 223.10499572753906 },
-            { date: "2024-11-11", time: "14:35:00", close: 223.0749969482422 },
-            { date: "2024-11-11", time: "14:40:00", close: 223.17010498046875 },
-            { date: "2024-11-11", time: "14:45:00", close: 223.17010498046875 },
-            { date: "2024-11-11", time: "14:50:00", close: 223.12010299682617 },
-            { date: "2024-11-11", time: "14:55:00", close: 223.14010620117188 },
-        ];
-        
+    };  
 
         useEffect(() => {
             if (!chartRef.current || stockPriceData.length === 0) return;
@@ -219,7 +171,7 @@ const StockDetails = () => {
                     .attr("d", line);
             };
         
-            const drawDashedLine = (yValue: d3.NumberValue, color: string, label: string, offsetX: number) => {
+            const drawDashedLine = (yValue: d3.NumberValue, color: string, label: string, offsetX: number, offsetY: number, drawLabel: boolean) => {
                 svg.append("line")
                     .attr("x1", margin.left)
                     .attr("y1", y(yValue))
@@ -227,14 +179,17 @@ const StockDetails = () => {
                     .attr("y2", y(yValue))
                     .style("stroke", color)
                     .style("stroke-dasharray", ("5, 5"));
-                
-                svg.append("text")
-                .attr("x", width - margin.right - offsetX)
-                .attr("y", y(yValue) - 10)
-                .attr("fill", color)
-                .attr("font-size", "12px")
-                .attr("text-anchor", "start")
-                .text(label);
+
+                if (drawLabel){
+                    svg.append("text")
+                    .attr("x", width - margin.right - offsetX)
+                    .attr("y", y(yValue) - offsetY)
+                    .attr("fill", color)
+                    .attr("font-size", "12px")
+                    .attr("text-anchor", "start")
+                    .attr("text-align", "right")
+                    .text(label);
+                }
             };
         
             const renderTooltip = () => {
@@ -266,9 +221,9 @@ const StockDetails = () => {
             const currentPrice = parsedStockPriceData[parsedStockPriceData.length-1].close;
             const minPrice = Math.min(...parsedStockPriceData.map(d => d.close));
 
-            drawDashedLine(maxPrice, "green", `Max Price - ${currentPrice.toFixed(2)}`, 100);
-            drawDashedLine(currentPrice, "blue", `Current Price - ${currentPrice.toFixed(2)}`, 120);
-            drawDashedLine(minPrice, "red", `Min Price - ${currentPrice.toFixed(2)}`, 100);
+            drawDashedLine(maxPrice, "green", `Max Price - ${maxPrice.toFixed(2)}`, 100, 8, true);
+            drawDashedLine(currentPrice, "blue", `Current Price - ${currentPrice.toFixed(2)}`, 118, 8, (maxPrice - currentPrice) / (maxPrice-minPrice) * 100 > 10);
+            drawDashedLine(minPrice, "red", `Min Price - ${minPrice.toFixed(2)}`, 100, -15, true);
         
             renderAxes();
             renderLine();
