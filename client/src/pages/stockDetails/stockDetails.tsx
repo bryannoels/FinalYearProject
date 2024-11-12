@@ -40,25 +40,13 @@ const StockDetails = () => {
     const [currentStock, setCurrentStock] = useState<Stock | null>(null);
     const [currentStockDetail, setCurrentStockDetail] = useState<StockDetail | null>(null);
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
+    const [currentAnalysis, setCurrentAnalysis] = useState<any | null>(null);
+    const [forecastData, setForecastData] = useState<any | null>(null);
     const [_loading, setLoading] = useState(true);
     const [_error, setError] = useState(null);
 
     useEffect(() => {
         console.log(symbol);
-        const fetchStockPriceData = async () => {
-            try {
-                const response = await fetch(`http://localhost:8000/api/stocks/historical/${symbol}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setStockPriceData(data.prices);
-            } catch (error: any) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         const fetchStockData = async () => {
             try {
@@ -95,8 +83,57 @@ const StockDetails = () => {
             }
         };
 
+        const fetchStockPriceData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/stocks/historical/${symbol}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setStockPriceData(data.prices);
+            } catch (error: any) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchAnalysisData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/stocks/verdict/${symbol}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log(data);
+                setCurrentAnalysis(data);
+            } catch (error: any) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        const fetchForecastData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/stocks/forecast/${symbol}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log(data);
+                setForecastData(data);
+            } catch (error: any) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         fetchStockData();
         fetchStockPriceData();
+        fetchAnalysisData();
+        fetchForecastData();
     }, [symbol]);
 
     const labels = {
@@ -111,31 +148,6 @@ const StockDetails = () => {
         "Price/Sales (TTM)": currentStockDetail?.priceSales,
         "Price/Book (MRQ)": currentStockDetail?.priceBook,
     };
-
-    const currentAnalysis = {
-        symbol: "AAPL",
-        num_of_analysts: 52,
-        num_of_buys: 35,
-        percent_buys: 67.3077,
-        num_of_holds: 14,
-        percent_holds: 26.9231,
-        num_of_sells: 3,
-        percent_sells: 5.7693,
-        last_updated: "2024-11-10T08:09:51.986555+00:00",
-        verdict: "buy"
-    };
-
-    const forecastData = {
-        symbol: "AAPL",
-        current_stock_price: 223.77,
-        high_target_price: 300,
-        median_target_price: 250,
-        low_target_price: 184,
-        percent_high_price: 34.06622871698619,
-        percent_median_price: 11.721857264155155,
-        percent_low_price: -17.772713053581807,
-        last_updated: "2024-11-12T08:06:38.491440+00:00"
-    };  
 
         useEffect(() => {
             if (!chartRef.current || stockPriceData.length === 0) return;
@@ -354,19 +366,19 @@ const StockDetails = () => {
             <div className="stock-details__recommendation">
                 <div className="stock-details__analysis">
                     <div className="stock-detailss__analysis__left">
-                        <p className={`stock-detailss__analysis__left__text ${currentAnalysis.verdict}`}>{currentAnalysis.verdict.toUpperCase()}</p>
+                        <p className={`stock-detailss__analysis__left__text ${currentAnalysis?.verdict}`}>{currentAnalysis?.verdict.toUpperCase()}</p>
                     </div>
                     <div className="stock-detailss__analysis__right">
                         <div className="stock-detailss__analysis__buys">
-                            <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_buys}</div>
+                            <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_buys}</div>
                             <div className="stock-detailss__analysis__text">buys</div>
                         </div>
                         <div className="stock-detailss__analysis__holds">
-                            <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_holds}</div>
+                            <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_holds}</div>
                             < div className="stock-detailss__analysis__text">holds</div>
                         </div>
                         <div className="stock-detailss__analysis__sells">
-                            <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_sells}</div>
+                            <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_sells}</div>
                             <div className="stock-detailss__analysis__text">sells</div>
                         </div>
                     </div>
@@ -375,22 +387,22 @@ const StockDetails = () => {
                     <div className = "stock-details__forecast__row">
                         <div className = "stock-details__forecast__label">High Target Price</div>
                         <div className = "stock-details__forecast__right green-rating">
-                            <div className = "stock-details__forecast__value">{forecastData.high_target_price}</div>
-                            <div className = "stock-details__forecast__percent">({forecastData.percent_high_price.toFixed(1)}%)</div>
+                            <div className = "stock-details__forecast__value">{forecastData?.high_target_price}</div>
+                            <div className = "stock-details__forecast__percent">({forecastData?.percent_high_price.toFixed(1)}%)</div>
                         </div>
                     </div>
                     <div className = "stock-details__forecast__row">
                         <div className = "stock-details__forecast__label">Median Target Price</div>
                         <div className = "stock-details__forecast__right blue-rating">
-                            <div className = "stock-details__forecast__value">{forecastData.median_target_price}</div>
-                            <div className = "stock-details__forecast__percent">({forecastData.percent_median_price.toFixed(1)}%)</div>
+                            <div className = "stock-details__forecast__value">{forecastData?.median_target_price}</div>
+                            <div className = "stock-details__forecast__percent">({forecastData?.percent_median_price.toFixed(1)}%)</div>
                         </div>
                     </div>
                     <div className = "stock-details__forecast__row">
                         <div className = "stock-details__forecast__label">Low Target Price</div>
                         <div className = "stock-details__forecast__right red-rating">
-                            <div className = "stock-details__forecast__value">{forecastData.low_target_price}</div>
-                            <div className = "stock-details__forecast__percent">({forecastData.percent_low_price.toFixed(1)}%)</div>
+                            <div className = "stock-details__forecast__value">{forecastData?.low_target_price}</div>
+                            <div className = "stock-details__forecast__percent">({forecastData?.percent_low_price.toFixed(1)}%)</div>
                         </div>
                     </div>
                 </div>
