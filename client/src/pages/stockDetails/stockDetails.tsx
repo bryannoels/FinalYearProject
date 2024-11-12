@@ -22,12 +22,6 @@ type StockDetail = {
     priceBook: string;
 };
 
-interface StockRating {
-    Firm: string;
-    Rating: string;
-    Action: number;
-}
-
 interface StockPrice {
     date: string;
     time: string;
@@ -80,28 +74,18 @@ const StockDetails = () => {
         "Price/Book (MRQ)": currentStockDetail.priceBook,
     };
 
-    const currentVerdict = {
-        verdict: "BUY",
-        count: {
-            positive: 3,
-            neutral: 2,
-            negative: 1
-        }
+    const currentAnalysis = {
+        symbol: "AAPL",
+        num_of_analysts: 52,
+        num_of_buys: 35,
+        percent_buys: 67.3077,
+        num_of_holds: 14,
+        percent_holds: 26.9231,
+        num_of_sells: 3,
+        percent_sells: 5.7693,
+        last_updated: "2024-11-10T08:09:51.986555+00:00",
+        verdict: "buy"
     };
-
-    const stockRatings: StockRating[] = [
-        { Firm: "Cantor Fitzgerald", Rating: "Neutral", Action: 0 },
-        { Firm: "BMO Capital", Rating: "Outperform", Action: 1 },
-        { Firm: "Wells Fargo", Rating: "Equal-Weight", Action: 0 },
-        { Firm: "Piper Sandler", Rating: "Overweight", Action: 1 },
-        { Firm: "Tigress Financial", Rating: "Strong Buy", Action: 1 },
-        { Firm: "Barclays", Rating: "Underweight", Action: -1 },
-    ];
-
-    const verdictClass = currentVerdict.verdict === "BUY" ? "buy" :
-        currentVerdict.verdict === "HOLD" ? "hold" :
-        currentVerdict.verdict === "SELL" ? "sell" :
-        "";
 
         const stockPriceData = [
             { date: "2024-11-11", time: "09:30:00", close: 223.85009765625 },
@@ -374,20 +358,20 @@ const StockDetails = () => {
             <div className="stock-details__recommendation">
                 <div className="stock-details__verdict">
                     <div className="stock-detailss__verdict__left">
-                        <p className={`stock-detailss__verdict__left__text ${verdictClass}`}>{currentVerdict.verdict}</p>
+                        <p className={`stock-detailss__verdict__left__text ${currentAnalysis.verdict}`}>{currentAnalysis.verdict.toUpperCase()}</p>
                     </div>
                     <div className="stock-detailss__verdict__right">
                         <div className="stock-detailss__verdict__positive">
-                            <div className="stock-detailss__verdict__value">{currentVerdict.count.positive}</div>
-                            <div className="stock-detailss__verdict__text">positive</div>
+                            <div className="stock-detailss__verdict__value">{currentAnalysis.num_of_buys}</div>
+                            <div className="stock-detailss__verdict__text">buys</div>
                         </div>
                         <div className="stock-detailss__verdict__neutral">
-                            <div className="stock-detailss__verdict__value">{currentVerdict.count.neutral}</div>
-                            < div className="stock-detailss__verdict__text">neutral</div>
+                            <div className="stock-detailss__verdict__value">{currentAnalysis.num_of_holds}</div>
+                            < div className="stock-detailss__verdict__text">holds</div>
                         </div>
                         <div className="stock-detailss__verdict__negative">
-                            <div className="stock-detailss__verdict__value">{currentVerdict.count.negative}</div>
-                            <div className="stock-detailss__verdict__text">negative</div>
+                            <div className="stock-detailss__verdict__value">{currentAnalysis.num_of_sells}</div>
+                            <div className="stock-detailss__verdict__text">sells</div>
                         </div>
                     </div>
                 </div>
