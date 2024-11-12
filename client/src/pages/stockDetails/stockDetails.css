@@ -322,6 +322,17 @@
     margin-bottom: 20px;
 }
 
+.stock-details-not-found{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: var(--light-gray);
+    font-size: 50px;
+}
+
 .green-rating {
     color: green;
 }

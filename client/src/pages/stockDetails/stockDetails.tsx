@@ -42,6 +42,7 @@ const StockDetails = () => {
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
     const [currentAnalysis, setCurrentAnalysis] = useState<any | null>(null);
     const [forecastData, setForecastData] = useState<any | null>(null);
+    const [epsData, setEpsData] = useState<Eps[]>([]);
     const [_loading, setLoading] = useState(true);
     const [_error, setError] = useState(null);
 
@@ -130,10 +131,27 @@ const StockDetails = () => {
             }
         }
 
+        const fetchEpsData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/stocks/eps/${symbol}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log(data);
+                setEpsData(data.EPS_Data);
+            } catch (error: any) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         fetchStockData();
         fetchStockPriceData();
         fetchAnalysisData();
         fetchForecastData();
+        fetchEpsData();
     }, [symbol]);
 
     const labels = {
@@ -258,24 +276,6 @@ const StockDetails = () => {
             renderTooltip();
         
         }, [stockPriceData]);
-
-        const epsData: Eps[] = [
-            { Year: 2009, EPS: 0.32 },
-            { Year: 2010, EPS: 0.54 },
-            { Year: 2011, EPS: 0.99 },
-            { Year: 2012, EPS: 1.58 },
-            { Year: 2013, EPS: 1.42 },
-            { Year: 2014, EPS: 1.61 },
-            { Year: 2015, EPS: 2.31 },
-            { Year: 2016, EPS: 2.08 },
-            { Year: 2017, EPS: 2.3 },
-            { Year: 2018, EPS: 2.98 },
-            { Year: 2019, EPS: 2.97 },
-            { Year: 2020, EPS: 3.28 },
-            { Year: 2021, EPS: 5.61 },
-            { Year: 2022, EPS: 6.11 },
-            { Year: 2023, EPS: -2 }
-        ];
         
         useEffect(() => {
             if (!epsChartRef.current || epsData.length === 0) return;
@@ -287,6 +287,9 @@ const StockDetails = () => {
             const margin = { top: 20, right: 30, bottom: 30, left: 50 };
         
             svg.attr("width", width).attr("height", height);
+
+            const minimumValue = d3.min(epsData, d => d.EPS) as number;
+            const maximumValue = d3.max(epsData, d => d.EPS) as number;
         
             const x = d3.scaleBand()
                 .domain(epsData.map(d => d.Year.toString()))
@@ -294,9 +297,11 @@ const StockDetails = () => {
                 .padding(0.1);
         
             const y = d3.scaleLinear()
-                .domain([(d3.min(epsData, d => d.EPS) as number)-1, d3.max(epsData, d => d.EPS) as number])
+                .domain([minimumValue < 0 ? minimumValue * 1.1 : minimumValue, maximumValue])
                 .nice()
                 .range([height - margin.bottom, margin.top]);
+            
+                console.log((d3.min(epsData, d => d.EPS) as number)*0.9)
         
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -334,94 +339,123 @@ const StockDetails = () => {
 
     return symbol ? (
         <div className="stock-details">
-            <div className="stock-details__top">
-                <div className="stock-details__top__head">
-                    <button className="stock-details__back" onClick={() => window.history.back()}>
-                        <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />
-                    </button>
-                    <div className="stock-details__name">
-                        {symbol}
-                    </div>
-                </div>
-                {
-                    currentStock 
-                        ? <DashboardItem key={symbol} {...currentStock} />
-                        : null
-                }
-            </div>
-            <div className="stock-details__chart">
-                <svg ref={chartRef} />
-            </div>
-            <div className="tooltip hidden" />
-            <p className="stock-details__title">Valuation Measures</p>
-            <div className="stock-details__table">
-                {Object.entries(labels).map(([label, value]) => (
-                    <div className="stock-details__table__row" key={label}>
-                        <div className="stock-details__table__label">{label}</div>
-                        <div className="stock-details__table__value">{value}</div>
-                    </div>
-                ))}
-            </div>
-            <p className="stock-details__title">Analysts' Recommendation</p>
+            {
+                currentStock
+                ? (
+                    <>
+                        <div className="stock-details__top">
+                            <div className="stock-details__top__head">
+                                <button className="stock-details__back" onClick={() => window.history.back()}>
+                                    <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />
+                                </button>
+                                <div className="stock-details__name">
+                                    {symbol}
+                                </div>
+                            </div>
+                            <DashboardItem key={symbol} {...currentStock} />
+                        </div>
+                        <div className="stock-details__chart">
+                            <svg ref={chartRef} />
+                        </div>
+                        <div className="tooltip hidden" />
+                        <p className="stock-details__title">Valuation Measures</p>
+                        <div className="stock-details__table">
+                            {Object.entries(labels).map(([label, value]) => (
+                                <div className="stock-details__table__row" key={label}>
+                                    <div className="stock-details__table__label">{label}</div>
+                                    <div className="stock-details__table__value">{value}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                ):
+                <p className="stock-details-not-found">Stock not found</p>
+            }
+            {
+                currentAnalysis || forecastData
+                ? <p className="stock-details__title">Analysts' Recommendation</p>
+                : null
+            }
             <div className="stock-details__recommendation">
-                <div className="stock-details__analysis">
-                    <div className="stock-detailss__analysis__left">
-                        <p className={`stock-detailss__analysis__left__text ${currentAnalysis?.verdict}`}>{currentAnalysis?.verdict.toUpperCase()}</p>
-                    </div>
-                    <div className="stock-detailss__analysis__right">
-                        <div className="stock-detailss__analysis__buys">
-                            <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_buys}</div>
-                            <div className="stock-detailss__analysis__text">buys</div>
+                {
+                    currentAnalysis
+                    ? (
+                        <div className="stock-details__analysis">
+                            <div className="stock-detailss__analysis__left">
+                                <p className={`stock-detailss__analysis__left__text ${currentAnalysis?.verdict}`}>{currentAnalysis?.verdict.toUpperCase()}</p>
+                            </div>
+                            <div className="stock-detailss__analysis__right">
+                                <div className="stock-detailss__analysis__buys">
+                                    <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_buys}</div>
+                                    <div className="stock-detailss__analysis__text">buys</div>
+                                </div>
+                                <div className="stock-detailss__analysis__holds">
+                                    <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_holds}</div>
+                                    < div className="stock-detailss__analysis__text">holds</div>
+                                </div>
+                                <div className="stock-detailss__analysis__sells">
+                                    <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_sells}</div>
+                                    <div className="stock-detailss__analysis__text">sells</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="stock-detailss__analysis__holds">
-                            <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_holds}</div>
-                            < div className="stock-detailss__analysis__text">holds</div>
+                    )
+                    : null
+                    
+                }
+                {
+                    forecastData
+                    ? (
+                        <div className ="stock-details__forecast">
+                            <div className = "stock-details__forecast__row">
+                                <div className = "stock-details__forecast__label">High Target Price</div>
+                                <div className = "stock-details__forecast__right green-rating">
+                                    <div className = "stock-details__forecast__value">{forecastData?.high_target_price}</div>
+                                    <div className = "stock-details__forecast__percent">({forecastData?.percent_high_price.toFixed(1)}%)</div>
+                                </div>
+                            </div>
+                            <div className = "stock-details__forecast__row">
+                                <div className = "stock-details__forecast__label">Median Target Price</div>
+                                <div className = "stock-details__forecast__right blue-rating">
+                                    <div className = "stock-details__forecast__value">{forecastData?.median_target_price}</div>
+                                    <div className = "stock-details__forecast__percent">({forecastData?.percent_median_price.toFixed(1)}%)</div>
+                                </div>
+                            </div>
+                            <div className = "stock-details__forecast__row">
+                                <div className = "stock-details__forecast__label">Low Target Price</div>
+                                <div className = "stock-details__forecast__right red-rating">
+                                    <div className = "stock-details__forecast__value">{forecastData?.low_target_price}</div>
+                                    <div className = "stock-details__forecast__percent">({forecastData?.percent_low_price.toFixed(1)}%)</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="stock-detailss__analysis__sells">
-                            <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_sells}</div>
-                            <div className="stock-detailss__analysis__text">sells</div>
-                        </div>
-                    </div>
-                </div>
-                <div className ="stock-details__forecast">
-                    <div className = "stock-details__forecast__row">
-                        <div className = "stock-details__forecast__label">High Target Price</div>
-                        <div className = "stock-details__forecast__right green-rating">
-                            <div className = "stock-details__forecast__value">{forecastData?.high_target_price}</div>
-                            <div className = "stock-details__forecast__percent">({forecastData?.percent_high_price.toFixed(1)}%)</div>
-                        </div>
-                    </div>
-                    <div className = "stock-details__forecast__row">
-                        <div className = "stock-details__forecast__label">Median Target Price</div>
-                        <div className = "stock-details__forecast__right blue-rating">
-                            <div className = "stock-details__forecast__value">{forecastData?.median_target_price}</div>
-                            <div className = "stock-details__forecast__percent">({forecastData?.percent_median_price.toFixed(1)}%)</div>
-                        </div>
-                    </div>
-                    <div className = "stock-details__forecast__row">
-                        <div className = "stock-details__forecast__label">Low Target Price</div>
-                        <div className = "stock-details__forecast__right red-rating">
-                            <div className = "stock-details__forecast__value">{forecastData?.low_target_price}</div>
-                            <div className = "stock-details__forecast__percent">({forecastData?.percent_low_price.toFixed(1)}%)</div>
-                        </div>
-                    </div>
-                </div>
+                    )
+                    : null
+                } 
             </div>
-            <p className="stock-details__title">Earning Per Sharing (EPS)</p>
-            <div className="stock-details__eps">
-                <svg ref={epsChartRef} />
-                <div className="stock-details__eps__table">
-                    {epsData.map((item) => (
-                        <div className="stock-details__eps__row" key={item.Year}>
-                            <div className="stock-details__eps__label">{item.Year}</div>
-                            <div className="stock-details__eps__value">{item.EPS}</div>
+            {
+                epsData?.length > 0
+                ? (
+                <>
+                    <p className="stock-details__title">Earning Per Sharing (EPS)</p>
+                    <div className="stock-details__eps">
+                        <svg ref={epsChartRef} />
+                        <div className="stock-details__eps__table">
+                            {epsData?.map((item) => (
+                                <div className="stock-details__eps__row" key={item.Year}>
+                                    <div className="stock-details__eps__label">{item.Year}</div>
+                                    <div className="stock-details__eps__value">{item.EPS}</div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            </div>
-            <div className="eps-tooltip hidden" />
+                    </div>
+                    <div className="eps-tooltip hidden" />
+                </>
+                )
+                : null
+            }            
         </div>
-    ): null;
+    ) : null;
 };
 
 export default StockDetails;
