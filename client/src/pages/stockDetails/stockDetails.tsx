@@ -356,22 +356,22 @@ const StockDetails = () => {
             </div>
             <p className="stock-details__title">Analysts' Recommendation</p>
             <div className="stock-details__recommendation">
-                <div className="stock-details__verdict">
-                    <div className="stock-detailss__verdict__left">
-                        <p className={`stock-detailss__verdict__left__text ${currentAnalysis.verdict}`}>{currentAnalysis.verdict.toUpperCase()}</p>
+                <div className="stock-details__analysis">
+                    <div className="stock-detailss__analysis__left">
+                        <p className={`stock-detailss__analysis__left__text ${currentAnalysis.verdict}`}>{currentAnalysis.verdict.toUpperCase()}</p>
                     </div>
-                    <div className="stock-detailss__verdict__right">
-                        <div className="stock-detailss__verdict__positive">
-                            <div className="stock-detailss__verdict__value">{currentAnalysis.num_of_buys}</div>
-                            <div className="stock-detailss__verdict__text">buys</div>
+                    <div className="stock-detailss__analysis__right">
+                        <div className="stock-detailss__analysis__buys">
+                            <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_buys}</div>
+                            <div className="stock-detailss__analysis__text">buys</div>
                         </div>
-                        <div className="stock-detailss__verdict__neutral">
-                            <div className="stock-detailss__verdict__value">{currentAnalysis.num_of_holds}</div>
-                            < div className="stock-detailss__verdict__text">holds</div>
+                        <div className="stock-detailss__analysis__holds">
+                            <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_holds}</div>
+                            < div className="stock-detailss__analysis__text">holds</div>
                         </div>
-                        <div className="stock-detailss__verdict__negative">
-                            <div className="stock-detailss__verdict__value">{currentAnalysis.num_of_sells}</div>
-                            <div className="stock-detailss__verdict__text">sells</div>
+                        <div className="stock-detailss__analysis__sells">
+                            <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_sells}</div>
+                            <div className="stock-detailss__analysis__text">sells</div>
                         </div>
                     </div>
                 </div>
