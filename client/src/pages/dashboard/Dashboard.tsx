@@ -1,5 +1,5 @@
-import labaLogo from '../../assets/LabaLogo.png';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Stock } from '../../types/stocks';
 import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import './Dashboard.css';
@@ -15,6 +15,7 @@ const createStockObject = (stockData: any): Stock => ({
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [stockList, setStockList] = useState<Stock[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:8000/api/stocks/most-active')
@@ -33,6 +34,10 @@ function Dashboard() {
     stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleItemClick = (symbol: string) => {
+    navigate(`/stock/${symbol}`); // Redirect to the stock page
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard__header">
@@ -48,7 +53,11 @@ function Dashboard() {
         </div>
       </div>
       {filteredStocks.map((stock: Stock) => (
-        <DashboardItem key={stock.symbol} {...stock} />
+        <DashboardItem 
+            key={stock.symbol} 
+            {...stock}
+            onClick={() => handleItemClick(stock.symbol)}
+          />
       ))}
     </div>
   );

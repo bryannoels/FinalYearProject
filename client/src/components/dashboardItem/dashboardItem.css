@@ -13,6 +13,12 @@
     color: var(--primary-black);
     max-width: calc(100% - 40px);
     min-width: calc(90%);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.dashboard__item:hover{
+    transform: scale(1.02);
 }
 
 .dashboard__item__left{
