@@ -37,11 +37,14 @@ const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
     const chartRef = useRef<SVGSVGElement | null>(null);
     const epsChartRef = useRef<SVGSVGElement | null>(null);
+    const [currentStock, setCurrentStock] = useState<Stock | null>(null);
+    const [currentStockDetail, setCurrentStockDetail] = useState<StockDetail | null>(null);
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
     const [_loading, setLoading] = useState(true);
     const [_error, setError] = useState(null);
 
     useEffect(() => {
+        console.log(symbol);
         const fetchStockPriceData = async () => {
             try {
                 const response = await fetch(`http://localhost:8000/api/stocks/historical/${symbol}`);
@@ -57,43 +60,56 @@ const StockDetails = () => {
             }
         };
 
+        const fetchStockData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/stocks/info/${symbol}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCurrentStock({
+                    name: data.companyName,
+                    symbol: symbol as string,
+                    price: parseFloat(data.currentPrice),
+                    change: parseFloat(data.currentPrice)-parseFloat(data.previousClose),
+                    percentChange: (parseFloat(data.currentPrice)-parseFloat(data.previousClose))/parseFloat(data.previousClose)*100
+                });
+                setCurrentStockDetail({
+                    companyName: data.companyName,
+                    currentPrice: data.currentPrice,
+                    openingPrice: data.openingPrice,
+                    previousClose: data.previousClose,
+                    daysRange: data.daysRange,
+                    week52Range: data.week52Range,
+                    volume: data.volume,
+                    marketCap: data.marketCap,
+                    peRatio: data.peRatio,
+                    eps: data.eps,
+                    priceSales: data.pricePerSales,
+                    priceBook: data.pricePerBook
+                });
+            } catch (error: any) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStockData();
         fetchStockPriceData();
     }, [symbol]);
 
-    const currentStock: Stock = {
-        name: 'Apple Inc.',
-        symbol: 'AAPL',
-        price: 149.15,
-        change: -0.41,
-        percentChange: -0.27
-    };
-
-    const currentStockDetail: StockDetail = {
-        companyName: "Alphabet Inc.",
-        currentPrice: "163.24",
-        openingPrice: "162.13",
-        previousClose: "162.08",
-        daysRange: "161.24 - 163.90",
-        week52Range: "120.21 - 191.75",
-        volume: "15,279,647",
-        marketCap: "2.017T",
-        peRatio: "23.42",
-        eps: "6.97",
-        priceSales: "6.26",
-        priceBook: "6.68"
-    };
-
     const labels = {
-        "Opening Price": currentStockDetail.openingPrice,
-        "Previous Close": currentStockDetail.previousClose,
-        "Day's Range": currentStockDetail.daysRange,
-        "52-Week Range": currentStockDetail.week52Range,
-        "Volume": currentStockDetail.volume,
-        "Market Cap": currentStockDetail.marketCap,
-        "PE Ratio (TTM)": currentStockDetail.peRatio,
-        "EPS (TTM)": currentStockDetail.eps,
-        "Price/Sales (TTM)": currentStockDetail.priceSales,
-        "Price/Book (MRQ)": currentStockDetail.priceBook,
+        "Opening Price": currentStockDetail?.openingPrice,
+        "Previous Close": currentStockDetail?.previousClose,
+        "Day's Range": currentStockDetail?.daysRange,
+        "52-Week Range": currentStockDetail?.week52Range,
+        "Volume": currentStockDetail?.volume,
+        "Market Cap": currentStockDetail?.marketCap,
+        "PE Ratio (TTM)": currentStockDetail?.peRatio,
+        "EPS (TTM)": currentStockDetail?.eps,
+        "Price/Sales (TTM)": currentStockDetail?.priceSales,
+        "Price/Book (MRQ)": currentStockDetail?.priceBook,
     };
 
     const currentAnalysis = {
@@ -304,7 +320,7 @@ const StockDetails = () => {
         }, [epsData]);
         
 
-    return (
+    return symbol ? (
         <div className="stock-details">
             <div className="stock-details__top">
                 <div className="stock-details__top__head">
@@ -315,7 +331,11 @@ const StockDetails = () => {
                         {symbol}
                     </div>
                 </div>
-                <DashboardItem key={currentStock.symbol} {...currentStock} />
+                {
+                    currentStock 
+                        ? <DashboardItem key={symbol} {...currentStock} />
+                        : null
+                }
             </div>
             <div className="stock-details__chart">
                 <svg ref={chartRef} />
@@ -389,7 +409,7 @@ const StockDetails = () => {
             </div>
             <div className="eps-tooltip hidden" />
         </div>
-    );
+    ): null;
 };
 
 export default StockDetails;
