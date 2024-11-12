@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/dashboardItem';
@@ -45,6 +46,7 @@ const StockDetails = () => {
     const [epsData, setEpsData] = useState<Eps[]>([]);
     const [_loading, setLoading] = useState(true);
     const [_error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -336,14 +338,14 @@ const StockDetails = () => {
                     <>
                         <div className="stock-details__top">
                             <div className="stock-details__top__head">
-                                <button className="stock-details__back" onClick={() => window.history.back()}>
+                                <button className="stock-details__back" onClick={() => navigate('/')}>
                                     <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />
                                 </button>
                                 <div className="stock-details__name">
                                     {symbol}
                                 </div>
                             </div>
-                            <DashboardItem key={symbol} {...currentStock} />
+                            <DashboardItem key={symbol} {...currentStock} onClick={() => {}}/>
                         </div>
                         <div className="stock-details__chart">
                             <svg ref={chartRef} />
