@@ -87,6 +87,18 @@ const StockDetails = () => {
         verdict: "buy"
     };
 
+    const forecastData = {
+        symbol: "AAPL",
+        current_stock_price: 223.77,
+        high_target_price: 300,
+        median_target_price: 250,
+        low_target_price: 184,
+        percent_high_price: 34.06622871698619,
+        percent_median_price: 11.721857264155155,
+        percent_low_price: -17.772713053581807,
+        last_updated: "2024-11-12T08:06:38.491440+00:00"
+    };
+
         const stockPriceData = [
             { date: "2024-11-11", time: "09:30:00", close: 223.85009765625 },
             { date: "2024-11-11", time: "09:35:00", close: 224.13999938964844 },
@@ -327,6 +339,7 @@ const StockDetails = () => {
                     epsTooltip.classed('hidden', true);
                 });
         }, [epsData]);
+        
 
     return (
         <div className="stock-details">
@@ -372,6 +385,29 @@ const StockDetails = () => {
                         <div className="stock-detailss__analysis__sells">
                             <div className="stock-detailss__analysis__value">{currentAnalysis.num_of_sells}</div>
                             <div className="stock-detailss__analysis__text">sells</div>
+                        </div>
+                    </div>
+                </div>
+                <div className ="stock-details__forecast">
+                    <div className = "stock-details__forecast__row">
+                        <div className = "stock-details__forecast__label">High Target Price</div>
+                        <div className = "stock-details__forecast__right green-rating">
+                            <div className = "stock-details__forecast__value">{forecastData.high_target_price}</div>
+                            <div className = "stock-details__forecast__percent">({forecastData.percent_high_price.toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                    <div className = "stock-details__forecast__row">
+                        <div className = "stock-details__forecast__label">Median Target Price</div>
+                        <div className = "stock-details__forecast__right blue-rating">
+                            <div className = "stock-details__forecast__value">{forecastData.median_target_price}</div>
+                            <div className = "stock-details__forecast__percent">({forecastData.percent_median_price.toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                    <div className = "stock-details__forecast__row">
+                        <div className = "stock-details__forecast__label">Low Target Price</div>
+                        <div className = "stock-details__forecast__right red-rating">
+                            <div className = "stock-details__forecast__value">{forecastData.low_target_price}</div>
+                            <div className = "stock-details__forecast__percent">({forecastData.percent_low_price.toFixed(1)}%)</div>
                         </div>
                     </div>
                 </div>

@@ -111,6 +111,9 @@
     width: 90%;
     margin-bottom: 20px;
     padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .stock-details__analysis{
@@ -118,6 +121,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    width: 90%;
     height: 100%;
     padding-left: 5%;
     padding-right: 5%;
@@ -223,16 +227,41 @@
     width: 40%;
 }
 
-.green-rating {
-    color: green;
+.stock-details__forecast{
+    width: 90%;
 }
 
-.blue-rating {
-    color: blue;
+.stock-details__forecast__row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
 }
 
-.red-rating {
-    color: red;
+.stock-details__forecast__label{
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+.stock-details__forecast__right{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+}
+
+.stock-details__forecast__value{
+    font-size: 20px;
+    margin-right: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.stock-details__forecast__percent{
+    font-size: 16px;
+    margin-right: 20px;
+    text-align: center;
 }
 
 .stock-details__eps {
@@ -280,4 +309,16 @@
     font-size: 16px;
     margin-right: 20px;
     font-weight: bold;
+}
+
+.green-rating {
+    color: green;
+}
+
+.blue-rating {
+    color: blue;
+}
+
+.red-rating {
+    color: red;
 }

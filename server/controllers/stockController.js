@@ -160,7 +160,7 @@ const getForecastData = async (req, res) => {
 
     try {
         const response = await axios.get(url, { headers });
-        res.json(response.data);
+        res.json(response.data[0]);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch forecast data' });
     }
