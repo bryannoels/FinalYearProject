@@ -287,7 +287,7 @@ const StockDetails = () => {
             { Year: 2020, EPS: 3.28 },
             { Year: 2021, EPS: 5.61 },
             { Year: 2022, EPS: 6.11 },
-            { Year: 2023, EPS: -2 } // Example negative EPS
+            { Year: 2023, EPS: -2 }
         ];
         
         useEffect(() => {
@@ -395,16 +395,14 @@ const StockDetails = () => {
             <p className="stock-details__title">Earning Per Sharing (EPS)</p>
             <div className="stock-details__eps">
                 <svg ref={epsChartRef} />
-            </div>
-            <div className="eps-tooltip hidden" />
-            {/* <div className="stock-details__eps_table">
-            {epsData.map((item) => (
+                {epsData.map((item) => (
                     <div className="stock-details__eps__row" key={item.Year}>
                         <div className="stock-details__eps__label">{item.Year}</div>
                         <div className="stock-details__eps__value">{item.EPS}</div>
                     </div>
                 ))}
-            </div> */}
+            </div>
+            <div className="eps-tooltip hidden" />
         </div>
     );
 };
