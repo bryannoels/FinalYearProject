@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stock } from '../../types/stocks';
 import DashboardItem from '../../components/dashboardItem/dashboardItem';
+import LoadingSpinner from '../../components/loadingSpinner/loadingSpinner';
 import './Dashboard.css';
 
 const createStockObject = (stockData: any): Stock => ({
@@ -15,18 +16,24 @@ const createStockObject = (stockData: any): Stock => ({
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [stockList, setStockList] = useState<Stock[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/stocks/most-active')
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchStocks = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/stocks/most-active');
+        const data = await response.json();
         const formattedData: Stock[] = data.map(createStockObject);
         setStockList(formattedData);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Error fetching stock data:', error);
-      });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStocks();
   }, []);
 
   const filteredStocks = stockList.filter((stock: Stock) =>
@@ -35,7 +42,7 @@ function Dashboard() {
   );
 
   const handleItemClick = (symbol: string) => {
-    navigate(`/stock/${symbol}`); // Redirect to the stock page
+    navigate(`/stock/${symbol}`);
   };
 
   return (
@@ -52,13 +59,17 @@ function Dashboard() {
           />
         </div>
       </div>
-      {filteredStocks.map((stock: Stock) => (
-        <DashboardItem 
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        filteredStocks.map((stock: Stock) => (
+          <DashboardItem 
             key={stock.symbol} 
             {...stock}
             onClick={() => handleItemClick(stock.symbol)}
           />
-      ))}
+        ))
+      )}
     </div>
   );
 }
