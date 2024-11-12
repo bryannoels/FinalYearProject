@@ -415,12 +415,14 @@ const StockDetails = () => {
             <p className="stock-details__title">Earning Per Sharing (EPS)</p>
             <div className="stock-details__eps">
                 <svg ref={epsChartRef} />
-                {epsData.map((item) => (
-                    <div className="stock-details__eps__row" key={item.Year}>
-                        <div className="stock-details__eps__label">{item.Year}</div>
-                        <div className="stock-details__eps__value">{item.EPS}</div>
-                    </div>
-                ))}
+                <div className="stock-details__eps__table">
+                    {epsData.map((item) => (
+                        <div className="stock-details__eps__row" key={item.Year}>
+                            <div className="stock-details__eps__label">{item.Year}</div>
+                            <div className="stock-details__eps__value">{item.EPS}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="eps-tooltip hidden" />
         </div>
