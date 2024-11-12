@@ -18,7 +18,9 @@
   --primary-white: #FFFFFF;
   --light-gray: #EDEFF8;
   --primary-green: #23B371;
+  --secondary-green: #008000;
   --primary-red: #E63E3E;
+  --secondary-red: #FF0000;
   --primary-black: #000000;
 }
 a {
