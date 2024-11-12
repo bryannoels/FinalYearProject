@@ -247,8 +247,8 @@ const StockDetails = () => {
                     .on("mouseover", function (event, d) {
                         d3.select(this).attr("r", 5);
                         tooltip
-                            .style("left", `${event.pageX + 5}px`)
-                            .style("top", `${event.pageY - 40}px`)
+                            .style("left", `${event.pageX - 60}px`)
+                            .style("top", `${event.pageY - 70}px`)
                             .classed("hidden", false)
                             .html(`Time: ${d.time}<br>Price: $${d.close.toFixed(2)}`);
                     })
@@ -336,6 +336,7 @@ const StockDetails = () => {
                         .style('top', `${event.pageY - 80}px`)
                         .classed('hidden', false)
                         .html(`Year: ${d.Year}<br>EPS: ${d.EPS}`);
+                    console.log(event.pageX, event.pageY);
                 })
                 .on("mouseout", function () {
                     d3.select(this).attr("opacity", 1);
@@ -357,9 +358,9 @@ const StockDetails = () => {
                 <DashboardItem key={currentStock.symbol} {...currentStock} />
             </div>
             <div className="stock-details__chart">
-                <div className="tooltip hidden" />
                 <svg ref={chartRef} />
             </div>
+            <div className="tooltip hidden" />
             <p className="stock-details__title">Valuation Measures</p>
             <div className="stock-details__table">
                 {Object.entries(labels).map(([label, value]) => (
@@ -393,15 +394,17 @@ const StockDetails = () => {
             </div>
             <p className="stock-details__title">Earning Per Sharing (EPS)</p>
             <div className="stock-details__eps">
-                <div className="eps-tooltip hidden" />
                 <svg ref={epsChartRef} />
-                {epsData.map((item) => (
+            </div>
+            <div className="eps-tooltip hidden" />
+            {/* <div className="stock-details__eps_table">
+            {epsData.map((item) => (
                     <div className="stock-details__eps__row" key={item.Year}>
                         <div className="stock-details__eps__label">{item.Year}</div>
                         <div className="stock-details__eps__value">{item.EPS}</div>
                     </div>
                 ))}
-            </div>
+            </div> */}
         </div>
     );
 };
