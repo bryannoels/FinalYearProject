@@ -219,7 +219,7 @@ const StockDetails = () => {
                     .attr("d", line);
             };
         
-            const drawDashedLine = (yValue: d3.NumberValue, color: string) => {
+            const drawDashedLine = (yValue: d3.NumberValue, color: string, label: string, offsetX: number) => {
                 svg.append("line")
                     .attr("x1", margin.left)
                     .attr("y1", y(yValue))
@@ -227,6 +227,14 @@ const StockDetails = () => {
                     .attr("y2", y(yValue))
                     .style("stroke", color)
                     .style("stroke-dasharray", ("5, 5"));
+                
+                svg.append("text")
+                .attr("x", width - margin.right - offsetX)
+                .attr("y", y(yValue) - 10)
+                .attr("fill", color)
+                .attr("font-size", "12px")
+                .attr("text-anchor", "start")
+                .text(label);
             };
         
             const renderTooltip = () => {
@@ -254,13 +262,13 @@ const StockDetails = () => {
                     });
             };
         
-            const openPrice = parsedStockPriceData[parsedStockPriceData.length-1].close;
             const maxPrice = Math.max(...parsedStockPriceData.map(d => d.close));
+            const currentPrice = parsedStockPriceData[parsedStockPriceData.length-1].close;
             const minPrice = Math.min(...parsedStockPriceData.map(d => d.close));
 
-            drawDashedLine(openPrice, "blue");
-            drawDashedLine(maxPrice, "green");
-            drawDashedLine(minPrice, "red");
+            drawDashedLine(maxPrice, "green", `Max Price - ${currentPrice.toFixed(2)}`, 100);
+            drawDashedLine(currentPrice, "blue", `Current Price - ${currentPrice.toFixed(2)}`, 120);
+            drawDashedLine(minPrice, "red", `Min Price - ${currentPrice.toFixed(2)}`, 100);
         
             renderAxes();
             renderLine();
