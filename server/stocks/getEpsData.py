@@ -22,6 +22,8 @@ def get_eps_data(stock_symbol):
                     year = int(cells[0].text.strip())
                     eps_value = float(cells[1].text.strip().replace('$', '').replace(',', ''))
                     eps_data.append({"Year": year, "EPS": eps_value})
+                    
+            eps_data.sort(key=lambda x: x["Year"])
 
             return {
                 "Symbol": stock_symbol,
