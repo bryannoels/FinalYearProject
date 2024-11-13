@@ -15,7 +15,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
-import './stockDetails.css';
+import './StockDetails.css';
 
 const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
