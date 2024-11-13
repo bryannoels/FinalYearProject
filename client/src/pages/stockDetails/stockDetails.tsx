@@ -45,9 +45,10 @@ const StockDetails = () => {
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
     const [currentVerdict, setCurrentVerdict] = useState<any | null>(null);
     const [forecastData, setForecastData] = useState<any | null>(null);
-    const [growthRate, setGrowthRate] = useState<any | null>(null);
+    const [growthRate, setGrowthRate] = useState<string | null>(null);
     const [stockRatings, setStockRatings] = useState<any | null>(null);
     const [epsData, setEpsData] = useState<Eps[]>([]);
+    const [aaaCorporateBondYield, setAaaCorporateBondYield] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [_error, setError] = useState(null);
     const navigate = useNavigate();
@@ -94,7 +95,7 @@ const StockDetails = () => {
             setLoading(true);
     
             try {
-                const [priceData, verdictData, forecastData, analysisData, epsData] = await Promise.all([
+                const [priceData, verdictData, forecastData, analysisData, epsData, aaaCorporateBondYieldData] = await Promise.all([
                     fetch(`http://localhost:8000/api/stocks/historical/${symbol}`).then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -125,6 +126,12 @@ const StockDetails = () => {
                         }
                         return response.json();
                     }),
+                    fetch(`http://localhost:8000/api/stocks/aaa-corporate-bond-yield`).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                 ]);
     
                 setStockPriceData(priceData.prices);
@@ -133,12 +140,10 @@ const StockDetails = () => {
                 setGrowthRate(analysisData.growthRate);
                 setStockRatings(analysisData.analysis);
                 setEpsData(epsData.EPS_Data);
+                setAaaCorporateBondYield(aaaCorporateBondYieldData.aaaCorporateBondYield);
             } catch (error: any) {
                 setError(error);
             } finally {
-                console.log(epsData[epsData.length - 1]?.EPS);
-                console.log(parseInt(growthRate))
-                console.log((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseInt(growthRate)) * 4.4)/2.57);
                 setLoading(false);
             }
         };
@@ -163,7 +168,7 @@ const StockDetails = () => {
     const benjaminGrahamLabels = {
         "Earings Per Share (EPS)": epsData[epsData.length - 1]?.EPS,
         "Growth Rate (g)": growthRate,
-        "AAA Corporate Bond Yield (Y)": 0.04
+        "AAA Corporate Bond Yield (Y)": aaaCorporateBondYield
     }
 
     const benjaminGrahamFormula = 'V^* = \\frac{EPS *(8.5+2g)*4.4}{Y}'
@@ -455,7 +460,7 @@ const StockDetails = () => {
                         </>
                     ) : null}
                     {
-                        epsData?.length > 0 && growthRate ?
+                        epsData?.length > 0 && growthRate && aaaCorporateBondYield ?
                         (
                             <>
                                 <p className="stock-details__title">Benjamin Graham Formula</p>
@@ -470,7 +475,7 @@ const StockDetails = () => {
                                     ))}
                                     <div className="stock-details__table__row" key="Intrinsic Value">
                                         <div className="stock-details__table__label bold-text">Intrinsic Value</div>
-                                        <div className="stock-details__table__value bold-text">{((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseFloat(growthRate)) * 4.4)/2.27)}</div>
+                                        <div className="stock-details__table__value bold-text">{((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseFloat(growthRate)) * 4.4)/parseFloat(aaaCorporateBondYield)).toFixed(2)}</div>
                                     </div>
                                 </div>
                             </>
