@@ -342,6 +342,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 20px;
+}
+
+.stock-details__benjamin-graham__row{
+    width: 80%;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.stock-details__benjamin-graham__label{
+    font-size: 16px;
+    margin-left: 20px;
+}
+
+.stock-details__benjamin-graham__value{
+    font-size: 16px;
+    margin-right: 20px;
 }
 
 .stock-details-not-found{

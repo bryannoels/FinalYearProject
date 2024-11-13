@@ -6,8 +6,9 @@ import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import { Stock } from '../../types/stocks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import Latex from 'react-latex';
 import LoadingSpinner from '../../components/loadingSpinner/loadingSpinner';
+import 'katex/dist/katex.min.css';
+import { BlockMath } from 'react-katex';
 import './StockDetails.css';
 
 type StockDetail = {
@@ -171,7 +172,7 @@ const StockDetails = () => {
         "AAA Corporate Bond Yield (Y)": aaaCorporateBondYield
     }
 
-    const benjaminGrahamFormula = 'V^* = \\frac{EPS *(8.5+2g)*4.4}{Y}'
+    const benjaminGrahamFormula = "V^* = \\frac{EPS \\times (8.5 + 2g) \\times 4.4}{Y}";
 
     useEffect(() => {
         if (!chartRef.current || stockPriceData === null || stockPriceData.length === 0) return;
@@ -197,12 +198,11 @@ const StockDetails = () => {
         const line = d3.line<StockPrice>()
             .x(d => x(new Date(`${d.date}T${d.time}`)))
             .y(d => y(d.close))
-            .curve(d3.curveMonotoneX);
 
         const renderAxes = () => {
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
-                .call(d3.axisBottom(x));
+                .call(d3.axisBottom(x).ticks(d3.timeMinute.every(30)));
 
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
@@ -465,17 +465,17 @@ const StockDetails = () => {
                             <>
                                 <p className="stock-details__title">Benjamin Graham Formula</p>
                                 <div className="stock-details__benjamin-graham">
-                                    <Latex>{benjaminGrahamFormula}</Latex>
+                                    <BlockMath math={benjaminGrahamFormula} />
                                     {
                                         Object.entries(benjaminGrahamLabels).map(([label, value]) => (
-                                        <div className="stock-details__table__row" key={label}>
-                                            <div className="stock-details__table__label">{label}</div>
-                                            <div className="stock-details__table__value">{value}</div>
+                                        <div className="stock-details__benjamin-graham__row" key={label}>
+                                            <div className="stock-details__benjamin-graham__label">{label}</div>
+                                            <div className="stock-details__benjamin-graham__value">{value}</div>
                                         </div>
                                     ))}
-                                    <div className="stock-details__table__row" key="Intrinsic Value">
-                                        <div className="stock-details__table__label bold-text">Intrinsic Value</div>
-                                        <div className="stock-details__table__value bold-text">{((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseFloat(growthRate)) * 4.4)/parseFloat(aaaCorporateBondYield)).toFixed(2)}</div>
+                                    <div className="stock-details__benjamin-graham__row" key="Intrinsic Value">
+                                        <div className="stock-details__benjamin-graham__label bold-text">Intrinsic Value</div>
+                                        <div className="stock-details__benjamin-graham__value bold-text">{((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseFloat(growthRate)) * 4.4)/parseFloat(aaaCorporateBondYield)).toFixed(2)}</div>
                                     </div>
                                 </div>
                             </>
