@@ -4,38 +4,18 @@ import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import { Stock } from '../../types/stocks';
+import { StockDetail } from '../../types/StockDetail';
+import { StockPrice } from '../../types/StockPrice';
+import { Verdict } from '../../types/Verdict';
+import { Forecast } from '../../types/Forecast';
+import { StockRatings } from '../../types/StockRatings';
+import { Eps } from '../../types/Eps';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import LoadingSpinner from '../../components/loadingSpinner/loadingSpinner';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import './StockDetails.css';
-
-type StockDetail = {
-    companyName: string;
-    currentPrice: string;
-    openingPrice: string;
-    previousClose: string;
-    daysRange: string;
-    week52Range: string;
-    volume: string;
-    marketCap: string;
-    peRatio: string;
-    eps: string;
-    priceSales: string;
-    priceBook: string;
-};
-
-interface StockPrice {
-    date: string;
-    time: string;
-    close: number;
-}
-
-interface Eps {
-    Year: number;
-    EPS: number;
-}
 
 const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
@@ -44,10 +24,10 @@ const StockDetails = () => {
     const [currentStock, setCurrentStock] = useState<Stock | null>(null);
     const [currentStockDetail, setCurrentStockDetail] = useState<StockDetail | null>(null);
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
-    const [currentVerdict, setCurrentVerdict] = useState<any | null>(null);
-    const [forecastData, setForecastData] = useState<any | null>(null);
+    const [currentVerdict, setCurrentVerdict] = useState<Verdict | null>(null);
+    const [forecastData, setForecastData] = useState<Forecast | null>(null);
     const [growthRate, setGrowthRate] = useState<string | null>(null);
-    const [stockRatings, setStockRatings] = useState<any | null>(null);
+    const [stockRatings, setStockRatings] = useState<StockRatings[] | null>(null);
     const [epsData, setEpsData] = useState<Eps[]>([]);
     const [aaaCorporateBondYield, setAaaCorporateBondYield] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
