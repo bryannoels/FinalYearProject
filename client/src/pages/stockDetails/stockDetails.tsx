@@ -2,17 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
-import DashboardItem from '../../components/dashboardItem/dashboardItem';
-import { Stock } from '../../types/stocks';
-import { StockDetail } from '../../types/stockDetail';
-import { StockPrice } from '../../types/stockPrice';
-import { Verdict } from '../../types/verdict';
-import { Forecast } from '../../types/forecast';
-import { StockRatings } from '../../types/stockRatings';
-import { Eps } from '../../types/eps';
+import DashboardItem from '../../components/dashboardItem/DashboardItem';
+import { Stock } from '../../types/Stocks';
+import { StockDetail } from '../../types/StockDetail';
+import { StockPrice } from '../../types/StockPrice';
+import { Verdict } from '../../types/Verdict';
+import { Forecast } from '../../types/Forecast';
+import { StockRatings } from '../../types/StockRatings';
+import { Eps } from '../../types/Eps';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import LoadingSpinner from '../../components/loadingSpinner/loadingSpinner';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import './stockDetails.css';
@@ -404,7 +404,7 @@ const StockDetails = () => {
                                     <hr className = "stock-details__analysts__divider" />
                                     <p className = "stock-details__analysts__rating__title">Analysts' Rating</p>
                                     <div className = "stock-details__analysts-recommendation">
-                                        {stockRatings.map((item: any) => {
+                                        {stockRatings.map((item: StockRatings) => {
                                             const ratingClass =
                                             item.Action === 1 ? "green-rating" :
                                             item.Action === 0 ? "blue-rating" :

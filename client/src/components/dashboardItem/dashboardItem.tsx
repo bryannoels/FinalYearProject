@@ -1,4 +1,4 @@
-import { Stock } from '../../types/stocks';
+import { Stock } from '../../types/Stocks';
 import './DashboardItem.css';
 
 interface DashboardItemProps extends Stock {
