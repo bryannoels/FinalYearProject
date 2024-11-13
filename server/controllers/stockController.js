@@ -54,7 +54,7 @@ const handleGetVerdict = async (stockSymbol) => {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
         'Accept': 'application/json'
     };
-
+    console.log(url);
     try {
         const response = await axios.get(url, { headers });
         const data = response.data[0];
@@ -69,7 +69,7 @@ const handleGetVerdict = async (stockSymbol) => {
         } else if (percent_sells >= percent_buys && percent_sells >= percent_holds) {
             verdict = 'sell';
         }
-
+        console.log(data)
         return { ...data, verdict };
     } catch (error) {
         throw new Error('Failed to fetch analyst ratings');
@@ -89,21 +89,24 @@ const getVerdict = async (req, res) => {
 
 const getAnalysis = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-
     handleGetVerdict(stockSymbol)
         .then((verdictData) => {
             const { num_of_buys, num_of_holds, num_of_sells } = verdictData;
             const pythonProcess = spawn('python3', ['stocks/getAnalysis.py', stockSymbol]);
-
             pythonProcess.stdout.on('data', (data) => {
                 try {
-                    const analysisData = JSON.parse(data.toString());
+                    const parsedData = JSON.parse(data.toString());
+                    const analysisData = parsedData.analysis
                     const combinedAnalysis = [
                         ...analysisData.filter(item => item.Action === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
                         ...analysisData.filter(item => item.Action === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
                         ...analysisData.filter(item => item.Action === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
                     ];
-                    res.json(combinedAnalysis);
+
+                    res.json({
+                        growthRate: parsedData.growthRate,
+                        analysis: combinedAnalysis
+                    });
                 } catch (error) {
                     res.status(500).json({ error: 'Failed to parse response' });
                 }
