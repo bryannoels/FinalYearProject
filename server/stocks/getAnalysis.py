@@ -13,17 +13,16 @@ def categorize_rating(rating):
         return 0
 
 def get_analysis(stock_symbol):
-    url = f'https://finance.yahoo.com/quote/{stock_symbol}/analysis'
+    url = f'https://finance.yahoo.com/quote/{stock_symbol}/analysis/'
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-    }
-    
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36'
+    }    
     response = requests.get(url, headers=headers)
-    
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         upgrades_downgrades = []
-        rows = soup.find_all('tr')
+        rows = soup.find('section',{'data-testid':'upgrade-downgrade-table'}).find_all('tr')
         unique_firms = set()
 
         for row in rows:
@@ -46,7 +45,13 @@ def get_analysis(stock_symbol):
             if len(upgrades_downgrades) >= 10:
                 break
         
-        return upgrades_downgrades
+        growthRate = soup.find('section',{'data-testid':'growthEstimate'}).find_all('tr')[5].find_all('td')[1].text.strip()
+        
+        result = {
+            'growthRate': growthRate,
+            'analysis': upgrades_downgrades
+        }
+        return result
     else:
         return {"error": f"Failed to retrieve data. Status code: {response.status_code}"}
 
