@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
-import { Stock } from '../../types/Stocks';
+import { Stock } from '../../types/Stock';
 import { StockDetail } from '../../types/StockDetail';
 import { StockPrice } from '../../types/StockPrice';
 import { Verdict } from '../../types/Verdict';

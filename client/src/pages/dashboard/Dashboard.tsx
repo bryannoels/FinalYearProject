@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stock } from '../../types/stocks';
-import DashboardItem from '../../components/dashboardItem/dashboardItem';
-import LoadingSpinner from '../../components/loadingSpinner/loadingSpinner';
+import { Stock } from '../../types/Stock';
+import DashboardItem from '../../components/dashboardItem/DashboardItem';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import './Dashboard.css';
 
 const createStockObject = (stockData: any): Stock => ({
