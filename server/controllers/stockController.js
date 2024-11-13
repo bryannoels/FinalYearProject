@@ -193,6 +193,28 @@ const getEPSData = (req, res) => {
     });
 };
 
+const getAaaCorporateBondYield = async (req, res) => {
+    const pythonProcess = spawn('python3', ['stocks/getAaaCorporateBondYield.py']);
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const stocksData = JSON.parse(data.toString());
+            res.json(stocksData);
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to parse response' });
+        }
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        res.status(500).json({ error: 'Error retrieving stock data' });
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 
 module.exports = {
     getStockData,
@@ -201,5 +223,6 @@ module.exports = {
     getVerdict,
     getHistoricalData,
     getForecastData,
-    getEPSData
+    getEPSData,
+    getAaaCorporateBondYield
 };
