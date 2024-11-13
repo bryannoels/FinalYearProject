@@ -6,6 +6,7 @@ import DashboardItem from '../../components/dashboardItem/dashboardItem';
 import { Stock } from '../../types/stocks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import Latex from 'react-latex';
 import LoadingSpinner from '../../components/loadingSpinner/loadingSpinner';
 import './StockDetails.css';
 
@@ -42,8 +43,10 @@ const StockDetails = () => {
     const [currentStock, setCurrentStock] = useState<Stock | null>(null);
     const [currentStockDetail, setCurrentStockDetail] = useState<StockDetail | null>(null);
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
-    const [currentAnalysis, setCurrentAnalysis] = useState<any | null>(null);
+    const [currentVerdict, setCurrentVerdict] = useState<any | null>(null);
     const [forecastData, setForecastData] = useState<any | null>(null);
+    const [growthRate, setGrowthRate] = useState<any | null>(null);
+    const [stockRatings, setStockRatings] = useState<any | null>(null);
     const [epsData, setEpsData] = useState<Eps[]>([]);
     const [loading, setLoading] = useState(true);
     const [_error, setError] = useState(null);
@@ -91,7 +94,7 @@ const StockDetails = () => {
             setLoading(true);
     
             try {
-                const [priceData, analysisData, forecastData, epsData] = await Promise.all([
+                const [priceData, verdictData, forecastData, analysisData, epsData] = await Promise.all([
                     fetch(`http://localhost:8000/api/stocks/historical/${symbol}`).then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -110,6 +113,12 @@ const StockDetails = () => {
                         }
                         return response.json();
                     }),
+                    fetch(`http://localhost:8000/api/stocks/analysis/${symbol}`).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    }),
                     fetch(`http://localhost:8000/api/stocks/eps/${symbol}`).then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -119,12 +128,17 @@ const StockDetails = () => {
                 ]);
     
                 setStockPriceData(priceData.prices);
-                setCurrentAnalysis(analysisData);
+                setCurrentVerdict(verdictData);
                 setForecastData(forecastData);
+                setGrowthRate(analysisData.growthRate);
+                setStockRatings(analysisData.analysis);
                 setEpsData(epsData.EPS_Data);
             } catch (error: any) {
                 setError(error);
             } finally {
+                console.log(epsData[epsData.length - 1]?.EPS);
+                console.log(parseInt(growthRate))
+                console.log((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseInt(growthRate)) * 4.4)/2.57);
                 setLoading(false);
             }
         };
@@ -143,7 +157,16 @@ const StockDetails = () => {
         "EPS (TTM)": currentStockDetail?.eps,
         "Price/Sales (TTM)": currentStockDetail?.priceSales,
         "Price/Book (MRQ)": currentStockDetail?.priceBook,
+        "Growth Rate": growthRate
     };
+
+    const benjaminGrahamLabels = {
+        "Earings Per Share (EPS)": epsData[epsData.length - 1]?.EPS,
+        "Growth Rate (g)": growthRate,
+        "AAA Corporate Bond Yield (Y)": 0.04
+    }
+
+    const benjaminGrahamFormula = 'V^* = \\frac{EPS *(8.5+2g)*4.4}{Y}'
 
     useEffect(() => {
         if (!chartRef.current || stockPriceData === null || stockPriceData.length === 0) return;
@@ -269,7 +292,7 @@ const StockDetails = () => {
             .padding(0.1);
 
         const y = d3.scaleLinear()
-            .domain([minimumValue < 0 ? minimumValue * 1.1 : 0, maximumValue])
+            .domain([minimumValue < 0 ? minimumValue * 1.1 : 0, maximumValue > 0 ? maximumValue : -maximumValue])
             .nice()
             .range([height - margin.bottom, margin.top]);
 
@@ -341,24 +364,24 @@ const StockDetails = () => {
                     ) : (
                         <p className="stock-details-not-found">Stock not found</p>
                     )}
-                    {currentAnalysis || forecastData ? <p className="stock-details__title">Analysts' Recommendation</p> : null}
+                    {currentVerdict || forecastData ? <p className="stock-details__title">Analysts' Recommendation</p> : null}
                     <div className="stock-details__recommendation">
-                        {currentAnalysis ? (
+                        {currentVerdict ? (
                             <div className="stock-details__analysis">
                                 <div className="stock-detailss__analysis__left">
-                                    <p className={`stock-detailss__analysis__left__text ${currentAnalysis?.verdict}`}>{currentAnalysis?.verdict.toUpperCase()}</p>
+                                    <p className={`stock-detailss__analysis__left__text ${currentVerdict?.verdict}`}>{currentVerdict?.verdict.toUpperCase()}</p>
                                 </div>
                                 <div className="stock-detailss__analysis__right">
                                     <div className="stock-detailss__analysis__buys">
-                                        <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_buys}</div>
+                                        <div className="stock-detailss__analysis__value">{currentVerdict?.num_of_buys}</div>
                                         <div className="stock-detailss__analysis__text">buys</div>
                                     </div>
                                     <div className="stock-detailss__analysis__holds">
-                                        <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_holds}</div>
+                                        <div className="stock-detailss__analysis__value">{currentVerdict?.num_of_holds}</div>
                                         <div className="stock-detailss__analysis__text">holds</div>
                                     </div>
                                     <div className="stock-detailss__analysis__sells">
-                                        <div className="stock-detailss__analysis__value">{currentAnalysis?.num_of_sells}</div>
+                                        <div className="stock-detailss__analysis__value">{currentVerdict?.num_of_sells}</div>
                                         <div className="stock-detailss__analysis__text">sells</div>
                                     </div>
                                 </div>
@@ -389,6 +412,30 @@ const StockDetails = () => {
                                 </div>
                             </div>
                         ) : null}
+                        {
+                            stockRatings ?
+                            (
+                                <>
+                                    <hr className = "stock-details__analysts__divider" />
+                                    <p className = "stock-details__analysts__rating__title">Analysts' Rating</p>
+                                    <div className = "stock-details__analysts-recommendation">
+                                        {stockRatings.map((item: any) => {
+                                            const ratingClass =
+                                            item.Action === 1 ? "green-rating" :
+                                            item.Action === 0 ? "blue-rating" :
+                                            "red-rating";
+                        
+                                            return(
+                                            <div className="stock-details__analysts__row" key={item.Firm}>
+                                                <div className="stock-details__analysts__firm">{item.Firm}</div>
+                                                <div className={`stock-details__analysts__rating ${ratingClass}`}>{item.Rating}</div>
+                                            </div>
+                                        )})}
+                                    </div>
+                                </>
+                            )
+                            : null
+                        }
                     </div>
                     {epsData?.length > 0 ? (
                         <>
@@ -407,6 +454,28 @@ const StockDetails = () => {
                             <div className="eps-tooltip hidden" />
                         </>
                     ) : null}
+                    {
+                        epsData?.length > 0 && growthRate ?
+                        (
+                            <>
+                                <p className="stock-details__title">Benjamin Graham Formula</p>
+                                <div className="stock-details__benjamin-graham">
+                                    <Latex>{benjaminGrahamFormula}</Latex>
+                                    {
+                                        Object.entries(benjaminGrahamLabels).map(([label, value]) => (
+                                        <div className="stock-details__table__row" key={label}>
+                                            <div className="stock-details__table__label">{label}</div>
+                                            <div className="stock-details__table__value">{value}</div>
+                                        </div>
+                                    ))}
+                                    <div className="stock-details__table__row" key="Intrinsic Value">
+                                        <div className="stock-details__table__label bold-text">Intrinsic Value</div>
+                                        <div className="stock-details__table__value bold-text">{((epsData[epsData.length - 1]?.EPS * (8.5 + 2 * parseFloat(growthRate)) * 4.4)/2.27)}</div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : null
+                    }
                 </>
             )}
         </div>
