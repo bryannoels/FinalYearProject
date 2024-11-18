@@ -11,7 +11,7 @@ def get_top_10_most_active_stocks():
         soup = BeautifulSoup(response.text, 'html.parser')
         stocks_data = []
 
-        rows = soup.find_all('tr', attrs={'class': 'yf-1dbt8wv'})
+        rows = soup.find_all('tr', attrs={'class': 'yf-paf8n5'})
         
         for row in rows[1:11]:
             stock = {}
