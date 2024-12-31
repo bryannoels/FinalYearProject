@@ -1,14 +1,26 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './pages/navbar/Navbar';
-import Banner from './pages/banner/Banner';
+import _Banner from './pages/banner/Banner';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+      window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 const Layout = () => {
-  const [login, _setLogin] = useState(false)
+  const [_login, _setLogin] = useState(false);
+  
   return (
     <div>
+      <ScrollToTop />
       <Navbar />
-      { !login && <Banner />}
+      {/* {!_login && <_Banner />} */}
       <Outlet />
     </div>
   );

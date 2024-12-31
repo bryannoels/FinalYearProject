@@ -1,0 +1,393 @@
+.stock-details{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    background-color: var(--light-gray);
+    padding-bottom: 30px;
+}
+
+.stock-details__top{
+    background-color: var(--primary-blue);
+    color: var(--primary-white);
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.stock-details__top__head{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.stock-details__back{
+    background-color: var(--primary-blue);
+    color: var(--primary-white);
+    font-size: 30px;
+    font-weight: bold;
+    left: 0px;
+    width: 100px;
+}
+
+.stock-details__name{
+    width: 150px;
+    text-align: center;
+    margin-left: calc(50% - 175px);
+}
+
+.stock-details__chart {
+    background-color: var(--primary-white);
+    width: 90%;
+    position: relative;
+    margin-top: 30px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tooltip {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.tooltip.hidden {
+    opacity: 0;
+}
+
+.stock-details__title{
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 50px;
+    margin-bottom: 10px;
+    width: 85%;
+}
+
+.stock-details__table{
+    background-color: var(--primary-white);
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.stock-details__table__row{
+    width: calc(100% - 40px); 
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-details__table__label{
+    font-size: 16px;
+    margin-left: 20px;
+}
+
+.stock-details__table__value{
+    font-size: 16px;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.stock-details__recommendation{
+    background-color: var(--primary-white);
+    border-radius: 10px;
+    width: 90%;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stock-details__analysis{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    height: 100%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.stock-detailss__analysis__left{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.stock-detailss__analysis__left__text{
+    font-size: 32px;
+    font-weight: bold;
+    width: 150px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    border-radius: 10px;
+    color: var(--primary-white)
+}
+
+.stock-detailss__analysis__right{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.stock-detailss__analysis__buys{
+    color: var(--primary-green);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33%;
+}
+
+.stock-detailss__analysis__holds{
+    color: var(--primary-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33%;
+}
+
+.stock-detailss__analysis__sells{
+    color: var(--primary-red);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 5px;
+    width: 33%;
+}
+
+.stock-detailss__analysis__value{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.stock-detailss__analysis__left__text.buy {
+    background-color: var(--primary-green);
+}
+
+.stock-detailss__analysis__left__text.hold {
+    background-color: var(--primary-blue);
+}
+
+.stock-detailss__analysis__left__text.sell {
+    background-color: var(--primary-red);
+}
+
+.stock-details__analysts__divider{
+    width: 90%;
+}
+
+.stock-details__analysts__rating__title{
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    width: 85%;
+    text-align: left;
+}
+
+.stock-details__analysts-recommendation{
+    width: 100%;
+}
+
+.stock-details__analysts__row{
+    width: calc(100% - 20px); 
+    margin-left: 20px;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-details__analysts__firm{
+    font-size: 16px;
+    margin-left: 20px;
+    width: 60%;
+}
+
+.stock-details__analysts__rating{
+    font-size: 16px;
+    margin-right: 20px;
+    font-weight: bold;
+    text-align: center;
+    width: 40%;
+}
+
+.stock-details__forecast{
+    width: 90%;
+}
+
+.stock-details__forecast__row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.stock-details__forecast__label{
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+.stock-details__forecast__right{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+}
+
+.stock-details__forecast__value{
+    font-size: 20px;
+    margin-right: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.stock-details__forecast__percent{
+    font-size: 16px;
+    margin-right: 20px;
+    text-align: center;
+}
+
+.stock-details__eps {
+    background-color: var(--primary-white);
+    width: 90%;
+    position: relative;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.eps-tooltip {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    padding-top: 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s;
+    z-index: 10;
+}
+
+.eps-tooltip.hidden {
+    opacity: 0;
+}
+
+.stock-details__eps__row{
+    width: 60%;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-details__eps__label{
+    font-size: 16px;
+    margin-left: 20px;
+}
+
+.stock-details__eps__value{
+    font-size: 16px;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.stock-details__eps__table{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.stock-details__benjamin-graham{
+    background-color: var(--primary-white);
+    width: 90%;
+    position: relative;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.stock-details__benjamin-graham__row{
+    width: 80%;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.stock-details__benjamin-graham__label{
+    font-size: 16px;
+    margin-left: 20px;
+}
+
+.stock-details__benjamin-graham__value{
+    font-size: 16px;
+    margin-right: 20px;
+}
+
+.stock-details-not-found{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: var(--light-gray);
+    font-size: 50px;
+}
+
+.green-rating {
+    color: green;
+}
+
+.blue-rating {
+    color: blue;
+}
+
+.red-rating {
+    color: red;
+}
+
+.bold-text {
+    font-weight: bold;
+}
