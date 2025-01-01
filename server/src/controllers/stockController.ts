@@ -33,6 +33,36 @@ const getStockData = (req: Request, res: Response): void => {
     });
 };
 
+const getStockProfile = (req: Request, res: Response): void => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['src/stocks/getStockProfile.py', stockSymbol]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const stockData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(stockData);
+            }
+        } catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
+        }
+    });
+
+    pythonProcess.stderr.on('data', () => {
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error retrieving historical data' });
+        }
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 const getTop10MostActiveStocks = (req: Request, res: Response): void => {
     const pythonProcess = spawn('python3', ['src/stocks/getTopStock.py']);
     pythonProcess.stdout.on('data', (data) => {
@@ -264,6 +294,7 @@ const searchStock = (req: Request, res: Response): void => {
 
 export {
     getStockData,
+    getStockProfile,
     getTop10MostActiveStocks,
     getAnalysis,
     getHistoricalData,
