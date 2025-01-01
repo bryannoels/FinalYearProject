@@ -1,6 +1,7 @@
 import express from 'express';
 import { 
   getStockData, 
+  getStockProfile,
   getTop10MostActiveStocks, 
   getAnalysis, 
   getHistoricalData, 
@@ -14,6 +15,7 @@ import {
 const router = express.Router();
 
 router.get('/info/:symbol', getStockData);
+router.get('/profile/:symbol', getStockProfile);
 router.get('/most-active', getTop10MostActiveStocks);
 router.get('/analysis/:symbol', getAnalysis);
 router.get('/historical/:symbol', getHistoricalData);
