@@ -14,7 +14,7 @@ def get_stock_profile(stock_symbol):
     stock_data['country'] = stock_info.get('country', None)
     stock_data['state'] = stock_info.get('state', None)
     stock_data['city'] = stock_info.get('city', None)
-    stock_data['address1'] = stock_info.get('address1', None)
+    stock_data['address'] = stock_info.get('address1', None)
     stock_data['phone'] = stock_info.get('phone', None)
     stock_data['website'] = stock_info.get('website', None)
     stock_data['CEO'] = next((officer['name'] for officer in stock_info.get('companyOfficers', None) if any(leader in officer.get('title', '') for leader in ["CEO", "President Director", "GM"])), None)
