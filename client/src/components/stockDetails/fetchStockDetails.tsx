@@ -39,8 +39,9 @@ export const fetchStockDetails = async (
                 growthRate: stockInfo.growthRate,
             };
 
-            const [priceData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
+            const [priceData, profileData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
                 fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`).catch(() => null),
+                fetchData(`http://localhost:8000/api/stocks/profile/${symbol}`).catch(() => null),
                 fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`).catch(() => null),
                 fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`).catch(() => null),
                 fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`).catch(() => null),
@@ -52,6 +53,7 @@ export const fetchStockDetails = async (
                 info: currentStock,
                 detail: currentStockDetail,
                 price: priceData ? priceData.data : null,
+                profile: profileData ? profileData : null,
                 forecast: forecastData ? forecastData : null,
                 analysis: analysisData ? analysisData : null,
                 eps: epsData ? epsData.EPS_Data : null,
