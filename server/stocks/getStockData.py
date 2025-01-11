@@ -6,6 +6,7 @@ def get_stock_data(stock_symbol):
     stock = yf.Ticker(stock_symbol)
     stock_data = {}
     stock_info = stock.info
+    growth_rate = stock.growth_estimates
     
     stock_data['companyName'] = stock_info.get('longName', "Not found")
     stock_data['currentPrice'] = stock_info.get('currentPrice', "Not found")
@@ -18,6 +19,7 @@ def get_stock_data(stock_symbol):
     stock_data['priceToBook'] = stock_info.get('priceToBook', "Not found")
     stock_data['earningsGrowth'] = stock_info.get('earningsGrowth', "Not found")
     stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', "Not found")
+    stock_data['growthRate'] = growth_rate.get('stock', "Not found").get('+1y', "Not found")
     
 
     return stock_data
