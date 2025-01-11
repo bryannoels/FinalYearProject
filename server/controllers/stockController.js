@@ -135,7 +135,9 @@ const getHistoricalData = (req, res) => {
 
     pythonProcess.stdout.on('data', (data) => {
         try {
+            console.log(data.toString());
             const historicalData = JSON.parse(data.toString());
+            console.log(historicalData);
             res.json(historicalData);
         } catch (error) {
             res.status(500).json({ error: 'Failed to parse response' });
