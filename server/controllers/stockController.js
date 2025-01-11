@@ -95,18 +95,13 @@ const getAnalysis = (req, res) => {
             const pythonProcess = spawn('python3', ['stocks/getAnalysis.py', stockSymbol]);
             pythonProcess.stdout.on('data', (data) => {
                 try {
-                    const parsedData = JSON.parse(data.toString());
-                    const analysisData = parsedData.analysis
+                    const analysisData = JSON.parse(data.toString());
                     const combinedAnalysis = [
-                        ...analysisData.filter(item => item.Action === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
-                        ...analysisData.filter(item => item.Action === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
-                        ...analysisData.filter(item => item.Action === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
+                        ...analysisData.filter(item => item.rating === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
+                        ...analysisData.filter(item => item.rating === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
+                        ...analysisData.filter(item => item.rating === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
                     ];
-
-                    res.json({
-                        growthRate: parsedData.growthRate,
-                        analysis: combinedAnalysis
-                    });
+                    res.json(combinedAnalysis);
                 } catch (error) {
                     res.status(500).json({ error: 'Failed to parse response' });
                 }
