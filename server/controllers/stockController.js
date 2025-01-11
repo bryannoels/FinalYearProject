@@ -3,7 +3,7 @@ const axios = require('axios');
 
 const getStockData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['stocks/getStocksData.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['stocks/getStockData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
