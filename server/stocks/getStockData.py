@@ -20,7 +20,6 @@ def get_stock_data(stock_symbol):
     stock_data['earningsGrowth'] = stock_info.get('earningsGrowth', "Not found")
     stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', "Not found")
     stock_data['growthRate'] = growth_rate.get('stock', "Not found").get('+1y', "Not found")
-    
 
     return stock_data
 
