@@ -1,5 +1,14 @@
-const express = require('express');
-const { getStockData, getTop10MostActiveStocks, getAnalysis, getVerdict, getHistoricalData, getForecastData, getEPSData, getAaaCorporateBondYield } = require('../controllers/stockController');
+import express from 'express';
+import { 
+  getStockData, 
+  getTop10MostActiveStocks, 
+  getAnalysis, 
+  getVerdict, 
+  getHistoricalData, 
+  getForecastData, 
+  getEPSData, 
+  getAaaCorporateBondYield 
+} from '../controllers/stockController';
 
 const router = express.Router();
 
@@ -12,4 +21,4 @@ router.get('/forecast/:symbol', getForecastData);
 router.get('/eps/:symbol', getEPSData);
 router.get('/aaa-corporate-bond-yield', getAaaCorporateBondYield);
 
-module.exports = router;
+export default router;
