@@ -39,7 +39,7 @@ const StockDetails = () => {
             try {
                 const response = await fetch(`http://localhost:8000/api/stocks/info/${symbol}`);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Could not get stock data');
                 }
                 const data = await response.json();
                 setCurrentStock({
@@ -79,37 +79,37 @@ const StockDetails = () => {
                 const [priceData, verdictData, forecastData, analysisData, epsData, aaaCorporateBondYieldData] = await Promise.all([
                     fetch(`http://localhost:8000/api/stocks/historical/${symbol}`).then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error('Could not get historical data');
                         }
                         return response.json();
                     }),
                     fetch(`http://localhost:8000/api/stocks/verdict/${symbol}`).then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error('Could not get verdict data');
                         }
                         return response.json();
                     }),
                     fetch(`http://localhost:8000/api/stocks/forecast/${symbol}`).then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error('Could not get forecast data');
                         }
                         return response.json();
                     }),
                     fetch(`http://localhost:8000/api/stocks/analysis/${symbol}`).then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error('Could not get analysis data');
                         }
                         return response.json();
                     }),
                     fetch(`http://localhost:8000/api/stocks/eps/${symbol}`).then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error('Could not get EPS data');
                         }
                         return response.json();
                     }),
                     fetch(`http://localhost:8000/api/stocks/aaa-corporate-bond-yield`).then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok');
+                            throw new Error('Could not get AAA corporate bond yield data');
                         }
                         return response.json();
                     })

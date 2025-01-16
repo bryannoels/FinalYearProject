@@ -9,8 +9,8 @@ const createStockObject = (stockData: any): Stock => ({
   name: stockData['Company Name'] || 'Unknown Company',
   symbol: stockData['Symbol'] || 'N/A',
   price: parseFloat(stockData['Price']) || 0,
-  change: parseFloat(stockData['Change'].replace(/[+,%]/g, '')) || 0,
-  percentChange: parseFloat(stockData['Change%'].replace(/[+,%]/g, '')) || 0,
+  change: parseFloat(stockData['Change']?.replace(/[+,%]/g, '')) || 0,
+  percentChange: parseFloat(stockData['Change%']?.replace(/[+,%]/g, '')) || 0,
 });
 
 function Dashboard() {
@@ -23,7 +23,7 @@ function Dashboard() {
     const fetchStocks = async () => {
         setLoading(true);
         try {
-            const response = await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/getTop10Stocks');
+            const response = await fetch('http://localhost:8000/api/stocks/most-active');
             const data = await response.json();
             const formattedData: Stock[] = data.map(createStockObject);
             setStockList(formattedData);
