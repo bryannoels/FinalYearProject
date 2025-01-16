@@ -41,6 +41,7 @@
   .navbar__search{
     height: 30px;
     margin-right: 20px;
+    color: var(--primary-blue);
   }
 
   .navbar__button{
@@ -49,3 +50,38 @@
     background-color: var(--primary-blue);
     color: var(--primary-white);
   }
+
+  .navbar__user{
+    position: relative;
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary-white);
+    color: var(--primary-blue);
+  }
+  
+  .navbar__user__dropdown {
+    position: absolute;
+    top: 100%; /* Position below the user icon */
+    right: 0;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 10;
+    min-width: 100px;
+    overflow: hidden;
+  }
+  
+  .navbar__user__dropdown-item {
+    width: 100%;
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .navbar__user__dropdown-item:hover {
+    background-color: #f5f5f5;
+  }
+  

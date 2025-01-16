@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stock } from '../../types/Stock';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import './Dashboard.css';
+import { AuthContext } from '../../context/AuthContext';
 
 const createStockObject = (stockData: any): Stock => ({
   name: stockData['Company Name'] || 'Unknown Company',
@@ -13,11 +14,15 @@ const createStockObject = (stockData: any): Stock => ({
   percentChange: parseFloat(stockData['Change%']?.replace(/[+,%]/g, '')) || 0,
 });
 
+
+
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [stockList, setStockList] = useState<Stock[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+
+  const { user, isAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchStocks = async () => {
@@ -25,7 +30,7 @@ function Dashboard() {
         try {
             const response = await fetch('http://localhost:8000/api/stocks/most-active');
             const data = await response.json();
-            const formattedData: Stock[] = data.map(createStockObject);
+            const formattedData: Stock[] = JSON.parse(data).map(createStockObject);
             setStockList(formattedData);
         } catch (error) {
             console.error('Error fetching stock data:', error);

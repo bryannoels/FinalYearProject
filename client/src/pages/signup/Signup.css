@@ -49,6 +49,13 @@ a{
     }
 }
 
+.container__username{
+    display: flex;
+    flex-direction: column;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
 .container__email{
     display: flex;
     flex-direction: column;
@@ -70,14 +77,15 @@ a{
     padding-bottom: 0.5rem;
 }
 
-.container__remember__forgot{
+.container__confirm__password{
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
 .checkbox__remember{
     margin: 3px 3px 3px 0;
-    background-color: var(--primary-white);
 }
 
 .button{
@@ -87,6 +95,22 @@ a{
     padding: 1rem 0;
     color: var(--primary-white);
     background-color: var(--primary-blue);
+}
+
+.success__message{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--primary-white);
+    width: 200px;
+    color: #213547;
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--gray);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    z-index: 1000;
 }
 
 .error__message{
