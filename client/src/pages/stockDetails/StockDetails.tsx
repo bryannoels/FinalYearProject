@@ -164,7 +164,7 @@ const StockDetails = () => {
         svg.attr("width", width).attr("height", height);
 
         const x = d3.scaleTime()
-            .domain(d3.extent(stockPriceData, d => new Date(`T${d.time}`)) as [Date, Date])
+            .domain(d3.extent(stockPriceData, d => new Date(`${d.date}T${d.time}`)) as [Date, Date])
             .range([margin.left, width - margin.right]);
 
         const y = d3.scaleLinear()
@@ -175,7 +175,7 @@ const StockDetails = () => {
             .range([height - margin.bottom, margin.top]);
 
         const line = d3.line<StockPrice>()
-            .x(d => x(new Date(`T${d.time}`)))
+            .x(d => x(new Date(`${d.date}T${d.time}`)))
             .y(d => y(d.price))
 
         const renderAxes = () => {
@@ -225,7 +225,7 @@ const StockDetails = () => {
                 .data(stockPriceData)
                 .enter().append("circle")
                 .attr("class", "dot")
-                .attr("cx", (d: StockPrice) => x(new Date(`T${d.time}`)))
+                .attr("cx", (d: StockPrice) => x(new Date(`${d.date}T${d.time}`)))
  .attr("cy", d => y(d.price))
                 .attr("r", 3)
                 .attr("fill", "#0033AA")
