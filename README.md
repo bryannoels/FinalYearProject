@@ -88,6 +88,7 @@ Inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0
 
 **Run Back End**
 1. cd server
-2. node server.js
+2. yarn
+3. yarn dev
 
 **Created on 16 September 2024**
