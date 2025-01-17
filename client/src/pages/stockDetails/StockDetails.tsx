@@ -114,8 +114,7 @@ const StockDetails = () => {
                         return response.json();
                     })
                 ]);
-    
-                setStockPriceData(priceData.prices);
+                setStockPriceData(priceData.data);
                 setCurrentVerdict(verdictData);
                 setForecastData(forecastData);
                 setGrowthRate(analysisData.growthRate);
@@ -165,19 +164,19 @@ const StockDetails = () => {
         svg.attr("width", width).attr("height", height);
 
         const x = d3.scaleTime()
-            .domain(d3.extent(stockPriceData, d => new Date(`${d.date}T${d.time}`)) as [Date, Date])
+            .domain(d3.extent(stockPriceData, d => new Date(`T${d.time}`)) as [Date, Date])
             .range([margin.left, width - margin.right]);
 
         const y = d3.scaleLinear()
             .domain([
-                Math.min(...stockPriceData.map(d => d.close)) - 1,
-                Math.max(...stockPriceData.map(d => d.close)) + 1
+                Math.min(...stockPriceData.map(d => d.price)) - 1,
+                Math.max(...stockPriceData.map(d => d.price)) + 1
             ])
             .range([height - margin.bottom, margin.top]);
 
         const line = d3.line<StockPrice>()
-            .x(d => x(new Date(`${d.date}T${d.time}`)))
-            .y(d => y(d.close))
+            .x(d => x(new Date(`T${d.time}`)))
+            .y(d => y(d.price))
 
         const renderAxes = () => {
             svg.append("g")
@@ -226,8 +225,8 @@ const StockDetails = () => {
                 .data(stockPriceData)
                 .enter().append("circle")
                 .attr("class", "dot")
-                .attr("cx", (d: StockPrice) => x(new Date(`${d.date}T${d.time}`)))
- .attr("cy", d => y(d.close))
+                .attr("cx", (d: StockPrice) => x(new Date(`T${d.time}`)))
+ .attr("cy", d => y(d.price))
                 .attr("r", 3)
                 .attr("fill", "#0033AA")
                 .on("mouseover", function (event, d) {
@@ -236,7 +235,7 @@ const StockDetails = () => {
                         .style("left", `${event.pageX - 60}px`)
                         .style("top", `${event.pageY - 70}px`)
                         .classed("hidden", false)
-                        .html(`Time: ${d.time}<br>Price: $${d.close.toFixed(2)}`);
+                        .html(`Time: ${d.time}<br>Price: $${d.price.toFixed(2)}`);
                 })
                 .on("mouseout", function () {
                     d3.select(this).attr("r", 3);
@@ -244,9 +243,9 @@ const StockDetails = () => {
                 });
         };
 
-        const maxPrice = Math.max(...stockPriceData.map(d => d.close));
-        const currentPrice = stockPriceData[stockPriceData.length - 1].close;
-        const minPrice = Math.min(...stockPriceData.map(d => d.close));
+        const maxPrice = Math.max(...stockPriceData.map(d => d.price));
+        const currentPrice = stockPriceData[stockPriceData.length - 1].price;
+        const minPrice = Math.min(...stockPriceData.map(d => d.price));
 
         drawDashedLine(maxPrice, "green", `Max Price - ${maxPrice.toFixed(2)}`, 100, 8, true);
         drawDashedLine(currentPrice, "blue", `Current Price - ${currentPrice.toFixed(2)}`, 118, 8, (maxPrice - currentPrice) / (maxPrice - minPrice) * 100 > 10);
