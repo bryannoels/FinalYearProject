@@ -24,7 +24,8 @@ def get_historical_data(stock_symbol, range_param):
     json_data = []
     for index, row in stock_info.iterrows():
         json_data.append({
-            "time": index.strftime("%Y-%m-%d %H:%M:%S"),
+            "date": index.strftime("%Y-%m-%d"),
+            "time": index.strftime("%H:%M:%S"),
             "price": row["Close"]
         })
     stock_data = {}
