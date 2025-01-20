@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stock } from '../../types/Stock';
+import { StockInfo } from '../../types/StockInfo';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import './Dashboard.css';
 
-const createStockObject = (stockData: any): Stock => ({
+const createStockObject = (stockData: any): StockInfo => ({
   name: stockData['Company Name'] || 'Unknown Company',
   symbol: stockData['Symbol'] || 'N/A',
   price: parseFloat(stockData['Price']) || 0,
@@ -15,7 +15,7 @@ const createStockObject = (stockData: any): Stock => ({
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [stockList, setStockList] = useState<Stock[]>([]);
+  const [stockList, setStockList] = useState<StockInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ function Dashboard() {
         try {
             const response = await fetch('http://localhost:8000/api/stocks/most-active');
             const data = await response.json();
-            const formattedData: Stock[] = data.map(createStockObject);
+            const formattedData: StockInfo[] = data.map(createStockObject);
             setStockList(formattedData);
         } catch (error) {
             console.error('Error fetching stock data:', error);
@@ -37,7 +37,7 @@ function Dashboard() {
 }, []);
 
 
-  const filteredStocks = stockList.filter((stock: Stock) =>
+  const filteredStocks = stockList.filter((stock: StockInfo) =>
     stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -63,7 +63,7 @@ function Dashboard() {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        filteredStocks.map((stock: Stock) => (
+        filteredStocks.map((stock: StockInfo) => (
           <DashboardItem 
             key={stock.symbol} 
             {...stock}
