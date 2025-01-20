@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
-import { Stock } from '../../types/Stock';
+import { StockInfo } from '../../types/StockInfo';
 import { StockDetail } from '../../types/StockDetail';
 import { StockPrice } from '../../types/StockPrice';
 import { Verdict } from '../../types/Verdict';
@@ -21,7 +21,7 @@ const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
     const chartRef = useRef<SVGSVGElement | null>(null);
     const epsChartRef = useRef<SVGSVGElement | null>(null);
-    const [currentStock, setCurrentStock] = useState<Stock | null>(null);
+    const [currentStock, setCurrentStock] = useState<StockInfo | null>(null);
     const [currentStockDetail, setCurrentStockDetail] = useState<StockDetail | null>(null);
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
     const [currentVerdict, setCurrentVerdict] = useState<Verdict | null>(null);
