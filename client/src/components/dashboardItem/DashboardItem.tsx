@@ -1,7 +1,7 @@
-import { Stock } from '../../types/Stock';
+import { StockInfo } from '../../types/StockInfo';
 import './DashboardItem.css';
 
-interface DashboardItemProps extends Stock {
+interface DashboardItemProps extends StockInfo {
     onClick: () => void;
 }
 
