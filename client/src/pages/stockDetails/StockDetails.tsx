@@ -54,15 +54,16 @@ const StockDetails = () => {
                     currentPrice: data.currentPrice,
                     openingPrice: data.openingPrice,
                     previousClose: data.previousClose,
-                    daysRange: data.daysRange,
-                    week52Range: data.week52Range,
                     volume: data.volume,
                     marketCap: data.marketCap,
-                    peRatio: data.peRatio,
-                    eps: data.eps,
-                    priceSales: data.pricePerSales,
-                    priceBook: data.pricePerBook
+                    totalRevenue: data.totalRevenue,
+                    ebitda: data.ebitda,
+                    priceToBook: data.priceToBook,
+                    earningsGrowth: data.earningsGrowth,
+                    revenuePerShare: data.revenuePerShare,
+                    growthRate: data.growthRate
                 });
+                setGrowthRate(data.growthRate);
             } catch (error: any) {
                 setError(error);
             }
@@ -117,7 +118,6 @@ const StockDetails = () => {
                 setStockPriceData(priceData.data);
                 setCurrentVerdict(verdictData);
                 setForecastData(forecastData);
-                setGrowthRate(analysisData.growthRate);
                 setStockRatings(analysisData.analysis);
                 setEpsData(epsData.EPS_Data);
                 setAaaCorporateBondYield(aaaCorporateBondYieldData.aaaCorporateBondYield);
@@ -134,15 +134,14 @@ const StockDetails = () => {
     const labels = {
         "Opening Price": currentStockDetail?.openingPrice,
         "Previous Close": currentStockDetail?.previousClose,
-        "Day's Range": currentStockDetail?.daysRange,
-        "52-Week Range": currentStockDetail?.week52Range,
         "Volume": currentStockDetail?.volume,
         "Market Cap": currentStockDetail?.marketCap,
-        "PE Ratio (TTM)": currentStockDetail?.peRatio,
-        "EPS (TTM)": currentStockDetail?.eps,
-        "Price/Sales (TTM)": currentStockDetail?.priceSales,
-        "Price/Book (MRQ)": currentStockDetail?.priceBook,
-        "Growth Rate": growthRate
+        "Total Revenue": currentStockDetail?.totalRevenue,
+        "EBITDA": currentStockDetail?.ebitda,
+        "Price/Book": currentStockDetail?.priceToBook,
+        "Earnings Growth": currentStockDetail?.earningsGrowth,
+        "Revenue Per Share": currentStockDetail?.revenuePerShare,
+        "Growth Rate": currentStockDetail?.growthRate
     };
 
     const benjaminGrahamLabels = {
