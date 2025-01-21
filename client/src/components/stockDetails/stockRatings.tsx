@@ -1,6 +1,6 @@
 import React from 'react';
-import { Stock } from '../../types/Stock';
-import { StockRatings } from '../../types/StockRatings';
+import type { Stock } from '../../types/Stock';
+import type { StockRatings } from '../../types/StockRatings';
 
 interface StockRatingsProps {
   stockData: Stock | null;
