@@ -24,22 +24,23 @@ const StockDetails = () => {
         fetchStockDetails(symbol, setStockData, setLoading, setError);
     }, [symbol]);
 
+    const renderStockComponents = () => (
+        <>
+            <StockInfo symbol={symbol} stockData={stockData} />
+            <StockPriceChart stockData={stockData} />
+            <ValuationMeasures stockData={stockData} />
+            <AnalystsRecommendation stockData={stockData} />
+            <EPSChart stockData={stockData} />
+            <BenjaminGraham stockData={stockData} />
+        </>
+    );
+
     return (
         <div className="stock-details">
-            {loading ? (
-                <LoadingSpinner />
-            ) : (
-                <>
-                    <StockInfo symbol={symbol} stockData={stockData} />
-                    <StockPriceChart stockData={stockData} />
-                    <ValuationMeasures stockData={stockData} />
-                    <AnalystsRecommendation stockData={stockData} />
-                    <EPSChart stockData={stockData} />
-                    <BenjaminGraham stockData={stockData} />
-                </>
-            )}
+            {loading ? <LoadingSpinner /> : renderStockComponents()}
         </div>
     );
+
 };
 
 export default StockDetails;
