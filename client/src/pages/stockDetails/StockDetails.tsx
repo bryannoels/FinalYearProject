@@ -97,7 +97,7 @@ const StockDetails = () => {
                         ratings: analysisData.analysis,
                         eps: epsData.EPS_Data,
                         growthRate: stockInfo.growthRate,
-                        bondYield: bondYieldData.yield
+                        bondYield: bondYieldData.aaaCorporateBondYield
                     };
 
                     setStockData(newStockData);
