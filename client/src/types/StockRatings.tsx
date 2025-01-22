@@ -1,5 +1,6 @@
 export type StockRatings = {
-    Firm: string;
-    Rating: string;
-    Action: number;
+    firm: string;
+    analysis: string;
+    rating: number;
+    actionType: string;
 };

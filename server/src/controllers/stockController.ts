@@ -37,7 +37,6 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
     const pythonProcess = spawn('python3', ['src/stocks/getTopStock.py']);
     pythonProcess.stdout.on('data', (data) => {
         try {
-            console.log(data.toString());
             const stocksData = JSON.parse(data.toString());
             if (!res.headersSent) {
                 res.json(stocksData);
@@ -50,7 +49,6 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.log("Python Error:", data.toString());
         if (!res.headersSent) {
             res.status(500).json({ error: 'Error retrieving stock data' });
         }
