@@ -5,9 +5,8 @@ import { fetchStockDetails } from '../../components/stockDetails/fetchStockDetai
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import StockInfo from '../../components/stockDetails/stockInfo';
 import StockPriceChart from '../../components/stockDetails/stockPriceChart';
-
-import './StockDetails.css';
 import TabContents from '../../components/stockDetails/tabContents';
+import './StockDetails.css';
 
 const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
