@@ -17,9 +17,9 @@ const createStockObject = (stockData: any): StockInfo => ({
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [portfolioStockList, setPortfolioStockList] = useState<
-    { portfolioName: string; stocks: Stock[] }[]
+    { portfolioName: string; stocks: StockInfo[] }[]
   >([]);
-  const [marketStockList, setMarketStockList] = useState<Stock[]>([]);
+  const [marketStockList, setMarketStockList] = useState<StockInfo[]>([]);
   const [portfolioLoading, setPortfolioLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ function Dashboard() {
     try {
         const response = await fetch('http://localhost:8000/api/stocks/most-active');
         const data = await response.json();
-        const formattedData: Stock[] = JSON.parse(data).map(createStockObject);
+        const formattedData: StockInfo[] = JSON.parse(data).map(createStockObject);
         setMarketStockList(formattedData);
     } catch (error) {
         console.error('Error fetching stock data:', error);
@@ -97,7 +97,7 @@ function Dashboard() {
   }))
   .filter((portfolio) => portfolio.stocks.length > 0);
 
-  const filteredStocks = marketStockList.filter((stock: Stock) =>
+  const filteredStocks = marketStockList.filter((stock: StockInfo) =>
     stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
