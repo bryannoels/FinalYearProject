@@ -11,6 +11,8 @@ interface TabContentsProps {
 }
 
 const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
+  if (!stockData) return null;
+  
   const [activeTab, setActiveTab] = useState<string>('valuation');
 
   const renderTabContent = () => {
