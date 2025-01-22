@@ -4,25 +4,11 @@ import ValuationMeasures from './valuationMeasures';
 import AnalystsRecommendation from './analystsRecommendation';
 import EPSChart from './epsChart';
 import BenjaminGraham from './benjaminGraham';
+import TabButton from './tabButton';
 
 interface TabContentsProps {
   stockData: Stock | null;
 }
-
-const TabButton: React.FC<{
-  label: string;
-  activeTab: string;
-  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ label, activeTab, setActiveTab }) => {
-  return (
-    <button
-      className={`stock-details__tab ${activeTab === label.toLowerCase() ? 'active' : ''}`}
-      onClick={() => setActiveTab(label.toLowerCase())}
-    >
-      {label}
-    </button>
-  );
-};
 
 const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   const [activeTab, setActiveTab] = useState<string>('valuation');
