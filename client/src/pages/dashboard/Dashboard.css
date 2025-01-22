@@ -9,6 +9,7 @@
 
 .dashboard__header {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
@@ -16,13 +17,31 @@
     margin-right: 20px;
 }
 
-.dashboard__title {
+.dashboard__user-portfolio__container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.market__title {
     font-size: 22px;
     color: #213547;
     font-weight: bold;
 }
 
-.dashboard__search-box {
+.portfolio__title {
+    font-size: 18px;
+    color: #213547;
+    font-weight: bold;
+    padding-top: 0.5em;;
+}
+
+.dashboard__market__container {
+    display: flex;
+    flex-direction: row;
+}
+
+.market__search-box {
     position: relative;
     display: flex;
     align-items: center;

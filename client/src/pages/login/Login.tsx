@@ -30,7 +30,7 @@ function Login() {
 
       const result = await response.json();
       if (result.statusCode === 200) {
-        login(result.authToken, formData.get('rememberMe') === 'on' ? true : false);
+        login(JSON.parse(result.authToken), formData.get('rememberMe') === 'on' ? true : false);
         navigate('/');
       } else {
         setErrorMessage(JSON.parse(result.body).message);
