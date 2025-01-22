@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import { useParams } from 'react-router-dom';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
-import { Stock } from '../../types/Stock';
+import { StockInfo } from '../../types/StockInfo';
 import { StockDetail } from '../../types/StockDetail';
 import { StockPrice } from '../../types/StockPrice';
 import { Verdict } from '../../types/Verdict';
@@ -21,7 +21,7 @@ const StockDetails = () => {
     const { symbol } = useParams<{ symbol: string }>();
     const chartRef = useRef<SVGSVGElement | null>(null);
     const epsChartRef = useRef<SVGSVGElement | null>(null);
-    const [currentStock, setCurrentStock] = useState<Stock | null>(null);
+    const [currentStock, setCurrentStock] = useState<StockInfo | null>(null);
     const [currentStockDetail, setCurrentStockDetail] = useState<StockDetail | null>(null);
     const [stockPriceData, setStockPriceData] = useState<StockPrice[]>([]);
     const [currentVerdict, setCurrentVerdict] = useState<Verdict | null>(null);
@@ -54,15 +54,16 @@ const StockDetails = () => {
                     currentPrice: data.currentPrice,
                     openingPrice: data.openingPrice,
                     previousClose: data.previousClose,
-                    daysRange: data.daysRange,
-                    week52Range: data.week52Range,
                     volume: data.volume,
                     marketCap: data.marketCap,
-                    peRatio: data.peRatio,
-                    eps: data.eps,
-                    priceSales: data.pricePerSales,
-                    priceBook: data.pricePerBook
+                    totalRevenue: data.totalRevenue,
+                    ebitda: data.ebitda,
+                    priceToBook: data.priceToBook,
+                    earningsGrowth: data.earningsGrowth,
+                    revenuePerShare: data.revenuePerShare,
+                    growthRate: data.growthRate
                 });
+                setGrowthRate(data.growthRate);
             } catch (error: any) {
                 setError(error);
             }
@@ -117,7 +118,6 @@ const StockDetails = () => {
                 setStockPriceData(priceData.data);
                 setCurrentVerdict(verdictData);
                 setForecastData(forecastData);
-                setGrowthRate(analysisData.growthRate);
                 setStockRatings(analysisData.analysis);
                 setEpsData(epsData.EPS_Data);
                 setAaaCorporateBondYield(aaaCorporateBondYieldData.aaaCorporateBondYield);
@@ -134,15 +134,14 @@ const StockDetails = () => {
     const labels = {
         "Opening Price": currentStockDetail?.openingPrice,
         "Previous Close": currentStockDetail?.previousClose,
-        "Day's Range": currentStockDetail?.daysRange,
-        "52-Week Range": currentStockDetail?.week52Range,
         "Volume": currentStockDetail?.volume,
         "Market Cap": currentStockDetail?.marketCap,
-        "PE Ratio (TTM)": currentStockDetail?.peRatio,
-        "EPS (TTM)": currentStockDetail?.eps,
-        "Price/Sales (TTM)": currentStockDetail?.priceSales,
-        "Price/Book (MRQ)": currentStockDetail?.priceBook,
-        "Growth Rate": growthRate
+        "Total Revenue": currentStockDetail?.totalRevenue,
+        "EBITDA": currentStockDetail?.ebitda,
+        "Price/Book": currentStockDetail?.priceToBook,
+        "Earnings Growth": currentStockDetail?.earningsGrowth,
+        "Revenue Per Share": currentStockDetail?.revenuePerShare,
+        "Growth Rate": currentStockDetail?.growthRate
     };
 
     const benjaminGrahamLabels = {

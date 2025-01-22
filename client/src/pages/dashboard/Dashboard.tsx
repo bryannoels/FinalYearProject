@@ -1,12 +1,12 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stock } from '../../types/Stock';
+import { StockInfo } from '../../types/StockInfo';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import './Dashboard.css';
 import { AuthContext } from '../../context/AuthContext';
 
-const createStockObject = (stockData: any): Stock => ({
+const createStockObject = (stockData: any): StockInfo => ({
   name: stockData['Company Name'] || 'Unknown Company',
   symbol: stockData['Symbol'] || 'N/A',
   price: parseFloat(stockData['Price']) || 0,
@@ -159,7 +159,7 @@ function Dashboard() {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        filteredStocks.map((stock: Stock) => (
+        filteredStocks.map((stock: StockInfo) => (
           <DashboardItem 
             key={stock.symbol} 
             {...stock}
