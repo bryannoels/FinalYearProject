@@ -106,6 +106,19 @@ function Dashboard() {
     navigate(`/stock/${symbol}`);
   };
 
+  const renderMarketStocks = () =>
+    loading ? (
+      <LoadingSpinner />
+    ) : (
+      filteredStocks.map((stock: StockInfo) => (
+        <DashboardItem 
+          key={stock.symbol} 
+          {...stock}
+          onClick={() => handleItemClick(stock.symbol)}
+        />
+      ))
+    );
+
   return (
     <div className="dashboard">
       <div className="dashboard__header">
@@ -156,17 +169,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        filteredStocks.map((stock: StockInfo) => (
-          <DashboardItem 
-            key={stock.symbol} 
-            {...stock}
-            onClick={() => handleItemClick(stock.symbol)}
-          />
-        ))
-      )}
+      {renderMarketStocks()}
     </div>
   );
 }
