@@ -38,7 +38,8 @@
 
 .dashboard__market__container {
     display: flex;
-    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .market__search-box {
