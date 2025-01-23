@@ -13,14 +13,17 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
+}
+
+.portfolio-group{
+    width: 100%;
 }
 
 .dashboard__user-portfolio__container{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
 }
 
 .market__title {
@@ -33,12 +36,14 @@
     font-size: 18px;
     color: #213547;
     font-weight: bold;
-    padding-top: 0.5em;;
+    padding-top: 0.5em;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .dashboard__market__container {
     display: flex;
-    width: 100%;
+    width: calc(100%  - 40px);
     justify-content: space-between;
 }
 
