@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Navbar from './pages/navbar/Navbar';
 import _Banner from './pages/banner/Banner';
 import { AuthProvider } from './context/AuthContext';
 
@@ -21,7 +20,6 @@ const Layout = () => {
     <AuthProvider>
       <div>
         <ScrollToTop />
-        <Navbar />
         {/* {!_login && <_Banner />} */}
         <Outlet />
       </div>
