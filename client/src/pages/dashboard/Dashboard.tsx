@@ -72,7 +72,7 @@ function Dashboard() {
     try {
         const response = await fetch('http://localhost:8000/api/stocks/most-active');
         const data = await response.json();
-        const formattedData: StockInfo[] = JSON.parse(data).map(createStockObject);
+        const formattedData: StockInfo[] = data.map(createStockObject);
         setMarketStockList(formattedData);
     } catch (error) {
         console.error('Error fetching stock data:', error);
