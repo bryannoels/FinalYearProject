@@ -22,6 +22,7 @@ def get_stock_data(stock_symbol):
     stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', "Not found")
     stock_data['ebitda'] = stock_info.get('ebitda', "Not found")
     stock_data['growthRate'] = growth_rate.get('stock', "Not found").get('+1y', "Not found")
+    stock_data['dividends'] = [{"Year": int(year), "Dividend": dividend} for year, dividend in stock.dividends.groupby(stock.dividends.index.year).max().items()]
 
     return stock_data
 
