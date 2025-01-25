@@ -6,6 +6,7 @@ import { Forecast } from './Forecast';
 import { StockRatings } from './StockRatings';
 import { Eps } from './Eps';
 import { PeRatio } from './PeRatio';
+import { Dividend } from './Dividend';
 
 export type Stock = {
     info: StockInfo;
@@ -16,6 +17,7 @@ export type Stock = {
     ratings: StockRatings[];
     eps: Eps[];
     peRatio: PeRatio[];
+    dividends: Dividend[];
     growthRate: string;
     bondYield: string;
 }
