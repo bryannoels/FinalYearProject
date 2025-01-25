@@ -1,0 +1,102 @@
+import React from 'react';
+import { Eps } from '../../types/Eps';
+import { Dividend } from '../../types/Dividend';
+import { PeRatio } from '../../types/PeRatio';
+import { Stock } from '../../types/Stock';
+
+function isEarningsStable(epsData: Eps[]): string {
+    console.log(epsData);
+    if (epsData == null || epsData.length === 0) return "BAD";
+    const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
+    if (sortedEpsData.length < 10) return "BAD";
+    for (let i = 0; i < 10; i++) {
+        if (sortedEpsData[i].EPS < 0) {
+            return "BAD";
+        }
+    }
+    return "GOOD";
+}
+
+function isDividendStable(dividendData: Dividend[]): string {
+    console.log("isDividendStable", dividendData);
+    if (dividendData == null || dividendData.length === 0) return "BAD";
+    const sortedDividendData = dividendData.sort((a, b) => b.Year - a.Year);
+    if (sortedDividendData.length < 20) return "BAD";
+    for (let i = 1; i < 20; i++) {
+        console.log(sortedDividendData[i-1].Year, sortedDividendData[i].Year);
+        if (sortedDividendData[i-1].Year !== sortedDividendData[i].Year+1) {
+            return "BAD";
+        }
+    }
+    return "GOOD";
+}
+
+function hasEarningsIncreased(epsData: Eps[]): string {
+    console.log("hasEarningsIncreased", epsData);
+    if (!epsData || epsData.length < 10) return "BAD";
+    const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
+    const initialAverage =
+        (sortedEpsData[7].EPS + sortedEpsData[8].EPS + sortedEpsData[9].EPS) / 3;
+    const finalAverage =
+        (sortedEpsData[0].EPS + sortedEpsData[1].EPS + sortedEpsData[2].EPS) / 3;
+    return (finalAverage/initialAverage).toFixed(2);
+}
+
+function threeYearsPeRatio(peRatioData: PeRatio[]): string {
+    if (!peRatioData || peRatioData.length < 3) return "N/A";
+    const sortedEpsData = peRatioData.sort((a, b) => b.Year - a.Year);
+    return ((peRatioData[0].PE_Ratio + sortedEpsData[1].PE_Ratio + sortedEpsData[2].PE_Ratio) / 3).toFixed(2);
+}
+
+function priceToAssetRatio(peRatioData: PeRatio[], priceToBook: string): string {
+    console.log("priceToAssetRatio", peRatioData, priceToBook);
+    if (!peRatioData || peRatioData.length == 0 || priceToBook == "Not found") return "N/A";
+    return (peRatioData.sort((a, b) => b.Year - a.Year)[0].PE_Ratio*parseFloat(priceToBook)).toFixed(2);
+}
+
+function goodForDefensiveInvestor(stockData: Stock): string {
+    if (parseFloat(stockData.detail?.totalRevenue) < 100000000) return "BAD";
+    if (parseFloat(stockData.detail?.currentRatio) < 2) return "BAD";
+    if (isEarningsStable(stockData.eps) === "BAD") return "BAD";
+    if (isDividendStable(stockData.dividends) === "BAD") return "BAD";
+    if (hasEarningsIncreased(stockData.eps) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps))>4.0/3) return "BAD";
+    if (threeYearsPeRatio(stockData.peRatio) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio))>15.0) return "BAD";
+    if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook))>22.5) return "BAD";
+    return "Good";
+}
+
+interface benjaminGrahamProps {
+  stockData: Stock | null;
+}
+
+const benjaminGraham: React.FC<benjaminGrahamProps> = ({ stockData }) => {
+    if (stockData == null) return null;
+    console.log("MASUK")
+
+    const labels = {
+        "Revenue": stockData.detail?.totalRevenue,
+        "Current Ratio": stockData.detail?.currentRatio,
+        "Earnings Stability": isEarningsStable(stockData.eps),
+        "Dividend Record": isDividendStable(stockData.dividends),
+        "Earnings Growth": hasEarningsIncreased(stockData.eps),
+        "Price/Earnings Ratio": threeYearsPeRatio(stockData.peRatio),
+        "Price/Assets Ratio": priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook),
+        "Defensive Investor": goodForDefensiveInvestor(stockData),
+    };
+
+    return (
+        <>
+            <p className="stock-details__title">Valuation Measures</p>
+            <div className="stock-details__table">
+                {Object.entries(labels).map(([label, value]) => (
+                    <div className="stock-details__table__row" key={label}>
+                        <div className="stock-details__table__label">{label}</div>
+                        <div className="stock-details__table__value">{value}</div>
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+};
+
+export default benjaminGraham;
