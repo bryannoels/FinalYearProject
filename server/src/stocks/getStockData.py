@@ -15,10 +15,12 @@ def get_stock_data(stock_symbol):
     stock_data['volume'] = stock_info.get('regularMarketVolume', "Not found")
     stock_data['marketCap'] = stock_info.get('marketCap', "Not found")
     stock_data['totalRevenue'] = stock_info.get('totalRevenue', "Not found")
-    stock_data['ebitda'] = stock_info.get('ebitda', "Not found")
+    stock_data['currentRatio'] = stock_info.get('currentRatio', "Not found")
+    stock_data['peRatio'] = stock_info.get('trailingPE', "Not found")
     stock_data['priceToBook'] = stock_info.get('priceToBook', "Not found")
     stock_data['earningsGrowth'] = stock_info.get('earningsGrowth', "Not found")
     stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', "Not found")
+    stock_data['ebitda'] = stock_info.get('ebitda', "Not found")
     stock_data['growthRate'] = growth_rate.get('stock', "Not found").get('+1y', "Not found")
 
     return stock_data
