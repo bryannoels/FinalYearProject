@@ -6,6 +6,7 @@ import EPSChart from './epsChart';
 import PeRatioChart from './peRatioChart';
 import IntrinsicValue from './intrinsicValue';
 import TabButton from './tabButton';
+import BenjaminGraham from './benjaminGraham';
 
 interface TabContentsProps {
   stockData: Stock | null;
@@ -28,6 +29,8 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
         return <PeRatioChart stockData={stockData} />;
       case 'intrinsic':
         return <IntrinsicValue stockData={stockData} />;
+      case 'graham':
+        return <BenjaminGraham stockData={stockData} />;
       default:
         return null;
     }
@@ -36,7 +39,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   return (
     <div className="stock-details__tab-content">
       <div className="stock-details__tabs">
-        {['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic'].map((tab) => (
+        {['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Graham'].map((tab) => (
           <TabButton
             key={tab}
             label={tab}
