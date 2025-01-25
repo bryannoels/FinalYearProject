@@ -39,12 +39,13 @@ export const fetchStockDetails = async (
                 growthRate: stockInfo.growthRate,
             };
 
-            const [priceData, verdictData, forecastData, analysisData, epsData, bondYieldData] = await Promise.all([
+            const [priceData, verdictData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
                 fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/verdict/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`),
+                fetchData(`http://localhost:8000/api/stocks/pe-ratio/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/aaa-corporate-bond-yield`),
             ]);
 
@@ -56,10 +57,10 @@ export const fetchStockDetails = async (
                 forecast: forecastData,
                 ratings: analysisData,
                 eps: epsData.EPS_Data,
+                peRatio: peRatioData.PE_Ratio_Data,
                 growthRate: stockInfo.growthRate,
                 bondYield: bondYieldData.aaaCorporateBondYield,
             };
-
             setStockData(newStockData);
             setCachedData(`stock_${symbol}`, newStockData);
         }

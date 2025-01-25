@@ -4,7 +4,7 @@ export const getCachedData = (key: string): Stock | null => {
     const cachedItem = localStorage.getItem(key);
     if (!cachedItem) return null;
     const { data, timestamp } = JSON.parse(cachedItem);
-    if (Date.now() - timestamp > 3600000) {
+    if (Date.now() - timestamp > 10) {
         localStorage.removeItem(key);
         return null;
     }

@@ -3,6 +3,7 @@ import { Stock } from '../../types/Stock';
 import ValuationMeasures from './valuationMeasures';
 import AnalystsRecommendation from './analystsRecommendation';
 import EPSChart from './epsChart';
+import PeRatioChart from './peRatioChart';
 import BenjaminGraham from './benjaminGraham';
 import TabButton from './tabButton';
 
@@ -23,6 +24,8 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
         return <AnalystsRecommendation stockData={stockData} />;
       case 'eps':
         return <EPSChart stockData={stockData} />;
+      case 'ratio':
+        return <PeRatioChart stockData={stockData} />;
       case 'graham':
         return <BenjaminGraham stockData={stockData} />;
       default:
@@ -33,7 +36,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   return (
     <div className="stock-details__tab-content">
       <div className="stock-details__tabs">
-        {['Valuation', 'Analysis', 'EPS', 'Graham'].map((tab) => (
+        {['Valuation', 'Analysis', 'EPS', 'ratio', 'Graham'].map((tab) => (
           <TabButton
             key={tab}
             label={tab}

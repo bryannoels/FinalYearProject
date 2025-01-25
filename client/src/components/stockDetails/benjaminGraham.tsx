@@ -10,7 +10,7 @@ interface BenjaminGrahamProps {
 }
 
 const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData }) => {
-    if (stockData == null) return null;
+    if (stockData == null || stockData.eps == null || stockData.eps.length == 0) return null;
 
     const benjaminGrahamLabels = {
         "Earnings Per Share (EPS)": stockData.eps[stockData.eps.length - 1]?.EPS,
