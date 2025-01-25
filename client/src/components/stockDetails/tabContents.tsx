@@ -24,9 +24,9 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
         return <AnalystsRecommendation stockData={stockData} />;
       case 'eps':
         return <EPSChart stockData={stockData} />;
-      case 'ratio':
+      case 'pe':
         return <PeRatioChart stockData={stockData} />;
-      case 'graham':
+      case 'intrinsic':
         return <BenjaminGraham stockData={stockData} />;
       default:
         return null;
@@ -36,7 +36,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   return (
     <div className="stock-details__tab-content">
       <div className="stock-details__tabs">
-        {['Valuation', 'Analysis', 'EPS', 'ratio', 'Graham'].map((tab) => (
+        {['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic'].map((tab) => (
           <TabButton
             key={tab}
             label={tab}
