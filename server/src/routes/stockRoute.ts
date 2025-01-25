@@ -7,6 +7,7 @@ import {
   getHistoricalData, 
   getForecastData, 
   getEPSData, 
+  getPeRatioData,
   getAaaCorporateBondYield 
 } from '../controllers/stockController';
 
@@ -19,6 +20,7 @@ router.get('/verdict/:symbol', getVerdict);
 router.get('/historical/:symbol', getHistoricalData);
 router.get('/forecast/:symbol', getForecastData);
 router.get('/eps/:symbol', getEPSData);
+router.get('/pe-ratio/:symbol', getPeRatioData);
 router.get('/aaa-corporate-bond-yield', getAaaCorporateBondYield);
 
 export default router;

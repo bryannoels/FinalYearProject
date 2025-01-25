@@ -228,6 +228,36 @@ const getEPSData = (req: Request, res: Response): void => {
     });
 };
 
+const getPeRatioData = (req: Request, res: Response): void => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['src/stocks/getPeRatioData.py', stockSymbol]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const epsData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(epsData);
+            }
+        } catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
+        }
+    });
+
+    pythonProcess.stderr.on('data', () => {
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error retrieving EPS data' });
+        }
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<void> => {
     const pythonProcess = spawn('python3', ['src/stocks/getAaaCorporateBondYield.py']);
     pythonProcess.stdout.on('data', (data) => {
@@ -264,5 +294,6 @@ export {
     getHistoricalData,
     getForecastData,
     getEPSData,
+    getPeRatioData,
     getAaaCorporateBondYield
 };
