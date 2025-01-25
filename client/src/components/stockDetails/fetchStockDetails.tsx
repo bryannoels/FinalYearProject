@@ -60,6 +60,7 @@ export const fetchStockDetails = async (
                 peRatio: peRatioData.PE_Ratio_Data,
                 growthRate: stockInfo.growthRate,
                 bondYield: bondYieldData.aaaCorporateBondYield,
+                dividends: stockInfo.dividends
             };
             setStockData(newStockData);
             setCachedData(`stock_${symbol}`, newStockData);
