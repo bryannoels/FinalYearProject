@@ -410,7 +410,6 @@
 .stock-details__tab {
     padding: 10px 15px;
     margin-left: 10px;
-    border: none;
     background-color: var(--primary-white);
     border-radius: 5px;
     cursor: pointer;
