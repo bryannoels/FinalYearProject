@@ -15,10 +15,12 @@ const ValuationMeasures: React.FC<ValuationMeasuresProps> = ({ stockData }) => {
         "Volume": stockData?.detail?.volume,
         "Market Cap": stockData?.detail?.marketCap,
         "Total Revenue": stockData?.detail?.totalRevenue,
-        "EBITDA": stockData?.detail?.ebitda,
+        "Current Ratio": stockData?.detail?.currentRatio,
+        "PE Ratio": stockData?.detail?.peRatio,
         "Price/Book": stockData?.detail?.priceToBook,
         "Earnings Growth": stockData?.detail?.earningsGrowth,
         "Revenue Per Share": stockData?.detail?.revenuePerShare,
+        "EBITDA": stockData?.detail?.ebitda,
         "Growth Rate": stockData?.detail?.growthRate
     };
 

@@ -30,10 +30,12 @@ export const fetchStockDetails = async (
                 volume: stockInfo.volume,
                 marketCap: stockInfo.marketCap,
                 totalRevenue: stockInfo.totalRevenue,
-                ebitda: stockInfo.ebitda,
+                currentRatio: stockInfo.currentRatio,
+                peRatio: stockInfo.peRatio,
                 priceToBook: stockInfo.priceToBook,
                 earningsGrowth: stockInfo.earningsGrowth,
                 revenuePerShare: stockInfo.revenuePerShare,
+                ebitda: stockInfo.ebitda,
                 growthRate: stockInfo.growthRate,
             };
 

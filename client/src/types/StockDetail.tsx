@@ -6,9 +6,11 @@ export type StockDetail = {
     volume: string;
     marketCap: string;
     totalRevenue: string;
-    ebitda: string;
+    currentRatio: string;
+    peRatio: string;
     priceToBook: string;
     earningsGrowth: string;
     revenuePerShare: string;
+    ebitda: string;
     growthRate: string;
 };
