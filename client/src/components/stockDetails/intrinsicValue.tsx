@@ -5,11 +5,11 @@ import { BlockMath } from 'react-katex';
 
 const benjaminGrahamFormula = "V^* = \\frac{EPS \\times (8.5 + 2g) \\times 4.4}{Y}";
 
-interface BenjaminGrahamProps {
+interface IntrinsicValueProps {
     stockData: Stock | null;
 }
 
-const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData }) => {
+const IntrinsicValue: React.FC<IntrinsicValueProps> = ({ stockData }) => {
     if (stockData == null || stockData.eps == null || stockData.eps.length == 0) return null;
 
     const benjaminGrahamLabels = {
@@ -25,7 +25,7 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData }) => {
 
   return (
     <>
-      <p className="stock-details__title">Benjamin Graham Formula</p>
+      <p className="stock-details__title">Intrinsic Value (Benjamin Graham)</p>
       <div className="stock-details__benjamin-graham">
         <BlockMath math={benjaminGrahamFormula} />
         {Object.entries(benjaminGrahamLabels).map(([label, value]) => (
@@ -43,4 +43,4 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData }) => {
   );
 };
 
-export default BenjaminGraham;
+export default IntrinsicValue;

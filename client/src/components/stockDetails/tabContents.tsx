@@ -4,7 +4,7 @@ import ValuationMeasures from './valuationMeasures';
 import AnalystsRecommendation from './analystsRecommendation';
 import EPSChart from './epsChart';
 import PeRatioChart from './peRatioChart';
-import BenjaminGraham from './benjaminGraham';
+import IntrinsicValue from './intrinsicValue';
 import TabButton from './tabButton';
 
 interface TabContentsProps {
@@ -27,7 +27,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
       case 'pe':
         return <PeRatioChart stockData={stockData} />;
       case 'intrinsic':
-        return <BenjaminGraham stockData={stockData} />;
+        return <IntrinsicValue stockData={stockData} />;
       default:
         return null;
     }
