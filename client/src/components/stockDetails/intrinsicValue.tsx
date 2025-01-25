@@ -26,17 +26,17 @@ const IntrinsicValue: React.FC<IntrinsicValueProps> = ({ stockData }) => {
   return (
     <>
       <p className="stock-details__title">Intrinsic Value (Benjamin Graham)</p>
-      <div className="stock-details__benjamin-graham">
+      <div className="stock-details__pe-ratio">
         <BlockMath math={benjaminGrahamFormula} />
         {Object.entries(benjaminGrahamLabels).map(([label, value]) => (
-          <div className="stock-details__benjamin-graham__row" key={label}>
-            <div className="stock-details__benjamin-graham__label">{label}</div>
-            <div className="stock-details__benjamin-graham__value">{value}</div>
+          <div className="stock-details__pe-ratio__row" key={label}>
+            <div className="stock-details__pe-ratio__label">{label}</div>
+            <div className="stock-details__pe-ratio__value">{value}</div>
           </div>
         ))}
-        <div className="stock-details__benjamin-graham__row" key="Intrinsic Value">
-          <div className="stock-details__benjamin-graham__label bold-text">Intrinsic Value</div>
-          <div className="stock-details__benjamin-graham__value bold-text">{intrinsicValue}</div>
+        <div className="stock-details__pe-ratio__row" key="Intrinsic Value">
+          <div className="stock-details__pe-ratio__label bold-text">Intrinsic Value</div>
+          <div className="stock-details__pe-ratio__value bold-text">{intrinsicValue}</div>
         </div>
       </div>
     </>

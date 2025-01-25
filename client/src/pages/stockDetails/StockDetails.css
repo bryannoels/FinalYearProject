@@ -334,7 +334,7 @@
     margin-bottom: 20px;
 }
 
-.stock-details__benjamin-graham{
+.stock-details__pe-ratio{
     background-color: var(--primary-white);
     width: 90%;
     position: relative;
@@ -345,7 +345,7 @@
     padding-top: 20px;
 }
 
-.stock-details__benjamin-graham__row{
+.stock-details__pe-ratio__row{
     width: 80%;
     height: 60px;
     display: flex;
@@ -355,12 +355,12 @@
 }
 
 
-.stock-details__benjamin-graham__label{
+.stock-details__pe-ratio__label{
     font-size: 16px;
     margin-left: 20px;
 }
 
-.stock-details__benjamin-graham__value{
+.stock-details__pe-ratio__value{
     font-size: 16px;
     margin-right: 20px;
 }
@@ -403,11 +403,13 @@
     margin-bottom: 0px;
     background-color: var(--primary-white);
     padding-bottom: 10px;
+    width: calc(100% - 40px);
+    overflow-x: scroll;
 }
 
 .stock-details__tab {
     padding: 10px 15px;
-    margin: 0 10px;
+    margin-left: 10px;
     border: none;
     background-color: var(--primary-white);
     border-radius: 5px;
