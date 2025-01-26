@@ -6,7 +6,7 @@ import EPSChart from './epsChart';
 import PeRatioChart from './peRatioChart';
 import IntrinsicValue from './intrinsicValue';
 import TabButton from './tabButton';
-import BenjaminGraham from './benjaminGraham';
+import BenjaminGraham from './benjaminGraham/benjaminGraham';
 
 interface TabContentsProps {
   stockData: Stock | null;
