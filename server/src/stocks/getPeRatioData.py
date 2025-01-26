@@ -38,6 +38,12 @@ def get_pe_ratio_data(stock_symbol):
     else:
         return {"error": f"Failed to retrieve the webpage. Status code: {response.status_code}"}
 
+# for lambda func: LABA-python-stocks-get-pe-ratio-data
+def lambda_handler(event, context):
+    stock_symbol = event.get("stock_symbol")
+    pe_data = get_pe_ratio_data(stock_symbol)
+    return json.dumps(pe_data, indent=4)
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         stock_symbol = sys.argv[1]
