@@ -29,8 +29,10 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
         return <PeRatioChart stockData={stockData} />;
       case 'intrinsic':
         return <IntrinsicValue stockData={stockData} />;
-      case 'graham':
-        return <BenjaminGraham stockData={stockData} />;
+      case 'defensive':
+        return <BenjaminGraham stockData={stockData} investorType = "defensive"/>;
+      case 'enterprising':
+        return <BenjaminGraham stockData={stockData} investorType = "enterprising"/>;
       default:
         return null;
     }
@@ -39,7 +41,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   return (
     <div className="stock-details__tab-content">
       <div className="stock-details__tabs">
-        {['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Graham'].map((tab) => (
+        {['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Defensive', 'Enterprising'].map((tab) => (
           <TabButton
             key={tab}
             label={tab}

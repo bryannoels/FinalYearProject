@@ -6,146 +6,224 @@ import { Stock } from '../../types/Stock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 
-function isEarningsStable(epsData: Eps[]): string {
-    if (epsData == null || epsData.length === 0) return "BAD";
-    const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
-    if (sortedEpsData.length < 10) return "BAD";
-    for (let i = 0; i < 10; i++) {
-        if (sortedEpsData[i].EPS < 0) {
-            return "BAD";
-        }
+function isEarningsStable(epsData: Eps[], years: number = 10): string {
+  if (epsData == null || epsData.length === 0) return "BAD";
+  const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
+  if (sortedEpsData.length < years) return "BAD";
+  for (let i = 0; i < years; i++) {
+    if (sortedEpsData[i].EPS < 0) {
+      return "BAD";
     }
-    return "GOOD";
+  }
+  return "GOOD";
 }
 
-function isDividendStable(dividendData: Dividend[]): string {
-    if (dividendData == null || dividendData.length === 0) return "BAD";
-    const sortedDividendData = dividendData.sort((a, b) => b.Year - a.Year);
-    if (sortedDividendData.length < 20) return "BAD";
-    for (let i = 1; i < 20; i++) {
-        if (sortedDividendData[i-1].Year !== sortedDividendData[i].Year+1) {
-            return "BAD";
-        }
+function isDividendStable(dividendData: Dividend[], years: number = 20): string {
+  if (dividendData == null || dividendData.length === 0) return "BAD";
+  const sortedDividendData = dividendData.sort((a, b) => b.Year - a.Year);
+  if (sortedDividendData.length < years) return "BAD";
+  for (let i = 1; i < years; i++) {
+    if (sortedDividendData[i - 1].Year !== sortedDividendData[i].Year + 1) {
+      return "BAD";
     }
-    return "GOOD";
+  }
+  return "GOOD";
 }
 
-function hasEarningsIncreased(epsData: Eps[]): string {
-    if (!epsData || epsData.length < 10) return "BAD";
-    const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
-    const initialAverage =
-        (sortedEpsData[7].EPS + sortedEpsData[8].EPS + sortedEpsData[9].EPS) / 3;
-    const finalAverage =
-        (sortedEpsData[0].EPS + sortedEpsData[1].EPS + sortedEpsData[2].EPS) / 3;
-    return (finalAverage/initialAverage).toFixed(2);
+function hasEarningsIncreased(epsData: Eps[], investorType: string = "defensive"): string {
+  if (!epsData || epsData.length < 10) return "N/A";
+  const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
+  const lastNonZeroEps = [...sortedEpsData].reverse().find(item => item.EPS > 0)?.EPS || 0;
+  const initialAverage = (investorType === "enterprising") ? lastNonZeroEps : 
+    (sortedEpsData[7].EPS + sortedEpsData[8].EPS + sortedEpsData[9].EPS) / 3;
+  const finalAverage = (investorType === "enterprising") ? sortedEpsData[0].EPS :
+      (sortedEpsData[0].EPS + sortedEpsData[1].EPS + sortedEpsData[2].EPS) / 3;
+  return (finalAverage/initialAverage).toFixed(2);
 }
 
 function threeYearsPeRatio(peRatioData: PeRatio[]): string {
-    if (!peRatioData || peRatioData.length < 3) return "N/A";
-    const sortedEpsData = peRatioData.sort((a, b) => b.Year - a.Year);
-    return ((peRatioData[0].PE_Ratio + sortedEpsData[1].PE_Ratio + sortedEpsData[2].PE_Ratio) / 3).toFixed(2);
+  if (!peRatioData || peRatioData.length < 3) return "N/A";
+  const sortedEpsData = peRatioData.sort((a, b) => b.Year - a.Year);
+  return ((peRatioData[0].PE_Ratio + sortedEpsData[1].PE_Ratio + sortedEpsData[2].PE_Ratio) / 3).toFixed(2);
 }
 
 function priceToAssetRatio(peRatioData: PeRatio[], priceToBook: string): string {
-    if (!peRatioData || peRatioData.length == 0 || priceToBook == "Not found") return "N/A";
-    return (peRatioData.sort((a, b) => b.Year - a.Year)[0].PE_Ratio*parseFloat(priceToBook)).toFixed(2);
+  if (!peRatioData || peRatioData.length == 0 || priceToBook == "Not found") return "N/A";
+  return (peRatioData.sort((a, b) => b.Year - a.Year)[0].PE_Ratio * parseFloat(priceToBook)).toFixed(2);
 }
 
 function goodForDefensiveInvestor(stockData: Stock): string {
-    if (parseFloat(stockData.detail?.totalRevenue) < 100000000) return "BAD";
-    if (parseFloat(stockData.detail?.currentRatio) < 2) return "BAD";
-    if (isEarningsStable(stockData.eps) === "BAD") return "BAD";
-    if (isDividendStable(stockData.dividends) === "BAD") return "BAD";
-    if (hasEarningsIncreased(stockData.eps) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps)) > 4.0 / 3) return "BAD";
-    if (threeYearsPeRatio(stockData.peRatio) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio)) > 15.0) return "BAD";
-    if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 22.5) return "BAD";
-    return "GOOD";
+  if (parseFloat(stockData.detail?.totalRevenue) < 100000000) return "BAD";
+  if (parseFloat(stockData.detail?.currentRatio) < 2) return "BAD";
+  if (isEarningsStable(stockData.eps) === "BAD") return "BAD";
+  if (isDividendStable(stockData.dividends) === "BAD") return "BAD";
+  if (hasEarningsIncreased(stockData.eps) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps, "defensive")) > 4.0 / 3) return "BAD";
+  if (threeYearsPeRatio(stockData.peRatio) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio)) > 15.0) return "BAD";
+  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 22.5) return "BAD";
+  return "GOOD";
+}
+
+function goodForEnterprisingInvestor(stockData: Stock): string {
+  if (parseFloat(stockData.detail?.totalRevenue) <= 0) return "BAD";
+  if (parseFloat(stockData.detail?.currentRatio) < 1.5) return "BAD";
+  if (isEarningsStable(stockData.eps, 5) === "BAD") return "BAD";
+  if (isDividendStable(stockData.dividends, 1) === "BAD") return "BAD";
+  if (hasEarningsIncreased(stockData.eps) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps, "enterprising")) <= 1) return "BAD";
+  if (stockData.detail?.priceToBook === null || parseFloat(stockData.detail?.priceToBook) < 1.2) return "BAD";
+  return "GOOD";
 }
 
 interface BenjaminGrahamProps {
   stockData: Stock | null;
+  investorType: "defensive" | "enterprising";
 }
 
-const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData }) => {
-    if (stockData == null) return null;
+const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData, investorType }) => {
+  if (stockData == null) return null;
+
+  const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
+
+  const defensiveData = {
+    "Revenue": {
+      value: stockData.detail?.totalRevenue,
+      description: "Revenue refers to the total income generated by the company from its business activities.",
+      color: parseFloat(stockData.detail?.totalRevenue) < 100000000 ? "red" : "green",
+    },
+    "Current Ratio": {
+      value: stockData.detail?.currentRatio,
+      description: "The current ratio measures the company's ability to pay short-term obligations with its short-term assets.",
+      color: parseFloat(stockData.detail?.currentRatio) < 2 ? "red" : "green",
+    },
+    "Earnings Stability": {
+      value: isEarningsStable(stockData.eps, 10),
+      description: "This indicates whether the company's earnings have remained positive over the last 10 years.",
+      color: isEarningsStable(stockData.eps, 10) === "BAD" ? "red" : "green",
+    },
+    "Dividend Record": {
+      value: isDividendStable(stockData.dividends, 20),
+      description: "A stable dividend record means the company has consistently paid dividends over the last 20 years.",
+      color: isDividendStable(stockData.dividends, 20) === "BAD" ? "red" : "green",
+    },
+    "Earnings Growth": {
+      value: hasEarningsIncreased(stockData.eps, "defensive"),
+      description: "The average growth of earnings compared to the initial years.",
+      color:
+        hasEarningsIncreased(stockData.eps, "defensive") === "N/A" ||
+        parseFloat(hasEarningsIncreased(stockData.eps, "defensive")) > 4.0 / 3
+          ? "red"
+          : "green",
+    },
+    "Price/Earnings Ratio": {
+      value: threeYearsPeRatio(stockData.peRatio),
+      description: "The P/E ratio reflects the company's valuation based on its earnings for the last few years.",
+      color:
+        threeYearsPeRatio(stockData.peRatio) === "N/A" ||
+        parseFloat(threeYearsPeRatio(stockData.peRatio)) > 15.0
+          ? "red"
+          : "green",
+    },
+    "Price/Assets Ratio": {
+      value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook),
+      description: "This measures the ratio of the stock price to the book value of the company's assets.",
+      color:
+        priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) === "N/A" ||
+        parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 22.5
+          ? "red"
+          : "green",
+    },
+    "Investor Suitability": {
+      value: goodForDefensiveInvestor(stockData),
+      description: "An overall assessment of the stock's suitability for Defensive investors.",
+      color: goodForDefensiveInvestor(stockData) === "BAD" ? "red" : "green",
+    },
+  };
   
-    const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
+  const enterprisingData = {
+    "Revenue": {
+      value: stockData.detail?.totalRevenue,
+      description: "Revenue refers to the total income generated by the company from its business activities.",
+      color: parseFloat(stockData.detail?.totalRevenue) <= 0 ? "red" : "green",
+    },
+    "Current Ratio": {
+      value: stockData.detail?.currentRatio,
+      description: "The current ratio measures the company's ability to pay short-term obligations with its short-term assets.",
+      color: parseFloat(stockData.detail?.currentRatio) < 1.5 ? "red" : "green",
+    },
+    "Earnings Stability": {
+      value: isEarningsStable(stockData.eps, 5),
+      description: "This indicates whether the company's earnings have remained positive over the last 5 years.",
+      color: isEarningsStable(stockData.eps, 5) === "BAD" ? "red" : "green",
+    },
+    "Dividend Record": {
+      value: isDividendStable(stockData.dividends, 1),
+      description: "A stable dividend record means the company has consistently paid dividends over the last year.",
+      color: isDividendStable(stockData.dividends, 1) === "BAD" ? "red" : "green",
+    },
+    "Earnings Growth": {
+      value: hasEarningsIncreased(stockData.eps, "enterprising"),
+      description: "The average growth of earnings compared to the initial years.",
+      color:
+        hasEarningsIncreased(stockData.eps, "enterprising") === "N/A" ||
+        parseFloat(hasEarningsIncreased(stockData.eps, "enterprising")) <= 1
+          ? "red"
+          : "green",
+    },
+    "Price/Earnings Ratio": {
+      value: stockData?.peRatio?.sort((a, b) => b.Year - a.Year)[0].PE_Ratio,
+      description: "The P/E ratio reflects the company's valuation based on its earnings for the last few years.",
+      color: "green",
+    },
+    "Price/Assets Ratio": {
+      value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook),
+      description: "This measures the ratio of the stock price to the book value of the company's assets.",
+      color: (stockData.detail?.priceToBook === null || parseFloat(stockData.detail?.priceToBook) < 1.2)
+          ? "red"
+          : "green",
+    },
+    "Investor Suitability": {
+      value: goodForEnterprisingInvestor(stockData),
+      description: "An overall assessment of the stock's suitability for Enterprising investors.",
+      color: goodForEnterprisingInvestor(stockData) === "BAD" ? "red" : "green",
+    },
+  };
   
-    const data = {
-      "Revenue": {
-        value: stockData.detail?.totalRevenue,
-        description: "Revenue refers to the total income generated by the company from its business activities.",
-        color: parseFloat(stockData.detail?.totalRevenue) < 100000000 ? "red" : "green"
-      },
-      "Current Ratio": {
-        value: stockData.detail?.currentRatio,
-        description: "The current ratio measures the company's ability to pay short-term obligations with its short-term assets.",
-        color: parseFloat(stockData.detail?.currentRatio) < 2 ? "red" : "green"
-      },
-      "Earnings Stability": {
-        value: isEarningsStable(stockData.eps),
-        description: "This indicates whether the company's earnings have remained positive over the last 10 years.",
-        color: isEarningsStable(stockData.eps) === "BAD" ? "red" : "green"
-      },
-      "Dividend Record": {
-        value: isDividendStable(stockData.dividends),
-        description: "A stable dividend record means the company has consistently paid dividends over the last 20 years.",
-        color: isDividendStable(stockData.dividends) === "BAD" ? "red" : "green"
-      },
-      "Earnings Growth": {
-        value: hasEarningsIncreased(stockData.eps),
-        description: "The average growth of earnings over the last decade compared to the initial years.",
-        color: hasEarningsIncreased(stockData.eps) === "BAD" ? "red" : "green"
-      },
-      "Price/Earnings Ratio": {
-        value: threeYearsPeRatio(stockData.peRatio),
-        description: "The P/E ratio reflects the company's valuation based on its earnings for the last 3 years.",
-        color: threeYearsPeRatio(stockData.peRatio) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio)) > 15.0 ? "red" : "green"
-      },
-      "Price/Assets Ratio": {
-        value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook),
-        description: "This measures the ratio of the stock price to the book value of the company's assets.",
-        color: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 22.5 ? "red" : "green"
-      },
-      "Defensive Investor": {
-        value: goodForDefensiveInvestor(stockData),
-        description: "An overall assessment of the stock's suitability for conservative investors.",
-        color: goodForDefensiveInvestor(stockData) === "BAD" ? "red" : "green"
-      }
-    };
-  
-    const handleMouseEnter = (label: string) => setHoveredLabel(label);
-    const handleMouseLeave = () => setHoveredLabel(null);
-  
-    return (
-      <>
-        <p className="stock-details__title">Defensive Investor</p>
-        <div className="stock-details__table">
-          {Object.entries(data).map(([label, { value, description, color }]) => (
-            <div className="stock-details__table__row" key={label}>
-              <div className="stock-details__table__label">
-                {label}
-                <span
-                  className="info-icon"
-                  onMouseEnter={() => handleMouseEnter(label)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <FontAwesomeIcon icon={faCircleInfo} />
-                  {hoveredLabel === label && (
-                    <div className="benjamin-graham__tooltip">
-                      {description}
-                    </div>
-                  )}
-                </span>
-              </div>
-              <div className="stock-details__table__value" style={{ color: color }}>
-                {value}
-              </div>
+
+  const data = investorType === "defensive" ? defensiveData : enterprisingData;
+
+  const handleMouseEnter = (label: string) => setHoveredLabel(label);
+  const handleMouseLeave = () => setHoveredLabel(null);
+
+  return (
+    <>
+      <p className="stock-details__title">
+        {investorType === "defensive" ? "Defensive Investor" : "Enterprising Investor"}
+      </p>
+      <div className="stock-details__table">
+        {Object.entries(data).map(([label, { value, description, color }]) => (
+          <div className="stock-details__table__row" key={label}>
+            <div className="stock-details__table__label">
+              {label}
+              <span
+                className="info-icon"
+                onMouseEnter={() => handleMouseEnter(label)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <FontAwesomeIcon icon={faCircleInfo} />
+                {hoveredLabel === label && (
+                  <div className="benjamin-graham__tooltip">
+                    {description}
+                  </div>
+                )}
+              </span>
             </div>
-          ))}
-        </div>
-      </>
-    );
+            <div className="stock-details__table__value" style={{ color: color }}>
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 };
-  
+
 export default BenjaminGraham;
