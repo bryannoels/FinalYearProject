@@ -26,6 +26,12 @@ def get_stock_data(stock_symbol):
 
     return stock_data
 
+# for lambda func: LABA-python-get-stock-data
+def lambda_handler(event, context):
+    stock_symbol = event.get("stock_symbol")
+    stock_data = get_stock_data(stock_symbol)
+    return json.dumps(stock_data)
+
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
     stock_data = get_stock_data(stock_symbol)

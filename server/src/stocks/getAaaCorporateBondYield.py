@@ -17,6 +17,11 @@ def get_aaa_corporate_bond_yield():
     else:
         return {"error": f"Failed to retrieve data. Status code: {response.status_code}"}
 
+# for lambda func: LABA-python-stocks-get-aaa-corporate-bond-yield
+def lambda_handler(event, context):
+    aaaCorporateBondYield = get_aaa_corporate_bond_yield()
+    return json.dumps(aaaCorporateBondYield, indent=4)
+
 if __name__ == "__main__":
     aaaCorporateBondYield = get_aaa_corporate_bond_yield()
     print(json.dumps(aaaCorporateBondYield, indent=4))
