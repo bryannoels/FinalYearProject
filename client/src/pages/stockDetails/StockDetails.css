@@ -395,18 +395,19 @@
 
 .stock-details__tabs {
     position: relative;
-    margin-top: 30px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin-top: 20px;
     margin-left: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
     background-color: var(--primary-white);
     padding-bottom: 10px;
+    padding-left: 0px;
     width: calc(100% - 40px);
-    overflow-x: scroll;
+    overflow-x: auto;
 }
+
 
 .stock-details__tab {
     padding: 10px 15px;
