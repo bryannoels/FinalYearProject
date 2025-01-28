@@ -61,212 +61,34 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
     });
 };
 
-// const handleGetVerdict = async (stockSymbol: string): Promise<any> => {
-//     const url = `https://production.dataviz.cnn.io/quote/analystratings/${stockSymbol}`;
-//     const headers = {
-//         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-//         'Accept': 'application/json'
-//     };
-//     try {
-//         const response = await axios.get(url, { headers });
-//         const data = response.data[0];
+const getAnalysis = (req: Request, res: Response): void => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
 
-//         let verdict = '';
-//         const { percent_buys, percent_holds, percent_sells } = data;
-
-//         if (percent_buys >= percent_holds && percent_buys >= percent_sells) {
-//             verdict = 'buy';
-//         } else if (percent_holds >= percent_buys && percent_holds >= percent_sells) {
-//             verdict = 'hold';
-//         } else if (percent_sells >= percent_buys && percent_sells >= percent_holds) {
-//             verdict = 'sell';
-//         }
-
-//         return { ...data, verdict };
-//     } catch (error) {
-//         throw new Error('Failed to fetch analyst ratings');
-//     }
-// };
-
-// const getVerdict = async (req: Request, res: Response): Promise<void> => {
-//     const stockSymbol = req.params.symbol.toUpperCase();
-    
-//     try {
-//         const verdictData = await handleGetVerdict(stockSymbol);
-//         if (!res.headersSent) {
-//             res.json(verdictData);
-//         }
-//     } catch (error: any) {
-//         if (!res.headersSent) {
-//             res.status(500).json({ error: error.message });
-//         }
-//     }
-// };
-
-// const getAnalysis = (req: Request, res: Response): void => {
-//     const stockSymbol = req.params.symbol.toUpperCase();
-//     handleGetVerdict(stockSymbol)
-//         .then((verdictData) => {
-//             const { num_of_buys, num_of_holds, num_of_sells } = verdictData;
-//             const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
-//             pythonProcess.stdout.on('data', (data) => {
-//                 try {
-//                     const analysisData: StockAnalysis[] = JSON.parse(data.toString());
-//                     const combinedAnalysis = [
-//                         ...analysisData.filter(item => item.rating === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
-//                         ...analysisData.filter(item => item.rating === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
-//                         ...analysisData.filter(item => item.rating === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
-//                     ];
-//                     if (!res.headersSent) {
-//                         res.json(combinedAnalysis);
-//                     }
-//                 } catch (error) {
-//                     if (!res.headersSent) {
-//                         res.status(500).json({ error: 'Failed to parse response' });
-//                     }
-//                 }
-//             });
-
-//             pythonProcess.stderr.on('data', () => {
-//                 if (!res.headersSent) {
-//                     res.status(500).json({ error: 'Error retrieving analysis data' });
-//                 }
-//             });
-
-//             pythonProcess.on('close', (code) => {
-//                 if (code !== 0 && !res.headersSent) {
-//                     res.status(500).json({ error: 'Python script exited with code ' + code });
-//                 }
-//             });
-//         })
-//         .catch((error) => {
-//             if (!res.headersSent) {
-//                 res.status(500).json({ error: 'Failed to fetch verdict data' });
-//             }
-//         });
-// };
-
-// Currently in lambda func: LABA-node-stock-get-combined-analysis
-// But modified slightly for local testing
-// const AWS = require('aws-sdk');
-// const lambda = new AWS.Lambda();
-// const axios = require('axios');
-
-// exports.handler = async (event) => {
-//     console.log(event);
-    const handleGetVerdict = async (stock_symbol: string): Promise<any> => {
-        const url = `https://production.dataviz.cnn.io/quote/analystratings/${stock_symbol}`;
-        const headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-            'Accept': 'application/json'
-        };
+    pythonProcess.stdout.on('data', (data) => {
         try {
-            const response = await axios.get(url, { headers });
-            const data = response.data[0];
-
-            let verdict = '';
-            const { percent_buys, percent_holds, percent_sells } = data;
-            if (percent_buys >= percent_holds && percent_buys >= percent_sells) {
-                verdict = 'buy';
-            } else if (percent_holds >= percent_buys && percent_holds >= percent_sells) {
-                verdict = 'hold';
-            } else if (percent_sells >= percent_buys && percent_sells >= percent_holds) {
-                verdict = 'sell';
+            const analysisData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(analysisData);
             }
-
-            return { ...data, verdict };
         } catch (error) {
-            // console.error("Axios Error:", error.response ? error.response.data : error.message);
-            throw new Error('Failed to fetch analyst ratings');
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
         }
-    };
+    });
 
-    // const getVerdict = async (req, res) => {
-    //     const stock_symbol = req.params.symbol.toUpperCase();
-        
-    //     try {
-    //         const verdictData = await handleGetVerdict(stock_symbol);
-    //         if (!res.headersSent) {
-    //             res.json(verdictData);
-    //         }
-    //     } catch (error) {
-    //         if (!res.headersSent) {
-    //             res.status(500).json({ error: error.message });
-    //         }
-    //     }
-    // };
-
-    const getAnalysis = async (req: Request, res: Response): Promise<any> => {
-        try {
-            const stockSymbol = req.params.symbol.toUpperCase();
-            const { num_of_buys, num_of_holds, num_of_sells } = await handleGetVerdict(stockSymbol);
-            handleGetVerdict(stockSymbol)
-                .then((verdictData) => {
-                    const { num_of_buys, num_of_holds, num_of_sells } = verdictData;
-                    const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
-                    pythonProcess.stdout.on('data', (data) => {
-                        try {
-                            const analysisData: StockAnalysis[] = JSON.parse(data.toString());
-                            const combinedAnalysis = [
-                                ...analysisData.filter(item => item.rating === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
-                                ...analysisData.filter(item => item.rating === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
-                                ...analysisData.filter(item => item.rating === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
-                            ];
-                            if (!res.headersSent) {
-                                res.json({ combinedAnalysis, num_of_buys, num_of_holds, num_of_sells });
-                            }
-                        } catch (error) {
-                            if (!res.headersSent) {
-                                res.status(500).json({ error: 'Failed to parse response' });
-                            }
-                        }
-                    });
-                });
-    //         const params = {
-    //             FunctionName: "LABA-python-stock-get-analysis", 
-    //             Payload: JSON.stringify({ req.params.symbol.toUpperCase() })
-    //         };
-
-    //         const response = await lambda.invoke(params).promise();
-    //         const analysisData = JSON.parse(JSON.parse(response.Payload));
-    //         console.log("analysisData:", analysisData);
-            
-    //         const combinedAnalysis = [
-    //             ...analysisData.filter(item => item.rating === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: "buy" })),
-    //             ...analysisData.filter(item => item.rating === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: "hold" })),
-    //             ...analysisData.filter(item => item.rating === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: "sell" })),
-    //         ];
-
-    //         return { 
-    //             combinedAnalysis,
-    //             num_of_buys,
-    //             num_of_holds,
-    //             num_of_sells,
-    //         };
-    //     } catch (error) {
-    //         console.error("Error in getAnalysis:", error);
-    //         throw new Error("Failed to process analysis data");
-    //     }
-    //     };
-
-    // try {
-    //     const { stock_symbol } = event
-        
-    //     const analysisResult = await getAnalysis(stock_symbol);
-    //     console.log(analysisResult);
-    //     return {
-    //         statusCode: 200,
-    //         body: JSON.stringify(analysisResult)
-    //     };
-    } catch (error) {
+    pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Failed to fetch verdict data' });
+            res.status(500).json({ error: 'Error retrieving historical data' });
         }
-        // return {
-        //     statusCode: 500,
-        //     body: JSON.stringify({ error: error.message })
-        // };
-    }
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
 };
 
 
@@ -413,7 +235,6 @@ const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<vo
 export {
     getStockData,
     getTop10MostActiveStocks,
-    // getVerdict,
     getAnalysis,
     getHistoricalData,
     getForecastData,

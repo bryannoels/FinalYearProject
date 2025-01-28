@@ -3,7 +3,6 @@ import {
   getStockData, 
   getTop10MostActiveStocks, 
   getAnalysis, 
-  getVerdict, 
   getHistoricalData, 
   getForecastData, 
   getEPSData, 
@@ -16,7 +15,6 @@ const router = express.Router();
 router.get('/info/:symbol', getStockData);
 router.get('/most-active', getTop10MostActiveStocks);
 router.get('/analysis/:symbol', getAnalysis);
-router.get('/verdict/:symbol', getVerdict);
 router.get('/historical/:symbol', getHistoricalData);
 router.get('/forecast/:symbol', getForecastData);
 router.get('/eps/:symbol', getEPSData);
