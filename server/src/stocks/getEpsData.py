@@ -38,10 +38,8 @@ def get_eps_data(stock_symbol):
 # for lambda func: LABA-python-stocks-get-eps-data
 def lambda_handler(event, context):
     stock_symbol = event.get("stock_symbol")
-    range_param = event.get("range_param") if event.get("range_param") else '1d'
-
-    stock_data = get_historical_data(stock_symbol, range_param)
-    return json.dumps(stock_data)
+    eps_data = get_eps_data(stock_symbol)
+    return json.dumps(eps_data, indent=4)
 
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
