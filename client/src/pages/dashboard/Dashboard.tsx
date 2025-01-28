@@ -70,9 +70,9 @@ function Dashboard() {
   const fetchStocks = async () => {
     setLoading(true);
     try {
-        const response = await fetch('http://localhost:8000/api/stocks/most-active');
+        const response = await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-most-active-stocks');
         const data = await response.json();
-        const formattedData: StockInfo[] = data.map(createStockObject);
+        const formattedData: StockInfo[] = JSON.parse(data).map(createStockObject);
         setMarketStockList(formattedData);
     } catch (error) {
         console.error('Error fetching stock data:', error);
@@ -105,19 +105,6 @@ function Dashboard() {
   const handleItemClick = (symbol: string) => {
     navigate(`/stock/${symbol}`);
   };
-
-  const renderMarketStocks = () =>
-    loading ? (
-      <LoadingSpinner />
-    ) : (
-      filteredStocks.map((stock: StockInfo) => (
-        <DashboardItem 
-          key={stock.symbol} 
-          {...stock}
-          onClick={() => handleItemClick(stock.symbol)}
-        />
-      ))
-    );
 
   return (
     <div className="dashboard">
@@ -169,7 +156,17 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      {renderMarketStocks()}
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        filteredStocks.map((stock: StockInfo) => (
+          <DashboardItem 
+            key={stock.symbol} 
+            {...stock}
+            onClick={() => handleItemClick(stock.symbol)}
+          />
+        ))
+      )}
     </div>
   );
 }

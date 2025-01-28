@@ -13,7 +13,7 @@ export const fetchStockDetails = async (
         if (cachedStock) {
             setStockData(cachedStock);
         } else {
-            const stockInfo = await fetchData(`http://localhost:8000/api/stocks/info/${symbol}`);
+            const stockInfo = await fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-stock-data/${symbol}`);
             const currentStock = {
                 name: stockInfo.companyName,
                 symbol,
@@ -40,13 +40,20 @@ export const fetchStockDetails = async (
             };
 
             const [priceData, verdictData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
-                fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`),
+                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-historical-data/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/verdict/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`),
                 fetchData(`http://localhost:8000/api/stocks/pe-ratio/${symbol}`),
-                fetchData(`http://localhost:8000/api/stocks/aaa-corporate-bond-yield`),
+                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-aaa-corp-bond-yield`),
+                // fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`),
+                // fetchData(`http://localhost:8000/api/stocks/verdict/${symbol}`),
+                // fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`),
+                // fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`),
+                // fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`),
+                // fetchData(`http://localhost:8000/api/stocks/pe-ratio/${symbol}`),
+                // fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-aaa-corp-bond-yield`),
             ]);
 
             const newStockData: Stock = {
