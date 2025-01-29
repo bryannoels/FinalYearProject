@@ -75,7 +75,8 @@ function Dashboard() {
         const formattedData: StockInfo[] = JSON.parse(data).map(createStockObject);
         setMarketStockList(formattedData);
     } catch (error) {
-        console.error('Error fetching stock data:', error);
+      setMessage('Error fetching stocks: ' + error);
+      setShowMessage(true);
     } finally {
         setLoading(false);
     }
