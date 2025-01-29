@@ -7,7 +7,7 @@ interface StockRatingsProps {
 }
 
 const StockRatings: React.FC<StockRatingsProps> = ({ stockData }) => {
-    if (stockData == null || stockData.analysis == null || stockData.analysis.ratings.length === 0) return null;
+    if (stockData == null || stockData.analysis == null || stockData.analysis.ratings == null || stockData.analysis.ratings.length === 0) return null;
     
     return (
         <>
