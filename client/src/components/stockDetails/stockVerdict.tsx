@@ -6,24 +6,24 @@ interface StockVerdictProps {
 }
 
 const StockVerdict: React.FC<StockVerdictProps> = ({ stockData }) => {
-    if (stockData == null || stockData.verdict == null) return null;
+    if (stockData == null || stockData.analysis == null) return null;
 
     return (
         <div className="stock-details__analysis">
             <div className="stock-detailss__analysis__left">
-                <p className={`stock-detailss__analysis__left__text ${stockData.verdict.verdict}`}>{stockData.verdict.verdict.toUpperCase()}</p>
+                <p className={`stock-detailss__analysis__left__text ${stockData.analysis.number_of_buys}`}>{stockData.analysis.number_of_buys}</p>
             </div>
             <div className="stock-detailss__analysis__right">
                 <div className="stock-detailss__analysis__buys">
-                    <div className="stock-detailss__analysis__value">{stockData.verdict.num_of_buys}</div>
+                    <div className="stock-detailss__analysis__value">{stockData.analysis.number_of_buys}</div>
                     <div className="stock-detailss__analysis__text">buys</div>
                 </div>
                 <div className="stock-detailss__analysis__holds">
-                    <div className="stock-detailss__analysis__value">{stockData.verdict.num_of_holds}</div>
+                    <div className="stock-detailss__analysis__value">{stockData.analysis.number_of_holds}</div>
                     <div className="stock-detailss__analysis__text">holds</div>
                 </div>
                 <div className="stock-detailss__analysis__sells">
-                    <div className="stock-detailss__analysis__value">{stockData.verdict.num_of_sells}</div>
+                    <div className="stock-detailss__analysis__value">{stockData.analysis.number_of_sells}</div>
                     <div className="stock-detailss__analysis__text">sells</div>
                 </div>
             </div>
