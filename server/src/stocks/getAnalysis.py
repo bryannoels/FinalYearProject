@@ -57,11 +57,14 @@ def process_stock_analysis(stock_symbol):
                 "rating": rating
             })
 
+    verdict = max(counts, key=counts.get)
+    
     return {
-        "analysis": analysis_data,
+        "verdict": verdict,
         "number_of_buy": counts["buy"],
         "number_of_hold": counts["hold"],
-        "number_of_sell": counts["sell"]
+        "number_of_sell": counts["sell"],
+        "ratings": analysis_data
     }
 
 def lambda_handler(event, context):
