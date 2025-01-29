@@ -59,7 +59,6 @@ export const fetchStockDetails = async (
                 bondYield: bondYieldData.aaaCorporateBondYield,
                 dividends: stockInfo.dividends
             };
-            console.log(newStockData);
             setStockData(newStockData);
             setCachedData(`stock_${symbol}`, newStockData);
         }
