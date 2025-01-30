@@ -13,9 +13,36 @@ interface TabContentsProps {
 }
 
 const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
-  if (!stockData) return null;
+  if (stockData == null) return null;
   
   const [activeTab, setActiveTab] = useState<string>('valuation');
+
+  const isTabValid = (tab: string) => {
+    switch (tab.toLowerCase()) {
+      case 'valuation':
+        return stockData.detail !== null;
+      case 'analysis':
+        return stockData.analysis !== null || stockData.forecast !== null;
+      case 'eps':
+        return stockData.eps && stockData.eps.length > 0;
+      case 'pe':
+        return stockData.peRatio && stockData.peRatio.length > 0;
+      case 'intrinsic':
+        return (
+          stockData.eps &&
+          stockData.eps.length > 0 &&
+          !isNaN(Number(stockData.growthRate)) &&
+          !isNaN(Number(stockData.bondYield))
+        );
+      case 'defensive':
+      case 'enterprising':
+        return stockData !== null;
+      default:
+        return false;
+    }
+  };
+
+  const validTabs = ['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Defensive', 'Enterprising'].filter(isTabValid);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -30,9 +57,9 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
       case 'intrinsic':
         return <IntrinsicValue stockData={stockData} />;
       case 'defensive':
-        return <BenjaminGraham stockData={stockData} investorType = "defensive"/>;
+        return <BenjaminGraham stockData={stockData} investorType="defensive" />;
       case 'enterprising':
-        return <BenjaminGraham stockData={stockData} investorType = "enterprising"/>;
+        return <BenjaminGraham stockData={stockData} investorType="enterprising" />;
       default:
         return null;
     }
@@ -41,13 +68,8 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   return (
     <div className="stock-details__tab-content">
       <div className="stock-details__tabs">
-        {['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Defensive', 'Enterprising'].map((tab) => (
-          <TabButton
-            key={tab}
-            label={tab}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+        {validTabs.map((tab) => (
+          <TabButton key={tab} label={tab} activeTab={activeTab} setActiveTab={setActiveTab} />
         ))}
       </div>
       <hr className="stock-details__analysts__divider" />
