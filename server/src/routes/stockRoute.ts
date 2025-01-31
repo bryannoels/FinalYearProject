@@ -7,7 +7,8 @@ import {
   getForecastData, 
   getEPSData, 
   getPeRatioData,
-  getAaaCorporateBondYield 
+  getAaaCorporateBondYield,
+  searchStock
 } from '../controllers/stockController';
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get('/forecast/:symbol', getForecastData);
 router.get('/eps/:symbol', getEPSData);
 router.get('/pe-ratio/:symbol', getPeRatioData);
 router.get('/aaa-corporate-bond-yield', getAaaCorporateBondYield);
+router.get('/search/:query', searchStock);
 
 export default router;
