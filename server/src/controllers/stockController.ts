@@ -232,6 +232,36 @@ const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<vo
     });
 };
 
+const searchStock = (req: Request, res: Response): void => {
+    const query = req.params.query.toUpperCase();
+    const pythonProcess = spawn('python3', ['src/stocks/searchStock.py', query]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const stockData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(stockData);
+            }
+        } catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
+        }
+    });
+
+    pythonProcess.stderr.on('data', () => {
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error retrieving historical data' });
+        }
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 export {
     getStockData,
     getTop10MostActiveStocks,
@@ -240,5 +270,6 @@ export {
     getForecastData,
     getEPSData,
     getPeRatioData,
-    getAaaCorporateBondYield
+    getAaaCorporateBondYield,
+    searchStock
 };
