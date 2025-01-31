@@ -7,6 +7,22 @@
     width: calc(100vw - 40px);
 }
 
+.dashboard .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .dashboard .overlay.show {
+    opacity: 1;
+}
+
 .dashboard__header {
     display: flex;
     flex-direction: column;
@@ -51,6 +67,7 @@
     position: relative;
     display: flex;
     align-items: center;
+    z-index: 7;
 }
 
 .dashboard__search-icon {
@@ -146,3 +163,60 @@
 .stock-down{
     color: var(--primary-red);
 }
+
+.search-suggestions {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 200%;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 10;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.search-suggestions.open {
+    max-height: 500px;
+    opacity: 1;
+}
+
+  .search-suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s ease;
+  }
+  
+  
+  .search-suggestion-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .search-suggestion-item p {
+    margin: 0;
+  }
+
+  .search-suggestion-item.not-found {
+    padding: 10px;
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    background-color: #f9f9f9;
+  }
+
+  .dashboard__dropdown-item__ticker {
+    font-weight: bold;
+    font-size: 16px;
+    color: #213547;
+}
+
+.dashboard__dropdown-item__company-name {
+    font-size: 14px;
+    color: #555;
+}
+  
