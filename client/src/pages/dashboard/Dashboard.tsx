@@ -103,7 +103,6 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // Handle opening or closing dropdown based on suggestions
     if (suggestions.length > 0) {
       setShowDropdown(true);
     } else {
