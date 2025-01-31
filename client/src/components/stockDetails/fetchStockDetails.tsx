@@ -40,25 +40,27 @@ export const fetchStockDetails = async (
             };
 
             const [priceData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
-                fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`),
-                fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`),
-                fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`),
-                fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`),
-                fetchData(`http://localhost:8000/api/stocks/pe-ratio/${symbol}`),
-                fetchData(`http://localhost:8000/api/stocks/aaa-corporate-bond-yield`),
+                fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`).catch(() => null),
+                fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`).catch(() => null),
+                fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`).catch(() => null),
+                fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`).catch(() => null),
+                fetchData(`http://localhost:8000/api/stocks/pe-ratio/${symbol}`).catch(() => null),
+                fetchData(`http://localhost:8000/api/stocks/aaa-corporate-bond-yield`).catch(() => null),
             ]);
+
             const newStockData: Stock = {
                 info: currentStock,
                 detail: currentStockDetail,
-                price: priceData.data,
-                forecast: forecastData,
-                analysis: analysisData,
-                eps: epsData.EPS_Data,
-                peRatio: peRatioData.PE_Ratio_Data,
+                price: priceData ? priceData.data : null,
+                forecast: forecastData ? forecastData : null,
+                analysis: analysisData ? analysisData : null,
+                eps: epsData ? epsData.EPS_Data : null,
+                peRatio: peRatioData ? peRatioData.PE_Ratio_Data : null,
                 growthRate: stockInfo.growthRate,
-                bondYield: bondYieldData.aaaCorporateBondYield,
+                bondYield: bondYieldData ? bondYieldData.aaaCorporateBondYield : null,
                 dividends: stockInfo.dividends
             };
+
             setStockData(newStockData);
             setCachedData(`stock_${symbol}`, newStockData);
         }
