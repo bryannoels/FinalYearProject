@@ -123,7 +123,6 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
             const stockSymbol = req.params.symbol.toUpperCase();
             const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
             pythonProcess.stdout.on('data', (data) => {
-                console.log(data.toString());
                 try {
                     const analysisData: StockAnalysis = JSON.parse(data.toString());
                     const verdict = analysisData.verdict;
@@ -171,7 +170,6 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
     //     const { stock_symbol } = event
         
     //     const analysisResult = await getAnalysis(stock_symbol);
-    //     console.log(analysisResult);
     //     return {
     //         statusCode: 200,
     //         body: JSON.stringify(analysisResult)
