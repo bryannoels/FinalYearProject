@@ -23,6 +23,10 @@ def get_stock_data(stock_symbol):
     stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', None)
     stock_data['ebitda'] = stock_info.get('ebitda', None)
     stock_data['growthRate'] = growth_rate.get('stock', {}).get('+1y', None)
+    stock_data['EPS'] = stock_info.get('trailingEps', None)
+    stock_data['totalDebt'] = stock_info.get('totalDebt', None)
+    stock_data['debtToEquity'] = stock_info.get('debtToEquity', None)
+    
     if isinstance(stock_data['growthRate'], float) and math.isnan(stock_data['growthRate']):
         stock_data['growthRate'] = None
     
