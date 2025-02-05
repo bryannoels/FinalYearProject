@@ -22,7 +22,7 @@ const getStockData = (req: Request, res: Response): void => {
 
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving stock data' });
         }
     });
 
@@ -52,7 +52,7 @@ const getStockProfile = (req: Request, res: Response): void => {
 
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving profile data' });
         }
     });
 
@@ -110,7 +110,7 @@ const getAnalysis = (req: Request, res: Response): void => {
 
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving analysis data' });
         }
     });
 
@@ -281,7 +281,7 @@ const searchStock = (req: Request, res: Response): void => {
 
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving the search result' });
         }
     });
 
