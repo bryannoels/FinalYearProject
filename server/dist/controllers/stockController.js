@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchStock = exports.getAaaCorporateBondYield = exports.getPeRatioData = exports.getEPSData = exports.getForecastData = exports.getHistoricalData = exports.getAnalysis = exports.getTop10MostActiveStocks = exports.getStockData = void 0;
+exports.searchStock = exports.getAaaCorporateBondYield = exports.getPeRatioData = exports.getEPSData = exports.getForecastData = exports.getHistoricalData = exports.getAnalysis = exports.getTop10MostActiveStocks = exports.getStockProfile = exports.getStockData = void 0;
 const child_process_1 = require("child_process");
 const axios_1 = __importDefault(require("axios"));
 const getStockData = (req, res) => {
@@ -33,7 +33,7 @@ const getStockData = (req, res) => {
     });
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving stock data' });
         }
     });
     pythonProcess.on('close', (code) => {
@@ -43,6 +43,34 @@ const getStockData = (req, res) => {
     });
 };
 exports.getStockData = getStockData;
+const getStockProfile = (req, res) => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/stocks/getStockProfile.py', stockSymbol]);
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const stockData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(stockData);
+            }
+        }
+        catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
+        }
+    });
+    pythonProcess.stderr.on('data', () => {
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error retrieving profile data' });
+        }
+    });
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+exports.getStockProfile = getStockProfile;
 const getTop10MostActiveStocks = (req, res) => {
     const pythonProcess = (0, child_process_1.spawn)('python3', ['src/stocks/getTopStock.py']);
     pythonProcess.stdout.on('data', (data) => {
@@ -88,7 +116,7 @@ const getAnalysis = (req, res) => {
     });
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving analysis data' });
         }
     });
     pythonProcess.on('close', (code) => {
@@ -248,7 +276,7 @@ const searchStock = (req, res) => {
     });
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving the search result' });
         }
     });
     pythonProcess.on('close', (code) => {
