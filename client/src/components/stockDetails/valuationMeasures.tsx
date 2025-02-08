@@ -31,7 +31,7 @@ const ValuationMeasures: React.FC<ValuationMeasuresProps> = ({ stockData }) => {
         <>
             <p className="stock-details__title">Valuation Measures</p>
             <div className="stock-details__table">
-                {Object.entries(labels).map(([label, value]) => (
+                {Object.entries(labels).filter(([_, value]) => value != null).map(([label, value]) => (
                     <div className="stock-details__table__row" key={label}>
                         <div className="stock-details__table__label">{label}</div>
                         <div className="stock-details__table__value">{value}</div>
