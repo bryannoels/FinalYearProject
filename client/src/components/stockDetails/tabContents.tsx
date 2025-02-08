@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Stock } from '../../types/Stock';
+import StockProfile from './stockProfile';
 import ValuationMeasures from './valuationMeasures';
 import AnalystsRecommendation from './analystsRecommendation';
 import EPSChart from './epsChart';
@@ -15,10 +16,12 @@ interface TabContentsProps {
 const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
   if (stockData == null) return null;
   
-  const [activeTab, setActiveTab] = useState<string>('valuation');
+  const [activeTab, setActiveTab] = useState<string>('profile');
 
   const isTabValid = (tab: string) => {
     switch (tab.toLowerCase()) {
+      case 'profile':
+        return stockData.profile !== null;
       case 'valuation':
         return stockData.detail !== null;
       case 'analysis':
@@ -41,10 +44,12 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
     }
   };
 
-  const validTabs = ['Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Defensive', 'Enterprising'].filter(isTabValid);
+  const validTabs = ['Profile', 'Valuation', 'Analysis', 'EPS', 'PE', 'Intrinsic', 'Defensive', 'Enterprising'].filter(isTabValid);
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'profile':
+        return <StockProfile stockData={stockData} />;
       case 'valuation':
         return <ValuationMeasures stockData={stockData} />;
       case 'analysis':

@@ -110,6 +110,22 @@
     font-weight: bold;
 }
 
+.stock-profile__description-title{
+    width: 80%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+  }
+
+
+.stock-profile__description{
+    width: 80%;
+    font-size: 14px;
+    text-align: justify;
+    margin-top: 0px;
+  }
+
 .stock-details__recommendation{
     background-color: var(--primary-white);
     border-radius: 10px;
@@ -496,4 +512,6 @@
     border-style: solid;
     border-color: transparent transparent #333 transparent;
   }
+
+
   

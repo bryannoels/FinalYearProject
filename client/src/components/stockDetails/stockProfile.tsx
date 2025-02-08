@@ -10,7 +10,6 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
     if (stockData == null || stockData.profile == null) return null;
 
     const labels = {
-        "Company Name": stockData?.profile?.companyName,
         "Sector": stockData?.profile?.sector,
         "Industry": stockData?.profile?.industry,
         "Country": stockData?.profile?.country,
@@ -20,7 +19,6 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
         "Website": stockData?.profile?.website,
         "CEO": stockData?.profile?.CEO,
         "Number of Employees": stockData?.profile?.fullTimeEmployees,
-        "Description": stockData?.profile?.longBusinessSummary
     };
 
     return (
@@ -34,6 +32,8 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
                     </div>
                 ))}
             </div>
+            <p className="stock-profile__description-title">{stockData?.profile.companyName}</p>
+            <p className="stock-profile__description">{stockData?.profile.longBusinessSummary}</p>
         </>
     );
 };
