@@ -9,8 +9,11 @@ export type StockDetail = {
     currentRatio: string;
     peRatio: string;
     priceToBook: string;
+    eps: string;
     earningsGrowth: string;
     revenuePerShare: string;
     ebitda: string;
+    totalDebt: string;
+    debtToEquity: string;
     growthRate: string;
 };
