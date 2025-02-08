@@ -11,7 +11,7 @@ const StockVerdict: React.FC<StockVerdictProps> = ({ stockData }) => {
     return (
         <div className="stock-details__analysis">
             <div className="stock-detailss__analysis__left">
-                <p className={`stock-detailss__analysis__left__text ${stockData.analysis.verdict}`}>{stockData.analysis.verdict}</p>
+                <p className={`stock-detailss__analysis__left__text ${stockData.analysis.verdict}`}>{stockData.analysis.verdict.toUpperCase()}</p>
             </div>
             <div className="stock-detailss__analysis__right">
                 <div className="stock-detailss__analysis__buys">
