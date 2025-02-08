@@ -1,4 +1,4 @@
-import { fetchData, getCachedData, setCachedData } from '../../components/stockDetails/utils';
+import { fetchData, getCachedData, setCachedData } from '../utils/utils';
 import { Stock } from '../../types/Stock';
 
 export const fetchStockDetails = async (
