@@ -26,7 +26,6 @@ function Navbar() {
           <p className = "navbar__company_name">LABA</p>
         </Link>
         <div className = "navbar__menu">
-          <FontAwesomeIcon icon={faSearch} aria-hidden="true" className="navbar__search"/>
           {isAuthenticated ? (
             <>
               <FontAwesomeIcon icon={faCircleUser} className="navbar__user" onClick={expandUserMenu}/>
