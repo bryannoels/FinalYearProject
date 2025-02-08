@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import labaLogo from '../../assets/LabaLogo.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import './Navbar.css'
 
