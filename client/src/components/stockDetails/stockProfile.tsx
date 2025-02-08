@@ -16,9 +16,8 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
         "City":  [stockData?.profile?.city, stockData?.profile?.state].filter(Boolean).join(", "),
         "Address": stockData?.profile?.address,
         "Phone": stockData?.profile?.phone,
-        "Website": stockData?.profile?.website,
         "CEO": stockData?.profile?.CEO,
-        "Number of Employees": stockData?.profile?.fullTimeEmployees,
+        "No. of Employees": stockData?.profile?.fullTimeEmployees,
     };
 
     return (
@@ -31,7 +30,14 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
                         <div className="stock-details__table__value">{value}</div>
                     </div>
                 ))}
+                <div className="stock-details__table__row" key="Website">
+                    <div className="stock-details__table__label">Website</div>
+                    <a href={stockData?.profile.website} target="_blank">
+                        <div className="stock-details__table__value">{stockData?.profile.website.replace(/^(https:\/\/)/,"")}</div>
+                    </a>
+                </div>
             </div>
+
             <p className="stock-profile__description-title">{stockData?.profile.companyName}</p>
             <p className="stock-profile__description">{stockData?.profile.longBusinessSummary}</p>
         </>
