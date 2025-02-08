@@ -10,18 +10,17 @@ interface IntrinsicValueProps {
 }
 
 const IntrinsicValue: React.FC<IntrinsicValueProps> = ({ stockData }) => {
-    if (stockData == null || stockData.eps == null || stockData.eps.length == 0) return null;
-    const sortedEps = stockData.eps.sort((a, b) => a.Year - b.Year);
+    if (stockData == null) return null;
 
     const benjaminGrahamLabels = {
-        "Earnings Per Share (EPS)": sortedEps[sortedEps.length - 1]?.EPS,
+        "Earnings Per Share (EPS)": stockData.detail.eps,
         "Growth Rate (g)": stockData.growthRate,
         "AAA Corporate Bond Yield (Y)": stockData.bondYield,
     };
 
     const intrinsicValue = (
-        (stockData.eps[stockData.eps.length - 1]?.EPS * (8.5 + 2 * parseFloat(stockData.growthRate)) * 4.4) / 
-        parseFloat(stockData.bondYield)
+        (parseFloat(stockData.detail.eps) * (8.5 + 2 * parseFloat(stockData.growthRate)) * 4.4)
+         / parseFloat(stockData.bondYield)
     ).toFixed(2);
 
   return (
