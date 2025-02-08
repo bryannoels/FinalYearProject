@@ -94,7 +94,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
     "Price/Assets Ratio": {
       value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook),
       description: "This measures the ratio of the stock price to the book value of the company's assets.",
-      color: (stockData.detail?.priceToBook === null || parseFloat(stockData.detail?.priceToBook) < 1.2)
+      color: (stockData.detail?.priceToBook === null || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 18)
           ? "red"
           : "green",
     },
