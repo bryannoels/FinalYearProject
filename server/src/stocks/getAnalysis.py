@@ -67,6 +67,7 @@ def process_stock_analysis(stock_symbol):
         "ratings": analysis_data
     }
 
+# for lambda func: LABA-python-stock-get-analysis
 def lambda_handler(event, context):
     stock_symbol = event.get("stock_symbol")
 
@@ -82,18 +83,6 @@ def lambda_handler(event, context):
         "body": json.dumps(stock_data)
     }
 
-# for lambda func: LABA-python-stock-get-analysis
-def lambda_handler(event, context):
-    stock_symbol = event.get("stock_symbol")
-    
-    if not stock_symbol:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Stock symbol is required"})
-        }
-
-    stock_data = get_recommendation(stock_symbol)
-    return json.dumps(stock_data)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

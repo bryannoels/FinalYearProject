@@ -67,7 +67,7 @@ function Dashboard() {
   const searchStocks = async (query: string) => {
     if (query.length >= 1) {
       try {
-        const response = await fetch(`http://localhost:8000/api/stocks/search/${query}`);
+        const response = await fetch(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/search/${query}`);
         const result = await response.json();
         setSuggestions(result);
       } catch (error) {

@@ -8,6 +8,7 @@ interface StockProfileProps {
 
 const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
     if (stockData == null || stockData.profile == null) return null;
+    //stockData.profile = typeof stockData.profile === 'string' ? JSON.parse(stockData.profile) : stockData.profile;
 
     const labels = {
         "Sector": stockData?.profile?.sector,
