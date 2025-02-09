@@ -23,6 +23,11 @@ def search_stock(query):
 
     return stock_data
 
+def lambda_handler(event, context):
+    query = event.get("query")
+    stock_data = search_stock(query)
+    return stock_data
+
 if __name__ == "__main__":
     query = sys.argv[1]
     stock_data = search_stock(query)

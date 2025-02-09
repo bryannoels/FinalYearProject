@@ -52,9 +52,10 @@ function Dashboard() {
   const fetchStocks = async () => {
     setLoading(true);
     try {
-      const data = await fetchStockData();
-      const formattedData: StockInfo[] = data.map(createStockObject);
-      setMarketStockList(formattedData);
+        const response = await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-most-active-stocks');
+        const data = await response.json();
+        const formattedData: StockInfo[] = JSON.parse(data).map(createStockObject);
+        setMarketStockList(formattedData);
     } catch (error) {
       setMessage('Error fetching stocks: ' + error);
       setShowMessage(true);
@@ -66,7 +67,7 @@ function Dashboard() {
   const searchStocks = async (query: string) => {
     if (query.length >= 1) {
       try {
-        const response = await fetch(`http://localhost:8000/api/stocks/search/${query}`);
+        const response = await fetch(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/search/${query}`);
         const result = await response.json();
         setSuggestions(result);
       } catch (error) {
