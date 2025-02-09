@@ -23,23 +23,6 @@ export const fetchStockDetails = async (
                 percentChange: ((parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose)) / parseFloat(stockInfo.previousClose)) * 100,
             };
 
-            const currentStockDetail = {
-                companyName: stockInfo.companyName,
-                currentPrice: stockInfo.currentPrice,
-                openingPrice: stockInfo.openingPrice,
-                previousClose: stockInfo.previousClose,
-                volume: stockInfo.volume,
-                marketCap: stockInfo.marketCap,
-                totalRevenue: stockInfo.totalRevenue,
-                currentRatio: stockInfo.currentRatio,
-                peRatio: stockInfo.peRatio,
-                priceToBook: stockInfo.priceToBook,
-                earningsGrowth: stockInfo.earningsGrowth,
-                revenuePerShare: stockInfo.revenuePerShare,
-                ebitda: stockInfo.ebitda,
-                growthRate: stockInfo.growthRate,
-            };
-
             const [priceData, profileData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
                 fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-historical-data/${symbol}`),
                 fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-profile/${symbol}`),

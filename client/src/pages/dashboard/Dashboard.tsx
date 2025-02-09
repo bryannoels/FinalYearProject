@@ -6,7 +6,7 @@ import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import './Dashboard.css';
 import { AuthContext } from '../../context/AuthContext';
 import { createStockObject } from './utils';
-import { fetchPortfolioData, fetchStockData } from './fetchData';
+import { fetchPortfolioData } from './fetchData';
 import Dropdown from './Dropdown';
 
 function Dashboard() {
