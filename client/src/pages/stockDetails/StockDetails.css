@@ -6,6 +6,7 @@
     min-height: 100vh;
     background-color: var(--light-gray);
     padding-bottom: 30px;
+    width: 100vw;
 }
 
 .stock-details__top{
@@ -107,7 +108,24 @@
     font-size: 16px;
     margin-right: 20px;
     font-weight: bold;
+    color: black;
 }
+
+.stock-profile__description-title{
+    width: 80%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+  }
+
+
+.stock-profile__description{
+    width: 80%;
+    font-size: 14px;
+    text-align: justify;
+    margin-top: 0px;
+  }
 
 .stock-details__recommendation{
     background-color: var(--primary-white);
@@ -394,18 +412,19 @@
 
 .stock-details__tabs {
     position: relative;
-    margin-top: 30px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin-top: 20px;
     margin-left: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
     background-color: var(--primary-white);
     padding-bottom: 10px;
+    padding-left: 0px;
     width: calc(100% - 40px);
-    overflow-x: scroll;
+    overflow-x: auto;
 }
+
 
 .stock-details__tab {
     padding: 10px 15px;
@@ -441,3 +460,59 @@
     padding-bottom: 20px;
 }
 
+.stock-details__table {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .stock-details__table__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .stock-details__table__label {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  
+  .info-icon {
+    position: relative;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+  
+  .benjamin-graham__tooltip {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    width: 200px;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    text-align: center;
+    z-index: 10;
+  }
+  
+  .benjamin-graham__tooltip::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent;
+  }
+
+
+  

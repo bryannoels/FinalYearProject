@@ -1,4 +1,4 @@
-import { fetchData, getCachedData, setCachedData } from '../../components/stockDetails/utils';
+import { fetchData, getCachedData, setCachedData } from '../utils/utils';
 import { Stock } from '../../types/Stock';
 
 export const fetchStockDetails = async (
@@ -58,17 +58,18 @@ export const fetchStockDetails = async (
 
             const newStockData: Stock = {
                 info: currentStock,
-                detail: currentStockDetail,
-                price: priceData.data,
-                verdict: verdictData,
-                forecast: forecastData,
-                ratings: analysisData,
-                eps: epsData.EPS_Data,
-                peRatio: peRatioData.PE_Ratio_Data,
+                detail: stockInfo,
+                price: priceData ? priceData.data : null,
+                profile: profileData ? profileData : null,
+                forecast: forecastData ? forecastData : null,
+                analysis: analysisData ? analysisData : null,
+                eps: epsData ? epsData.EPS_Data : null,
+                peRatio: peRatioData ? peRatioData.PE_Ratio_Data : null,
                 growthRate: stockInfo.growthRate,
-                bondYield: bondYieldData.aaaCorporateBondYield,
+                bondYield: bondYieldData ? bondYieldData.aaaCorporateBondYield : null,
                 dividends: stockInfo.dividends
             };
+            console.log(newStockData.detail);
             setStockData(newStockData);
             setCachedData(`stock_${symbol}`, newStockData);
         }

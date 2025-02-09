@@ -1,6 +1,7 @@
 import yfinance as yf
 import sys
 import json
+import math
 
 def get_stock_data(stock_symbol):
     stock = yf.Ticker(stock_symbol)
@@ -8,21 +9,30 @@ def get_stock_data(stock_symbol):
     stock_info = stock.info
     growth_rate = stock.growth_estimates
     
-    stock_data['companyName'] = stock_info.get('longName', "Not found")
-    stock_data['currentPrice'] = stock_info.get('currentPrice', "Not found")
-    stock_data['openingPrice'] = stock_info.get('regularMarketOpen', "Not found")
-    stock_data['previousClose'] = stock_info.get('regularMarketPreviousClose', "Not found")
-    stock_data['volume'] = stock_info.get('regularMarketVolume', "Not found")
-    stock_data['marketCap'] = stock_info.get('marketCap', "Not found")
-    stock_data['totalRevenue'] = stock_info.get('totalRevenue', "Not found")
-    stock_data['currentRatio'] = stock_info.get('currentRatio', "Not found")
-    stock_data['peRatio'] = stock_info.get('trailingPE', "Not found")
-    stock_data['priceToBook'] = stock_info.get('priceToBook', "Not found")
-    stock_data['earningsGrowth'] = stock_info.get('earningsGrowth', "Not found")
-    stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', "Not found")
-    stock_data['ebitda'] = stock_info.get('ebitda', "Not found")
-    stock_data['growthRate'] = growth_rate.get('stock', "Not found").get('+1y', "Not found")
-    stock_data['dividends'] = [{"Year": int(year), "Dividend": dividend} for year, dividend in stock.dividends.groupby(stock.dividends.index.year).max().items()]
+    stock_data['companyName'] = stock_info.get('longName', None)
+    stock_data['currentPrice'] = stock_info.get('currentPrice', None)
+    stock_data['openingPrice'] = stock_info.get('regularMarketOpen', None)
+    stock_data['previousClose'] = stock_info.get('regularMarketPreviousClose', None)
+    stock_data['volume'] = stock_info.get('regularMarketVolume', None)
+    stock_data['marketCap'] = stock_info.get('marketCap', None)
+    stock_data['totalRevenue'] = stock_info.get('totalRevenue', None)
+    stock_data['currentRatio'] = stock_info.get('currentRatio', None)
+    stock_data['peRatio'] = stock_info.get('trailingPE', None)
+    stock_data['priceToBook'] = stock_info.get('priceToBook', None)
+    stock_data['earningsGrowth'] = stock_info.get('earningsGrowth', None)
+    stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', None)
+    stock_data['ebitda'] = stock_info.get('ebitda', None)
+    stock_data['growthRate'] = growth_rate.get('stock', {}).get('+1y', None)
+    stock_data['eps'] = stock_info.get('trailingEps', None)
+    stock_data['totalDebt'] = stock_info.get('totalDebt', None)
+    stock_data['debtToEquity'] = stock_info.get('debtToEquity', None)
+    
+    if isinstance(stock_data['growthRate'], float) and math.isnan(stock_data['growthRate']):
+        stock_data['growthRate'] = None
+    
+    dividends = stock.dividends
+    dividend_by_year = dividends.groupby(dividends.index.year).max()
+    stock_data['dividends'] = [{"Year": int(year), "Dividend": dividend} for year, dividend in dividend_by_year.items()]
 
     return stock_data
 
@@ -34,4 +44,4 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
     stock_data = get_stock_data(stock_symbol)
-    print(json.dumps(stock_data))
+    print(json.dumps(stock_data, indent=2))

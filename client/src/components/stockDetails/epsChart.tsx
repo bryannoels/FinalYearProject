@@ -9,9 +9,10 @@ interface EPSChartProps {
 const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
     if (stockData == null || stockData.eps == null || stockData.eps.length === 0) return null;
     const epsChartRef = useRef<SVGSVGElement | null>(null);
+    const sortedEps = stockData.eps.sort((a, b) => a.Year - b.Year);
 
     useEffect(() => {
-        if (!epsChartRef.current || stockData == null || stockData.eps.length === 0) return;
+        if (!epsChartRef.current || stockData == null || sortedEps.length === 0) return;
         const epsTooltip = d3.select('.eps-tooltip');
 
         const svg = d3.select(epsChartRef.current);
@@ -21,11 +22,11 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
 
         svg.attr("width", width).attr("height", height);
 
-        const minimumValue = d3.min(stockData.eps, d => d.EPS) as number;
-        const maximumValue = d3.max(stockData.eps, d => d.EPS) as number;
+        const minimumValue = d3.min(sortedEps, d => d.EPS) as number;
+        const maximumValue = d3.max(sortedEps, d => d.EPS) as number;
 
         const x = d3.scaleBand()
-            .domain(stockData.eps.map(d => d.Year.toString()))
+            .domain(sortedEps.map(d => d.Year.toString()))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
@@ -43,7 +44,7 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
             .call(d3.axisLeft(y));
 
         svg.selectAll(".bar")
-            .data(stockData.eps)
+            .data(sortedEps)
             .enter().append("rect")
             .attr("class", "bar")
             .attr("x", d => x(d.Year.toString()) as number)
@@ -64,7 +65,7 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
                 d3.select(this).attr("opacity", 1);
                 epsTooltip.classed('hidden', true);
             });
-    }, [stockData?.eps]);
+    }, [sortedEps]);
 
     return (
         <>
@@ -72,7 +73,7 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
             <div className="stock-details__eps">
                 <svg ref={epsChartRef} />
                 <div className="stock-details__eps__table">
-                    {stockData.eps.map((item) => (
+                    {sortedEps.map((item) => (
                         <div className="stock-details__eps__row" key={item.Year}>
                             <div className="stock-details__eps__label">{item.Year}</div>
                             <div className="stock-details__eps__value">{item.EPS}</div>

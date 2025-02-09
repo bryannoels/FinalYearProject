@@ -38,12 +38,6 @@
     right: 50px;
   }
 
-  .navbar__search{
-    height: 30px;
-    margin-right: 20px;
-    color: var(--primary-blue);
-  }
-
   .navbar__button{
     position: relative;
     width: 100px;

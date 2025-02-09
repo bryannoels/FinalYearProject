@@ -10,25 +10,28 @@ const ValuationMeasures: React.FC<ValuationMeasuresProps> = ({ stockData }) => {
     if (stockData == null || stockData.detail == null) return null;
 
     const labels = {
-        "Opening Price": stockData?.detail?.openingPrice,
-        "Previous Close": stockData?.detail?.previousClose,
-        "Volume": stockData?.detail?.volume,
-        "Market Cap": stockData?.detail?.marketCap,
-        "Total Revenue": stockData?.detail?.totalRevenue,
-        "Current Ratio": stockData?.detail?.currentRatio,
-        "PE Ratio": stockData?.detail?.peRatio,
-        "Price/Book": stockData?.detail?.priceToBook,
-        "Earnings Growth": stockData?.detail?.earningsGrowth,
-        "Revenue Per Share": stockData?.detail?.revenuePerShare,
-        "EBITDA": stockData?.detail?.ebitda,
-        "Growth Rate": stockData?.detail?.growthRate
+        "Opening Price": stockData.detail.openingPrice,
+        "Previous Close": stockData.detail.previousClose,
+        "Volume": stockData.detail.volume,
+        "Market Cap": stockData.detail.marketCap,
+        "Total Revenue": stockData.detail.totalRevenue,
+        "Current Ratio": stockData.detail.currentRatio,
+        "PE Ratio": stockData.detail.peRatio,
+        "Price/Book": stockData.detail.priceToBook,
+        "EPS": stockData.detail.eps,
+        "Earnings Growth": stockData.detail.earningsGrowth,
+        "Revenue Per Share": stockData.detail.revenuePerShare,
+        "EBITDA": stockData.detail.ebitda,
+        "Total Debt": stockData.detail.totalDebt,
+        "Debt to Equity": stockData.detail.debtToEquity,
+        "Growth Rate": stockData.detail.growthRate,
     };
 
     return (
         <>
             <p className="stock-details__title">Valuation Measures</p>
             <div className="stock-details__table">
-                {Object.entries(labels).map(([label, value]) => (
+                {Object.entries(labels).filter(([_, value]) => value != null).map(([label, value]) => (
                     <div className="stock-details__table__row" key={label}>
                         <div className="stock-details__table__label">{label}</div>
                         <div className="stock-details__table__value">{value}</div>

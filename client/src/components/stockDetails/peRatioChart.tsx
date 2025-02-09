@@ -9,9 +9,10 @@ interface PeRatioChartProps {
 const PeRatioChart: React.FC<PeRatioChartProps> = ({ stockData }) => {
     if (stockData == null || stockData.peRatio == null || stockData.peRatio.length === 0) return null;
     const peRatioChartRef = useRef<SVGSVGElement | null>(null);
+    const sortedData = stockData.peRatio.sort((a, b) => a.Year - b.Year);
 
     useEffect(() => {
-        if (!peRatioChartRef.current || stockData == null || stockData.peRatio.length === 0) return;
+        if (!peRatioChartRef.current || stockData == null || sortedData.length === 0) return;
         const peRatioTooltip = d3.select('.peRatio-tooltip');
 
         const svg = d3.select(peRatioChartRef.current);
@@ -21,11 +22,11 @@ const PeRatioChart: React.FC<PeRatioChartProps> = ({ stockData }) => {
 
         svg.attr("width", width).attr("height", height);
 
-        const minimumValue = d3.min(stockData.peRatio, d => d.PE_Ratio) as number;
-        const maximumValue = d3.max(stockData.peRatio, d => d.PE_Ratio) as number;
+        const minimumValue = d3.min(sortedData, d => d.PE_Ratio) as number;
+        const maximumValue = d3.max(sortedData, d => d.PE_Ratio) as number;
 
         const x = d3.scaleBand()
-            .domain(stockData.peRatio.map(d => d.Year.toString()))
+            .domain(sortedData.map(d => d.Year.toString()))
             .range([margin.left, width - margin.right])
             .padding(0.1);
 
@@ -43,7 +44,7 @@ const PeRatioChart: React.FC<PeRatioChartProps> = ({ stockData }) => {
             .call(d3.axisLeft(y));
 
         svg.selectAll(".bar")
-            .data(stockData.peRatio)
+            .data(sortedData)
             .enter().append("rect")
             .attr("class", "bar")
             .attr("x", d => x(d.Year.toString()) as number)
@@ -64,7 +65,7 @@ const PeRatioChart: React.FC<PeRatioChartProps> = ({ stockData }) => {
                 d3.select(this).attr("opacity", 1);
                 peRatioTooltip.classed('hidden', true);
             });
-    }, [stockData.peRatio]);
+    }, [sortedData]);
 
     return (
         <>
@@ -72,7 +73,7 @@ const PeRatioChart: React.FC<PeRatioChartProps> = ({ stockData }) => {
             <div className="stock-details__eps">
                 <svg ref={peRatioChartRef} />
                 <div className="stock-details__eps__table">
-                    {stockData.peRatio.map((item) => (
+                    {sortedData.map((item) => (
                         <div className="stock-details__eps__row" key={item.Year}>
                             <div className="stock-details__eps__label">{item.Year}</div>
                             <div className="stock-details__eps__value">{item.PE_Ratio}</div>

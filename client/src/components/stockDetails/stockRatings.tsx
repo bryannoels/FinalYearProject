@@ -7,14 +7,14 @@ interface StockRatingsProps {
 }
 
 const StockRatings: React.FC<StockRatingsProps> = ({ stockData }) => {
-    if (stockData == null || stockData.ratings == null || stockData.ratings.length === 0) return null;
+    if (stockData == null || stockData.analysis == null || stockData.analysis.ratings == null || stockData.analysis.ratings.length === 0) return null;
     
     return (
         <>
             <hr className = "stock-details__analysts__divider" />
             <p className = "stock-details__analysts__rating__title">Analysts' Rating</p>
             <div className = "stock-details__analysts-recommendation">
-                { stockData.ratings.map((item: StockRatings, index: number) => {
+                { stockData.analysis.ratings.map((item: StockRatings, index: number) => {
                     const ratingClass =
                         item.rating === 1 ? "green-rating" :
                         item.rating === 0 ? "blue-rating" :

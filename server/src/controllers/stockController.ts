@@ -22,7 +22,37 @@ const getStockData = (req: Request, res: Response): void => {
 
     pythonProcess.stderr.on('data', () => {
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+            res.status(500).json({ error: 'Error retrieving stock data' });
+        }
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
+const getStockProfile = (req: Request, res: Response): void => {
+    const stockSymbol = req.params.symbol.toUpperCase();
+    const pythonProcess = spawn('python3', ['src/stocks/getStockProfile.py', stockSymbol]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const stockData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(stockData);
+            }
+        } catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
+        }
+    });
+
+    pythonProcess.stderr.on('data', () => {
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error retrieving profile data' });
         }
     });
 
@@ -270,6 +300,7 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
 };
 
 
+
 const getHistoricalData = (req: Request, res: Response): void => {
     const stockSymbol = req.params.symbol.toUpperCase();
     const rangeParam = (req.query.range || '1d') as string;
@@ -410,8 +441,39 @@ const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<vo
     });
 };
 
+const searchStock = (req: Request, res: Response): void => {
+    const query = req.params.query.toUpperCase();
+    const pythonProcess = spawn('python3', ['src/stocks/searchStock.py', query]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        try {
+            const stockData = JSON.parse(data.toString());
+            if (!res.headersSent) {
+                res.json(stockData);
+            }
+        } catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to parse response' });
+            }
+        }
+    });
+
+    pythonProcess.stderr.on('data', () => {
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error retrieving the search result' });
+        }
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0 && !res.headersSent) {
+            res.status(500).json({ error: 'Python script exited with code ' + code });
+        }
+    });
+};
+
 export {
     getStockData,
+    getStockProfile,
     getTop10MostActiveStocks,
     // getVerdict,
     getAnalysis,
@@ -419,5 +481,6 @@ export {
     getForecastData,
     getEPSData,
     getPeRatioData,
-    getAaaCorporateBondYield
+    getAaaCorporateBondYield,
+    searchStock
 };
