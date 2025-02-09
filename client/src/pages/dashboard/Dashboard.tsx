@@ -189,12 +189,8 @@ function Dashboard() {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        filteredStocks.map((stock: StockInfo) => (
-          <DashboardItem 
-            key={stock.symbol} 
-            {...stock}
-            onClick={() => handleItemClick(stock.symbol)}
-          />
+        marketStockList.map((stock: StockInfo) => (
+          <DashboardItem key={stock.symbol} {...stock} onClick={() => handleItemClick(stock.symbol)} />
         ))
       )}
     </div>
