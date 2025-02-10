@@ -61,6 +61,7 @@ a{
     border: 2px solid var(--gray);
     border-radius: 10px;
     background-color: var(--primary-white);
+    color: var(--primary-light-dark);
 }
 
 .container__password{
