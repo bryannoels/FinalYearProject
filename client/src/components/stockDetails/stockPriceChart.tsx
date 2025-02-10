@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Stock } from '../../types/Stock';
 import { StockPrice } from '../../types/StockPrice';
 import * as d3 from 'd3';
@@ -11,13 +11,32 @@ interface StockPriceChartProps {
 const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
     if (stockData == null) return null;
     const chartRef = useRef<SVGSVGElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [dimensions, setDimensions] = useState({ width: 450, height: 300 });
+
+    useLayoutEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                setDimensions({
+                    width: containerRef.current.clientWidth || 450,
+                    height: containerRef.current.clientHeight || 300, // Keep height fixed or adjust dynamically
+                });
+            }
+        };
+
+        updateSize(); // Run once on mount
+        window.addEventListener("resize", updateSize);
+        return () => window.removeEventListener("resize", updateSize);
+    }, []);
 
     useEffect(() => {
         if (!chartRef.current || stockData.price === null || stockData.price.length === 0) return;
 
         const svg = d3.select(chartRef.current);
-        const width = 450;
-        const height = 300;
+        svg.selectAll("*").remove(); // replace old SVG
+
+        const width = dimensions.width;
+        const height = dimensions.height;
         const margin = { top: 20, right: 30, bottom: 30, left: 50 };
 
         svg.attr("width", width).attr("height", height);
@@ -40,10 +59,12 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
         const renderAxes = () => {
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
+                .attr("color", "var(--primary-light-dark)")
                 .call(d3.axisBottom(x).ticks(d3.timeMinute.every(30)));
 
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
+                .attr("color", "var(--primary-light-dark)")
                 .call(d3.axisLeft(y));
         };
 
@@ -114,11 +135,11 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
         renderAxes();
         renderLine();
         renderTooltip();
-    }, [stockData?.price]);
+    }, [stockData?.price, dimensions]);
 
     return (
         <>
-            <div className="stock-details__chart">
+            <div ref={containerRef} className="stock-details__chart">
                 <svg ref={chartRef} />
             </div>
             <div className="tooltip hidden" />

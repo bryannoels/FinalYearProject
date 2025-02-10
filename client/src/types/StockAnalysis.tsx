@@ -2,8 +2,8 @@ import { StockRatings } from './StockRatings';
 
 export type StockAnalysis = {
     verdict: string;
-    number_of_buy: number;
-    number_of_hold: number;
-    number_of_sell: number;
+    num_of_buys: number;
+    num_of_holds: number;
+    num_of_sells: number;
     ratings: StockRatings[];
 }

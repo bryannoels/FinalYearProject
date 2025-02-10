@@ -144,6 +144,7 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
                         }
                     });
                 });
+    // Lambda func ver:
     //         const params = {
     //             FunctionName: "LABA-python-stock-get-analysis", 
     //             Payload: JSON.stringify({ req.params.symbol.toUpperCase() })
@@ -364,7 +365,6 @@ export {
     getStockData,
     getStockProfile,
     getTop10MostActiveStocks,
-    // getVerdict,
     getAnalysis,
     getHistoricalData,
     getForecastData,

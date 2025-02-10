@@ -49,6 +49,7 @@
 .stock-details__chart {
     background-color: var(--primary-white);
     width: 90%;
+    min-height: 300px;
     position: relative;
     margin-top: 30px;
     border-radius: 10px;
@@ -73,7 +74,8 @@
 }
 
 .stock-details__title{
-    font-size: 24px;
+    font-size: 1.5em;
+    color: var(--primary-light-dark);
     font-weight: bold;
     margin-top: 20px;
     margin-bottom: 10px;
@@ -100,15 +102,20 @@
 }
 
 .stock-details__table__label{
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-size: 0.9em;
+    color: var(--primary-light-dark);
     margin-left: 20px;
 }
 
 .stock-details__table__value{
-    font-size: 16px;
+    max-width: 50%;
+    font-size: 0.9em;
     margin-right: 20px;
     font-weight: bold;
-    color: black;
+    color: var(--primary-light-dark);
 }
 
 .stock-profile__description-title{
@@ -201,7 +208,8 @@
 }
 
 .stock-detailss__analysis__value{
-    font-size: 20px;
+    font-size: 1em;
+    color: var(--primary-light-dark);
     font-weight: bold;
 }
 
@@ -271,7 +279,8 @@
 }
 
 .stock-details__forecast__label{
-    font-size: 20px;
+    color: var(--primary-light-dark);
+    font-size: 1em;
     margin-left: 20px;
 }
 
@@ -283,7 +292,8 @@
 }
 
 .stock-details__forecast__value{
-    font-size: 20px;
+    font-size: 1em;
+    color: var(--primary-light-dark);
     margin-right: 20px;
     font-weight: bold;
     text-align: center;
@@ -443,10 +453,6 @@
     color: var(--primary-white);
 }
 
-.stock-details__tab:hover {
-    background-color: var(--primary-light-blue);
-}
-
 .stock-details__tab-content {
     margin-top: 30px;
     width: 90%;
@@ -475,13 +481,8 @@
     border-bottom: 1px solid #ddd;
   }
   
-  .stock-details__table__label {
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
-  
   .info-icon {
+    color: var(--primary-light-dark);
     position: relative;
     cursor: pointer;
     font-weight: bold;
