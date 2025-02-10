@@ -125,13 +125,13 @@
 .dashboard__item__name{
     font-size: 16px;
     font-weight: bold;
-    color: var(--primary-light-dark)7;
+    color: var(--primary-light-dark);
     margin: 0px;
 }
 
 .dashboard__item__symbol{
     font-size: 12px;
-    color: var(--primary-light-dark)7;
+    color: var(--primary-light-dark);
     margin: 0px;
 }
 
@@ -147,7 +147,7 @@
 .dashboard__item__price{
     font-size: 20px;
     font-weight: bold;
-    color: var(--primary-light-dark)7;
+    color: var(--primary-light-dark);
     margin: 0px;
 }
 
@@ -212,7 +212,7 @@
   .dashboard__dropdown-item__ticker {
     font-weight: bold;
     font-size: 16px;
-    color: var(--primary-light-dark)7;
+    color: var(--primary-light-dark);
 }
 
 .dashboard__dropdown-item__company-name {
