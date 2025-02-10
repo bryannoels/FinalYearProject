@@ -44,13 +44,13 @@
 
 .market__title {
     font-size: 22px;
-    color: #213547;
+    color: var(--primary-light-dark);
     font-weight: bold;
 }
 
 .portfolio__title {
     font-size: 18px;
-    color: #213547;
+    color: var(--primary-light-dark);
     font-weight: bold;
     padding-top: 0.5em;
     margin-left: 20px;
@@ -125,13 +125,13 @@
 .dashboard__item__name{
     font-size: 16px;
     font-weight: bold;
-    color: #213547;
+    color: var(--primary-light-dark)7;
     margin: 0px;
 }
 
 .dashboard__item__symbol{
     font-size: 12px;
-    color: #213547;
+    color: var(--primary-light-dark)7;
     margin: 0px;
 }
 
@@ -147,7 +147,7 @@
 .dashboard__item__price{
     font-size: 20px;
     font-weight: bold;
-    color: #213547;
+    color: var(--primary-light-dark)7;
     margin: 0px;
 }
 
@@ -212,7 +212,7 @@
   .dashboard__dropdown-item__ticker {
     font-weight: bold;
     font-size: 16px;
-    color: #213547;
+    color: var(--primary-light-dark)7;
 }
 
 .dashboard__dropdown-item__company-name {
