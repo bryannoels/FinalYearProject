@@ -26,7 +26,7 @@
 label{
     margin-bottom: 0.2rem;
     font-size: 11pt;
-    color: var(--primary-light-dark)7
+    color: var(--primary-light-dark);
 }
 
 a{
@@ -104,7 +104,7 @@ a{
     transform: translate(-50%, -50%);
     background-color: var(--primary-white);
     width: 200px;
-    color: var(--primary-light-dark)7;
+    color: var(--primary-light-dark);
     padding: 1rem 1.5rem;
     border: 2px solid var(--gray);
     border-radius: 10px;
