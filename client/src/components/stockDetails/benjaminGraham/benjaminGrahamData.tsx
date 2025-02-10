@@ -9,7 +9,7 @@ export const getDefensiveData = (stockData: Stock) => ({
     },
     "Current Ratio": {
       value: stockData.detail?.currentRatio ?? "N/A",
-      description: "The current ratio measures the company's ability to pay short-term obligations with its short-term assets.",
+      description: "The current ratio measures the company's current assets against its current liabilities.",
       color: parseFloat(stockData.detail?.currentRatio) < 2 ? "red" : "green",
     },
     "Earnings Stability": {
@@ -24,7 +24,7 @@ export const getDefensiveData = (stockData: Stock) => ({
     },
     "Earnings Growth": {
       value: hasEarningsIncreased(stockData.eps, "defensive"),
-      description: "The average growth of earnings compared to the initial years.",
+      description: "The average growth of earnings per share in the past ten years using three-year averages.",
       color:
         hasEarningsIncreased(stockData.eps, "defensive") === "N/A" ||
         parseFloat(hasEarningsIncreased(stockData.eps, "defensive")) > 4.0 / 3
@@ -33,7 +33,7 @@ export const getDefensiveData = (stockData: Stock) => ({
     },
     "Price/Earnings Ratio": {
       value: threeYearsPeRatio(stockData.peRatio),
-      description: "The P/E ratio reflects the company's valuation based on its earnings for the last few years.",
+      description: "The current price against the average earnings per share over the last three years.",
       color:
         threeYearsPeRatio(stockData.peRatio) === "N/A" ||
         parseFloat(threeYearsPeRatio(stockData.peRatio)) > 15.0
