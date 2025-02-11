@@ -64,7 +64,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
     },
     "Current Ratio": {
       value: stockData.detail?.currentRatio ?? "N/A",
-      description: "The current ratio measures the company's ability to pay short-term obligations with its short-term assets.",
+      description: "The current ratio measures the company's current assets against its current liabilities.",
       color: parseFloat(stockData.detail?.currentRatio) < 1.5 ? "red" : "green",
     },
     "Earnings Stability": {
@@ -79,7 +79,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
     },
     "Earnings Growth": {
       value: hasEarningsIncreased(stockData.eps, "enterprising"),
-      description: "The average growth of earnings compared to the initial years.",
+      description: "The average growth of earnings per share compared to the initial years.",
       color:
         hasEarningsIncreased(stockData.eps, "enterprising") === "N/A" ||
         parseFloat(hasEarningsIncreased(stockData.eps, "enterprising")) <= 1
@@ -88,7 +88,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
     },
     "Price/Earnings Ratio": {
       value: stockData?.peRatio?.length ? stockData.peRatio.sort((a, b) => b.Year - a.Year)[0].PE_Ratio : "N/A",
-      description: "The P/E ratio reflects the company's valuation based on its earnings for the last few years.",
+      description: "The P/E ratio reflects the price of the stock compared to the company's earnings per share.",
       color: "green",
     },
     "Price/Assets Ratio": {
