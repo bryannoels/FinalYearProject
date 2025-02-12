@@ -14,7 +14,7 @@ export const getDefensiveData = (stockData: Stock) => ({
     },
     "Earnings Stability": {
       value: isEarningsStable(stockData.eps, 10),
-      description: "This indicates whether the company's earnings have remained positive over the last 10 years.",
+      description: "This indicates whether the company's earnings per share have remained positive over the last 10 years.",
       color: isEarningsStable(stockData.eps, 10) === "BAD" ? "red" : "green",
     },
     "Dividend Record": {
@@ -69,7 +69,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
     },
     "Earnings Stability": {
       value: isEarningsStable(stockData.eps, 5),
-      description: "This indicates whether the company's earnings have remained positive over the last 5 years.",
+      description: "This indicates whether the company's earnings per share have remained positive over the last 5 years.",
       color: isEarningsStable(stockData.eps, 5) === "BAD" ? "red" : "green",
     },
     "Dividend Record": {
