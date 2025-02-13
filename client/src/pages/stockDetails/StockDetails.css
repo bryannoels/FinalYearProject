@@ -116,6 +116,7 @@
     margin-right: 20px;
     font-weight: bold;
     color: var(--primary-light-dark);
+    text-align: right;
 }
 
 .stock-profile__description-title{
@@ -133,6 +134,11 @@
     text-align: justify;
     margin-top: 0px;
   }
+
+.view-more-button:focus{
+    outline: none;
+    border: none;
+}
 
 .stock-details__recommendation{
     background-color: var(--primary-white);
