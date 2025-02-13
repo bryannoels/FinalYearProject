@@ -459,6 +459,10 @@
     color: var(--primary-white);
 }
 
+.stock-details__tab:focus {
+    outline: none;
+}
+
 .stock-details__tab-content {
     margin-top: 30px;
     width: 90%;
