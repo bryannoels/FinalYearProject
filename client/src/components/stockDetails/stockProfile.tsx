@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Stock } from '../../types/Stock';
 
 
@@ -8,6 +8,10 @@ interface StockProfileProps {
 
 const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
     if (stockData == null || stockData.profile == null) return null;
+    const [expanded, setExpanded] = useState(false);
+    const summary = stockData?.profile.longBusinessSummary || "";
+    const previewLength = 200;
+    const isLong = summary.length > previewLength;
     //stockData.profile = typeof stockData.profile === 'string' ? JSON.parse(stockData.profile) : stockData.profile;
 
     const labels = {
@@ -40,7 +44,14 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
             </div>
 
             <p className="stock-profile__description-title">{stockData?.profile.companyName}</p>
-            <p className="stock-profile__description">{stockData?.profile.longBusinessSummary}</p>
+            <p className="stock-profile__description">
+                {isLong && !expanded ? `${summary.slice(0, previewLength)}...` : summary}
+                {isLong && (
+                    <button onClick={() => setExpanded(!expanded)} className="view-more-button">
+                        {expanded ? "View Less" : "View More"}
+                    </button>
+                )}
+            </p>
         </>
     );
 };
