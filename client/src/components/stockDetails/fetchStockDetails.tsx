@@ -1,6 +1,10 @@
 import { fetchData, getCachedData, setCachedData } from '../utils/utils';
 import { Stock } from '../../types/Stock';
 
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8000/api/stocks'
+        : 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock';
+
 export const fetchStockDetails = async (
     symbol: string,
     setStockData: (data: Stock | null) => void,
@@ -22,23 +26,17 @@ export const fetchStockDetails = async (
                 change: parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose),
                 percentChange: ((parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose)) / parseFloat(stockInfo.previousClose)) * 100,
             };
-
+        
             const [priceData, profileData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-historical-data/${symbol}`),
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-profile/${symbol}`),
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-forecast/${symbol}`),
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/analysis/${symbol}`),
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-eps/${symbol}`),
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-pe-ratio/${symbol}`),
-                fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-aaa-corp-bond-yield`),
-                // fetchData(`http://localhost:8000/api/stocks/historical/${symbol}`),
-                // fetchData(`http://localhost:8000/api/stocks/verdict/${symbol}`),
-                // fetchData(`http://localhost:8000/api/stocks/forecast/${symbol}`),
-                // fetchData(`http://localhost:8000/api/stocks/analysis/${symbol}`),
-                // fetchData(`http://localhost:8000/api/stocks/eps/${symbol}`),
-                // fetchData(`http://localhost:8000/api/stocks/pe-ratio/${symbol}`),
-                // fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-aaa-corp-bond-yield`),
+                fetchData(`${API_BASE_URL}/historical/${symbol}`),
+                fetchData(`${API_BASE_URL}/profile/${symbol}`),
+                fetchData(`${API_BASE_URL}/forecast/${symbol}`),
+                fetchData(`${API_BASE_URL}/analysis/${symbol}`),
+                fetchData(`${API_BASE_URL}/eps/${symbol}`),
+                fetchData(`${API_BASE_URL}/pe-ratio/${symbol}`),
+                fetchData(`${API_BASE_URL}/get-aaa-corp-bond-yield`),
             ]);
+
             const newStockData: Stock = {
                 info: currentStock,
                 detail: stockInfo,
