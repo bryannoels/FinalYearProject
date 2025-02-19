@@ -28,12 +28,12 @@ export const fetchStockDetails = async (
             };
         
             const [priceData, profileData, forecastData, analysisData, epsData, peRatioData, bondYieldData] = await Promise.all([
-                fetchData(`${API_BASE_URL}/historical/${symbol}`),
-                fetchData(`${API_BASE_URL}/profile/${symbol}`),
-                fetchData(`${API_BASE_URL}/forecast/${symbol}`),
+                fetchData(`${API_BASE_URL}/get-historical-data/${symbol}`),
+                fetchData(`${API_BASE_URL}/get-profile/${symbol}`),
+                fetchData(`${API_BASE_URL}/get-forecast/${symbol}`),
                 fetchData(`${API_BASE_URL}/analysis/${symbol}`),
-                fetchData(`${API_BASE_URL}/eps/${symbol}`),
-                fetchData(`${API_BASE_URL}/pe-ratio/${symbol}`),
+                fetchData(`${API_BASE_URL}/get-eps/${symbol}`),
+                fetchData(`${API_BASE_URL}/get-pe-ratio/${symbol}`),
                 fetchData(`${API_BASE_URL}/get-aaa-corp-bond-yield`),
             ]);
 
