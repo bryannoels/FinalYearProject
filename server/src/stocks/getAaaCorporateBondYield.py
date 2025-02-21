@@ -1,12 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import random
 
 def get_aaa_corporate_bond_yield():
+    random_chrome_version = random.randint(130, 136)
     url = f'https://ycharts.com/indicators/us_coporate_aaa_effective_yield'
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36'
+        'User-Agent': f"Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{random_chrome_version}.0.0.0 Mobile Safari/537.36"
     }    
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
