@@ -121,29 +121,24 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
     const getAnalysis = async (req: Request, res: Response): Promise<any> => {
         try {
             const stockSymbol = req.params.symbol.toUpperCase();
-            const { num_of_buys, num_of_holds, num_of_sells } = await handleGetVerdict(stockSymbol);
-            handleGetVerdict(stockSymbol)
-                .then((verdictData) => {
-                    const { num_of_buys, num_of_holds, num_of_sells } = verdictData;
-                    const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
-                    pythonProcess.stdout.on('data', (data) => {
-                        try {
-                            const analysisData: StockAnalysis[] = JSON.parse(data.toString());
-                            const combinedAnalysis = [
-                                ...analysisData.filter(item => item.rating === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: 'buy' })),
-                                ...analysisData.filter(item => item.rating === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: 'hold' })),
-                                ...analysisData.filter(item => item.rating === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: 'sell' })),
-                            ];
-                            if (!res.headersSent) {
-                                res.json({ combinedAnalysis, num_of_buys, num_of_holds, num_of_sells });
-                            }
-                        } catch (error) {
-                            if (!res.headersSent) {
-                                res.status(500).json({ error: 'Failed to parse response' });
-                            }
-                        }
-                    });
-                });
+            const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
+            pythonProcess.stdout.on('data', (data) => {
+                console.log(data.toString());
+                try {
+                    const analysisData: StockAnalysis = JSON.parse(data.toString());
+                    const ratings = analysisData.ratings;
+                    const num_of_buys = analysisData.number_of_buy;
+                    const num_of_holds = analysisData.number_of_hold;
+                    const num_of_sells = analysisData.number_of_sell;
+                    if (!res.headersSent) {
+                        res.json({ ratings, num_of_buys, num_of_holds, num_of_sells });
+                    }
+                } catch (error) {
+                    if (!res.headersSent) {
+                        res.status(500).json({ error: 'Failed to parse response' });
+                    }
+                }
+            });
     // Lambda func ver:
     //         const params = {
     //             FunctionName: "LABA-python-stock-get-analysis", 
