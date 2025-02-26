@@ -35,17 +35,6 @@ export const fetchStockDetails = async (
                 fetchData(`${API_BASE_URL}/get-pe-ratio/${symbol}`),
                 fetchData(`${API_BASE_URL}/get-aaa-corp-bond-yield`),
             ]);
-            console.log(currentStock)
-            console.log(stockInfo)
-            console.log(priceData.data)
-            console.log(profileData)
-            console.log(forecastData)
-            console.log(analysisData)
-            console.log(epsData)
-            console.log(peRatioData)
-            console.log(bondYieldData)
-            console.log("growth rate "+stockInfo.growthRate)
-            console.log("dividend "+stockInfo.dividends)
             const newStockData: Stock = {
                 info: currentStock,
                 detail: stockInfo,
@@ -59,13 +48,10 @@ export const fetchStockDetails = async (
                 bondYield: bondYieldData?.aaaCorporateBondYield,
                 dividends: stockInfo?.dividends
             };
-            console.log(newStockData);
-            console.log("SINI")
             setStockData(newStockData);
             setCachedData(`stock_${symbol}`, newStockData);
         }
     } catch (err: any) {
-        console.log(err);
         setError(err.message || 'An error occurred while fetching stock data');
     } finally {
         setLoading(false);
