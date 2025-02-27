@@ -126,12 +126,13 @@ const getTop10MostActiveStocks = (req: Request, res: Response): void => {
                 console.log(data.toString());
                 try {
                     const analysisData: StockAnalysis = JSON.parse(data.toString());
-                    const ratings = analysisData.ratings;
+                    const verdict = analysisData.verdict;
                     const num_of_buys = analysisData.number_of_buy;
                     const num_of_holds = analysisData.number_of_hold;
                     const num_of_sells = analysisData.number_of_sell;
+                    const ratings = analysisData.ratings;
                     if (!res.headersSent) {
-                        res.json({ ratings, num_of_buys, num_of_holds, num_of_sells });
+                        res.json({ verdict, num_of_buys, num_of_holds, num_of_sells, ratings });
                     }
                 } catch (error) {
                     if (!res.headersSent) {
