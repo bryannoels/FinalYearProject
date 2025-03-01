@@ -1,13 +1,22 @@
 import requests
 import json
 import sys
+import random
 from bs4 import BeautifulSoup
+
+USER_AGENTS = [
+    "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux aarch64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 CrKey/1.54.250320",
+    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+]
 
 def get_pe_ratio_data(stock_symbol):
     url = f"https://www.macrotrends.net/stocks/charts/{stock_symbol}/stock/pe-ratio"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-    }
+    headers = {"User-Agent": random.choice(USER_AGENTS)}
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -27,18 +36,13 @@ def get_pe_ratio_data(stock_symbol):
                             pe_ratio_data.append({"Year": year, "PE_Ratio": pe_ratio})
 
             pe_ratio_data.sort(key=lambda x: x["Year"])
-
-            return {
-                "Symbol": stock_symbol,
-                "PE_Ratio_Data": pe_ratio_data
-            }
+            return {"Symbol": stock_symbol, "PE_Ratio_Data": pe_ratio_data}
 
         except AttributeError:
             return {"error": "Could not find the PE ratio data table on the page."}
     else:
         return {"error": f"Failed to retrieve the webpage. Status code: {response.status_code}"}
 
-# for lambda func: LABA-python-stocks-get-pe-ratio-data
 def lambda_handler(event, context):
     stock_symbol = event.get("stock_symbol")
     pe_data = get_pe_ratio_data(stock_symbol)
