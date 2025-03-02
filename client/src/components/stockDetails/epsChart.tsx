@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Stock } from '../../types/Stock';
 import * as d3 from 'd3';
 
@@ -16,8 +16,8 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
         const epsTooltip = d3.select('.eps-tooltip');
 
         const svg = d3.select(epsChartRef.current);
-        const width = 450;
-        const height = 300;
+        const width = 350;
+        const height = 200;
         const margin = { top: 20, right: 30, bottom: 30, left: 50 };
 
         svg.attr("width", width).attr("height", height);
@@ -25,32 +25,46 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
         const minimumValue = d3.min(sortedEps, d => d.EPS) as number;
         const maximumValue = d3.max(sortedEps, d => d.EPS) as number;
 
-        const x = d3.scaleBand()
-            .domain(sortedEps.map(d => d.Year.toString()))
-            .range([margin.left, width - margin.right])
-            .padding(0.1);
+        const x = d3.scaleTime()
+            .domain([new Date(sortedEps[0].Year, 0, 1), new Date(sortedEps[sortedEps.length - 1].Year, 0, 1)])
+            .range([margin.left, width - margin.right]);
 
         const y = d3.scaleLinear()
             .domain([minimumValue < 0 ? minimumValue * 1.1 : 0, maximumValue > 0 ? maximumValue : -maximumValue])
             .nice()
             .range([height - margin.bottom, margin.top]);
 
-        svg.append("g")
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(x));
+        const renderAxes = () => {
+            const yearsInterval = Math.floor(sortedEps.length/5);
+            const tickValues = [];
+            const startYear = sortedEps[0].Year;
+            const endYear = sortedEps[sortedEps.length - 1].Year;
+            for (let year = startYear; year <= endYear; year += yearsInterval) {
+                tickValues.push(new Date(year, 0, 1));
+            }
 
-        svg.append("g")
-            .attr("transform", `translate(${margin.left},0)`)
-            .call(d3.axisLeft(y));
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .attr("color", "var(--primary-light-dark)")
+                .call(d3.axisBottom(x).tickValues(tickValues));
+            
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .attr("color", "var(--primary-light-dark)")
+                .call(d3.axisLeft(y));
+        };
 
         svg.selectAll(".bar")
             .data(sortedEps)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", d => x(d.Year.toString()) as number)
+            .attr("x", d => x(new Date(d.Year, 0, 1)) as number)
             .attr("y", d => d.EPS < 0 ? y(0) : y(d.EPS))
             .attr("height", d => Math.abs(y(d.EPS) - y(0)))
-            .attr("width", x.bandwidth())
+            .attr("width", (d, i) => {
+                const nextX = i < sortedEps.length - 1 ? x(new Date(sortedEps[i + 1].Year, 0, 1)) : x(new Date(d.Year + 1, 0, 1));
+                return nextX - x(new Date(d.Year, 0, 1));
+            })
             .attr("fill", d => d.EPS < 0 ? "#FF0000" : "#008000")
             .on("mouseover", function (event, d) {
                 d3.select(this).attr("opacity", 0.7);
@@ -65,6 +79,9 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
                 d3.select(this).attr("opacity", 1);
                 epsTooltip.classed('hidden', true);
             });
+
+
+        renderAxes();
     }, [sortedEps]);
 
     return (
