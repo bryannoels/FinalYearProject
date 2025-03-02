@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchData, getCachedData, setCachedData } from '../../../src/components/utils/utils';
 import { StockInfo } from '../../types/StockInfo';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
@@ -36,7 +37,6 @@ function Dashboard() {
           portfolioName,
           stocks: (stocks as any[]).map(createStockObject),
         }));
-
         setPortfolioStockList(portfolios);
         setMessage('');
         setShowMessage(false);
@@ -52,10 +52,16 @@ function Dashboard() {
   const fetchStocks = async () => {
     setLoading(true);
     try {
-        const response = await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-most-active-stocks');
-        const data = await response.json();
-        const formattedData: StockInfo[] = JSON.parse(data).map(createStockObject);
+      const cachedStocks = getCachedData("10_most_active_stocks");
+      if (cachedStocks) {
+        setMarketStockList(cachedStocks);
+      }
+      else {
+        const response = await fetchData('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-most-active-stocks');
+        const formattedData: StockInfo[] = JSON.parse(response).map(createStockObject);
+        setCachedData(`10_most_active_stocks`, formattedData);
         setMarketStockList(formattedData);
+      }
     } catch (error) {
       setMessage('Error fetching stocks: ' + error);
       setShowMessage(true);
