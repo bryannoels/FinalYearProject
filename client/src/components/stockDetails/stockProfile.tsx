@@ -12,7 +12,6 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
     const summary = stockData?.profile.longBusinessSummary || "";
     const previewLength = 200;
     const isLong = summary.length > previewLength;
-    //stockData.profile = typeof stockData.profile === 'string' ? JSON.parse(stockData.profile) : stockData.profile;
 
     const labels = {
         "Sector": stockData?.profile?.sector,
@@ -45,7 +44,7 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
 
             <p className="stock-profile__description-title">{stockData?.profile.companyName}</p>
             <p className="stock-profile__description">
-                {isLong && !expanded ? `${summary.slice(0, previewLength)}...` : summary}
+                {isLong && !expanded ? `${summary.slice(0, previewLength)}... ` : summary+" "}
                 {isLong && (
                     <button onClick={() => setExpanded(!expanded)} className="view-more-button">
                         {expanded ? "View Less" : "View More"}
