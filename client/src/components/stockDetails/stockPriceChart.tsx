@@ -19,12 +19,12 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
             if (containerRef.current) {
                 setDimensions({
                     width: containerRef.current.clientWidth || 450,
-                    height: containerRef.current.clientHeight || 300, // Keep height fixed or adjust dynamically
+                    height: containerRef.current.clientHeight || 300,
                 });
             }
         };
 
-        updateSize(); // Run once on mount
+        updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
     }, []);
@@ -33,7 +33,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
         if (!chartRef.current || stockData.price === null || stockData.price.length === 0) return;
 
         const svg = d3.select(chartRef.current);
-        svg.selectAll("*").remove(); // replace old SVG
+        svg.selectAll("*").remove();
 
         const width = dimensions.width;
         const height = dimensions.height;
@@ -60,7 +60,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
             svg.append("g")
                 .attr("transform", `translate(0,${height - margin.bottom})`)
                 .attr("color", "var(--primary-light-dark)")
-                .call(d3.axisBottom(x).ticks(d3.timeMinute.every(30)));
+                .call(d3.axisBottom(x).ticks(d3.timeMinute.every(60)));
 
             svg.append("g")
                 .attr("transform", `translate(${margin.left},0)`)
