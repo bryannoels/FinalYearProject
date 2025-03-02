@@ -13,14 +13,14 @@ const IntrinsicValue: React.FC<IntrinsicValueProps> = ({ stockData }) => {
     if (stockData == null) return null;
 
     const benjaminGrahamLabels = {
-        "Earnings Per Share (EPS)": stockData.detail.eps,
+        "Earnings Per Share (EPS)": stockData.detail?.eps,
         "Growth Rate (g)": stockData.growthRate,
         "AAA Corporate Bond Yield (Y)": stockData.bondYield,
     };
 
     const intrinsicValue = (
-        (parseFloat(stockData.detail.eps) * (8.5 + 2 * parseFloat(stockData.growthRate)) * 4.4)
-         / parseFloat(stockData.bondYield)
+        (parseFloat(stockData.detail?.eps ?? "0") * (8.5 + 2 * parseFloat(stockData.growthRate ?? "0")) * 4.4)
+         / parseFloat(stockData.bondYield ?? "0")
     ).toFixed(2);
 
   return (
