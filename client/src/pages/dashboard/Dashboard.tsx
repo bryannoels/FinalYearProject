@@ -12,12 +12,16 @@ import Dropdown from './Dropdown';
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [portfolioSearchTerms, setPortfolioSearchTerms] = useState<{ [portfolioName: string]: string }>({});
   const [portfolioStockList, setPortfolioStockList] = useState<{ portfolioName: string; stocks: StockInfo[] }[]>([]);
   const [marketStockList, setMarketStockList] = useState<StockInfo[]>([]);
   const [portfolioLoading, setPortfolioLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
-  const [suggestions, setSuggestions] = useState<{ ticker: string; name: string }[]>([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchStockResult, setSuggestions] = useState<{ ticker: string; name: string }[]>([]);
+  const [searchAddStockResult, setAddStockResult] = useState<{ ticker: string; name: string }[]>([]);
+  const [portfolioDropdowns, setPortfolioDropdowns] = useState<{ [portfolioName: string]: boolean }>({});
+  const [showSearchedStocks, setShowDropdown] = useState(false);
+
   const navigate = useNavigate();
   const { user, isAuthenticated } = useContext(AuthContext);
   const [showMessage, setShowMessage] = useState<boolean>(true);
@@ -25,6 +29,7 @@ function Dashboard() {
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  const ddAddStockRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const fetchPortfolio = async () => {
@@ -70,17 +75,17 @@ function Dashboard() {
     }
   };
 
-  const searchStocks = async (query: string) => {
+  const searchStocks = async (query: string, type: string | null) => {
     if (query.length >= 1) {
       try {
         const response = await fetch(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/search/${query}`);
         const result = await response.json();
-        setSuggestions(result);
+        type === 'portfolio' ? setAddStockResult(result) : setSuggestions(result);
       } catch (error) {
         console.error('Error fetching search suggestions:', error);
       }
     } else {
-      setSuggestions([]);
+      type === 'portfolio' ? setAddStockResult([]) : setSuggestions([]);
     }
   };
 
@@ -91,7 +96,7 @@ function Dashboard() {
 
     if (searchTerm.length >= 1) {
       debounceTimeout.current = setTimeout(() => {
-        searchStocks(searchTerm);
+        searchStocks(searchTerm, null);
       }, 200);
     } else {
       setSuggestions([]);
@@ -105,23 +110,50 @@ function Dashboard() {
   }, [searchTerm]);
 
   useEffect(() => {
+    const timeouts: { [key: string]: NodeJS.Timeout } = {};
+
+    Object.keys(portfolioSearchTerms).forEach((portfolioName) => {
+      if (portfolioSearchTerms[portfolioName].length >= 1) {
+        timeouts[portfolioName] = setTimeout(() => {
+          searchStocks(portfolioSearchTerms[portfolioName], 'portfolio');
+        }, 200);
+      }
+    });
+
+    return () => {
+      Object.values(timeouts).forEach((timeout) => clearTimeout(timeout));
+    };
+  }, [portfolioSearchTerms]);
+
+  useEffect(() => {
     fetchPortfolio();
     fetchStocks();
   }, []);
 
   useEffect(() => {
-    if (suggestions.length > 0) {
+    if (searchStockResult.length > 0) {
       setShowDropdown(true);
     } else {
       setShowDropdown(false);
     }
-  }, [suggestions]);
+  }, [searchStockResult]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
       }
+      
+      setPortfolioDropdowns((prev) => {
+        const updatedDropdowns = { ...prev };
+        Object.keys(prev).forEach((portfolioName) => {
+          const portfolioDropdownRef = ddAddStockRef.current;
+          if (portfolioDropdownRef && !portfolioDropdownRef.contains(event.target as Node)) {
+            updatedDropdowns[portfolioName] = false;
+          }
+        });
+        return updatedDropdowns;
+      });
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -131,11 +163,7 @@ function Dashboard() {
   const userPortfolioStocks = portfolioStockList
     .map((portfolio) => ({
       portfolioName: portfolio.portfolioName,
-      stocks: portfolio.stocks.filter(
-        (stock) =>
-          stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
+      stocks: portfolio.stocks,
     }))
     .filter((portfolio) => portfolio.stocks.length > 0);
 
@@ -143,11 +171,51 @@ function Dashboard() {
     navigate(`/stock/${symbol}`);
   };
 
+  const handlePortfolioSearchChange = (portfolioName: string, value: string) => {
+    setPortfolioSearchTerms((prev) => ({
+      ...prev,
+      [portfolioName]: value,
+    }));
+
+    setPortfolioDropdowns((prev) => ({
+      ...prev,
+      [portfolioName]: value.length > 0, // Show dropdown only if user types something
+    }));
+  };
+
+  const addStockToPortfolio = async (symbol: string, portfolioName: string) => {
+    const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (authToken) {
+      setPortfolioLoading(true);
+      try {
+        const payload = {
+          method: 'addStock',
+          data: {
+            portfolioName: portfolioName,
+            stockSymbol: symbol,
+          },
+        };
+        const response = await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(payload),
+        });
+  
+        const result = await response.json();
+        console.log('result: ', result);
+      } catch (error) {
+        console.error('Error adding stock to portfolio:', error);
+      } finally {
+        setPortfolioLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="dashboard">
-      {showDropdown && suggestions.length > 0 && (
-        <div className="overlay show" onClick={() => setShowDropdown(false)}></div>
-      )}
       <div className="dashboard__header">
         {isAuthenticated && user && (
           <div className="dashboard__user-portfolio__container">
@@ -159,7 +227,28 @@ function Dashboard() {
             ) : (
               userPortfolioStocks.map((portfolio) => (
                 <div key={portfolio.portfolioName} className="portfolio-group">
-                  <div className="portfolio__title">{portfolio.portfolioName}</div>
+                  <div className="portfolio__title__container">
+                    <div className="portfolio__title">
+                      {portfolio.portfolioName}
+                    </div>
+                    <div className="portfolio__add__stock__container">
+                      <input
+                        type="text"
+                        className="dashboard__portfolio__search"
+                        placeholder="Add a stock"
+                        value={portfolioSearchTerms[portfolio.portfolioName] || ''}
+                        onChange={(e) => handlePortfolioSearchChange(portfolio.portfolioName, e.target.value)}
+                      />
+                      {portfolioDropdowns[portfolio.portfolioName] && searchAddStockResult.length > 0 && (
+                        <Dropdown
+                          suggestions={searchAddStockResult}
+                          dropdownRef={ddAddStockRef}
+                          onItemClick={(symbol) => addStockToPortfolio(symbol, portfolio.portfolioName)}
+                          isOpen={portfolioDropdowns[portfolio.portfolioName]}
+                        />
+                      )}
+                    </div>
+                  </div>
                   <div className="portfolio-stocks">
                     {portfolio.stocks.map((stock) => (
                       <DashboardItem key={stock.symbol} {...stock} onClick={() => handleItemClick(stock.symbol)} />
@@ -181,12 +270,12 @@ function Dashboard() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            {showDropdown && suggestions.length > 0 && (
+            {showSearchedStocks && searchStockResult.length > 0 && (
               <Dropdown
-                suggestions={suggestions}
+                suggestions={searchStockResult}
                 dropdownRef={dropdownRef}
                 onItemClick={handleItemClick}
-                isOpen={showDropdown}
+                isOpen={showSearchedStocks}
               />
             )}
           </div>
