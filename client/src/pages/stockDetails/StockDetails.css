@@ -74,7 +74,7 @@
 }
 
 .stock-details__title{
-    font-size: 1.5em;
+    font-size: 1.4em;
     color: var(--primary-light-dark);
     font-weight: bold;
     margin-top: 20px;
@@ -94,26 +94,30 @@
 
 .stock-details__table__row{
     width: calc(100% - 40px); 
-    height: 60px;
+    height: 30px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
 }
+
 
 .stock-details__table__label{
     display: flex;
     align-items: center;
     position: relative;
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: var(--primary-light-dark);
-    margin-left: 20px;
+    margin-left: 0px;
 }
 
 .stock-details__table__value{
     max-width: 50%;
-    font-size: 0.9em;
-    margin-right: 20px;
+    font-size: 0.8em;
+    margin-right: 0px;
     font-weight: bold;
     color: var(--primary-light-dark);
     text-align: right;
@@ -130,7 +134,7 @@
 
 .stock-profile__description{
     width: 80%;
-    font-size: 14px;
+    font-size: 0.8em;
     text-align: justify;
     margin-top: 0px;
   }
@@ -480,15 +484,6 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-  
-  .stock-details__table__row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    padding: 0.5rem;
-    border-bottom: 1px solid #ddd;
   }
   
   .info-icon {
