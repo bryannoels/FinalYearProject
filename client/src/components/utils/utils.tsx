@@ -1,6 +1,4 @@
-import { Stock } from '../../types/Stock';
-
-export const getCachedData = (key: string): Stock | null => {
+export const getCachedData = (key: string): any => {
     const cachedItem = localStorage.getItem(key);
     if (!cachedItem) return null;
     const { data, timestamp } = JSON.parse(cachedItem);
@@ -11,7 +9,7 @@ export const getCachedData = (key: string): Stock | null => {
     return data;
 };
 
-export const setCachedData = (key: string, data: Stock) => {
+export const setCachedData = (key: string, data: any) => {
     localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
 };
 

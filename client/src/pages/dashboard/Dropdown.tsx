@@ -8,7 +8,6 @@ interface DropdownProps {
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ suggestions, dropdownRef, onItemClick, isOpen }) => {
-  console.log(suggestions.length)
   return (
     <div className={`search-suggestions ${isOpen ? 'open' : ''}`} ref={dropdownRef}>
       {suggestions.length === 0 ? (

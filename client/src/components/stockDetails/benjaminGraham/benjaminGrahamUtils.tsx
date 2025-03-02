@@ -48,22 +48,22 @@ export function priceToAssetRatio(peRatioData: PeRatio[], priceToBook: string): 
 }
 
 export function goodForDefensiveInvestor(stockData: Stock): string {
-  if (parseFloat(stockData.detail?.totalRevenue) < 100000000) return "BAD";
-  if (parseFloat(stockData.detail?.currentRatio) < 2) return "BAD";
-  if (isEarningsStable(stockData.eps) === "BAD") return "BAD";
-  if (isDividendStable(stockData.dividends) === "BAD") return "BAD";
-  if (hasEarningsIncreased(stockData.eps) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps, "defensive")) > 4.0 / 3) return "BAD";
-  if (threeYearsPeRatio(stockData.peRatio) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio)) > 15.0) return "BAD";
-  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 22.5) return "BAD";
+  if (parseFloat(stockData.detail?.totalRevenue ?? "0") < 100000000) return "BAD";
+  if (parseFloat(stockData.detail?.currentRatio ?? "0") < 2) return "BAD";
+  if (isEarningsStable(stockData.eps ?? []) === "BAD") return "BAD";
+  if (isDividendStable(stockData.dividends ?? []) === "BAD") return "BAD";
+  if (hasEarningsIncreased(stockData.eps ?? []) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps ?? [], "defensive")) > 4.0 / 3) return "BAD";
+  if (threeYearsPeRatio(stockData.peRatio ?? []) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio ?? [])) > 15.0) return "BAD";
+  if (priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found") === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found")) > 22.5) return "BAD";
   return "GOOD";
 }
 
 export function goodForEnterprisingInvestor(stockData: Stock): string {
-  if (parseFloat(stockData.detail?.totalRevenue) <= 0) return "BAD";
-  if (parseFloat(stockData.detail?.currentRatio) < 1.5) return "BAD";
-  if (isEarningsStable(stockData.eps, 5) === "BAD") return "BAD";
-  if (isDividendStable(stockData.dividends, 1) === "BAD") return "BAD";
-  if (hasEarningsIncreased(stockData.eps) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps, "enterprising")) <= 1) return "BAD";
-  if (stockData.detail?.priceToBook === null || parseFloat(priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook)) > 18) return "BAD";
+  if (parseFloat(stockData.detail?.totalRevenue ?? "0") <= 0) return "BAD";
+  if (parseFloat(stockData.detail?.currentRatio ?? "0") < 1.5) return "BAD";
+  if (isEarningsStable(stockData.eps ?? [], 5) === "BAD") return "BAD";
+  if (isDividendStable(stockData.dividends ?? [], 1) === "BAD") return "BAD";
+  if (hasEarningsIncreased(stockData.eps ?? []) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps ?? [], "enterprising")) <= 1) return "BAD";
+  if (stockData.detail?.priceToBook === null || parseFloat(priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found")) > 18) return "BAD";
   return "GOOD";
 }

@@ -7,7 +7,6 @@ interface StockVerdictProps {
 
 const StockVerdict: React.FC<StockVerdictProps> = ({ stockData }) => {
     if (stockData == null || stockData.analysis == null) return null;
-    console.log(stockData.analysis);
     return (
         <div className="stock-details__analysis">
             <div className="stock-detailss__analysis__left">
