@@ -30,7 +30,7 @@ def get_pe_ratio_data(stock_symbol):
                 if index % 4 == 3:
                     cells = row.find_all("td")
                     if len(cells) >= 3:
-                        year = cells[0].text.strip()[:4]
+                        year = int(cells[0].text.strip()[:4])
                         pe_ratio = float(cells[3].text.strip().replace(',', ''))
                         if pe_ratio != "":
                             pe_ratio_data.append({"Year": year, "PE_Ratio": pe_ratio})
