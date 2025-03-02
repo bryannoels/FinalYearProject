@@ -13,11 +13,11 @@ export type Stock = {
     profile: StockProfile;
     detail: StockDetail;
     price: StockPrice[];
-    forecast: Forecast;
-    analysis: StockAnalysis;
-    eps: Eps[];
-    peRatio: PeRatio[];
-    dividends: Dividend[];
+    forecast: Forecast | null;
+    analysis: StockAnalysis | null;
+    eps: Eps[] | null;
+    peRatio: PeRatio[] | null;
+    dividends: Dividend[] | null;
     growthRate: string | null;
     bondYield: string | null;
 }
