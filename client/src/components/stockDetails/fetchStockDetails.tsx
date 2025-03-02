@@ -11,6 +11,7 @@ export const fetchStockDetails = async (
     setLoading: (loading: boolean) => void,
     setError: (error: string | null) => void
 ) => {
+    const startTime = performance.now();
     setLoading(true);
     try {
         const cachedStock = getCachedData(`stock_${symbol}`);
@@ -94,4 +95,7 @@ export const fetchStockDetails = async (
         setError(err.message || 'An error occurred while fetching stock data');
         setLoading(false);
     }
+
+    const endTime = performance.now();
+    console.log(`UI updated in ${endTime - startTime} ms`);
 };
