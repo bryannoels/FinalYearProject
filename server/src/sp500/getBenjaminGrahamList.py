@@ -117,7 +117,6 @@ def get_benjamin_graham_list(stock_symbol):
             defensive += "0"
     else:
         defensive += "0"
-        enterprising += "0"
 
         
     enterprising_value += 1
