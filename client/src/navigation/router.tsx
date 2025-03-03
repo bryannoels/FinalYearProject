@@ -9,6 +9,7 @@ import Dashboard from "../pages/dashboard/Dashboard.tsx";
 import Login from "../pages/login/Login.tsx"
 import Signup from "../pages/signup/Signup.tsx"
 import StockDetails from "../pages/stockDetails/StockDetails.tsx";
+import StockList from "../pages/stockList/StockList.tsx";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -16,6 +17,7 @@ export const router = createBrowserRouter(
       {/* Routes using the Layout */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
+        <Route path="stocklist" element={<StockList />} />
         <Route path="stock/:symbol" element={<StockDetails />} />
       </Route>
 
