@@ -12,14 +12,12 @@ import Dropdown from './Dropdown';
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [portfolioSearchTerms, setPortfolioSearchTerms] = useState<{ [portfolioName: string]: string }>({});
   const [portfolioStockList, setPortfolioStockList] = useState<{ portfolioName: string; stocks: StockInfo[] }[]>([]);
   const [marketStockList, setMarketStockList] = useState<StockInfo[]>([]);
   const [portfolioLoading, setPortfolioLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchStockResult, setSuggestions] = useState<{ ticker: string; name: string }[]>([]);
   const [searchAddStockResult, setAddStockResult] = useState<{ ticker: string; name: string }[]>([]);
-  const [portfolioDropdowns, setPortfolioDropdowns] = useState<{ [portfolioName: string]: boolean }>({});
   const [showSearchedStocks, setShowDropdown] = useState(false);
 
   const navigate = useNavigate();
@@ -29,6 +27,10 @@ function Dashboard() {
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  const [showCreateNewPortfolio, setShowCreateNewPortfolio] = useState<boolean>(false);
+
+  const [portfolioSearchTerms, setPortfolioSearchTerms] = useState<{ [portfolioName: string]: string }>({});
+  const [portfolioDropdowns, setPortfolioDropdowns] = useState<{ [portfolioName: string]: boolean }>({});
   const ddAddStockRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,6 +91,42 @@ function Dashboard() {
     }
   };
 
+  const handleCreateNewPortfolio = () => {
+    setShowCreateNewPortfolio((prev) => !prev);
+  };
+
+  const createNewPortfolio = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (authToken) {
+      const formData = new FormData(e.currentTarget);
+      const portfolioName = formData.get('portfolioName');
+
+      const payload = {
+        method: 'addPortfolio',
+        data: {
+          portfolioName: portfolioName
+        },
+      };
+      try {
+        await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        fetchPortfolio();
+        setShowCreateNewPortfolio(false);
+      } catch (error) {
+        console.error('Error creating new portfolio:', error);
+      }
+    }
+  };
+
+  // Searchs stocks in current market
   useEffect(() => {
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
@@ -109,6 +147,7 @@ function Dashboard() {
     };
   }, [searchTerm]);
 
+  // Search stocks to add to portfolio
   useEffect(() => {
     const timeouts: { [key: string]: NodeJS.Timeout } = {};
 
@@ -125,11 +164,13 @@ function Dashboard() {
     };
   }, [portfolioSearchTerms]);
 
+  // First time load stocks
   useEffect(() => {
     fetchPortfolio();
     fetchStocks();
   }, []);
 
+  // Control dropdown
   useEffect(() => {
     if (searchStockResult.length > 0) {
       setShowDropdown(true);
@@ -138,6 +179,7 @@ function Dashboard() {
     }
   }, [searchStockResult]);
 
+  // Hide dropdown when click elsewhere
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -164,8 +206,7 @@ function Dashboard() {
     .map((portfolio) => ({
       portfolioName: portfolio.portfolioName,
       stocks: portfolio.stocks,
-    }))
-    .filter((portfolio) => portfolio.stocks.length > 0);
+    }));
 
   const handleItemClick = (symbol: string) => {
     navigate(`/stock/${symbol}`);
@@ -195,17 +236,26 @@ function Dashboard() {
             stockSymbol: symbol,
           },
         };
-        const response = await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
+
+        await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify(payload),
-        });
-  
-        const result = await response.json();
-        console.log('result: ', result);
+        }).catch((error) => console.error('Server error: ', error));
+        
+        setPortfolioDropdowns((prev) => ({
+          ...prev,
+          [portfolioName]: false,
+        }));
+        setPortfolioSearchTerms((prev) => ({
+          ...prev,
+          [portfolioName]: '',
+        }));
+
+        fetchPortfolio();
       } catch (error) {
         console.error('Error adding stock to portfolio:', error);
       } finally {
@@ -214,14 +264,56 @@ function Dashboard() {
     }
   };
 
+  const deleteStockFromPortfolio = async (portfolioName: string, symbol: string) => {
+    const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (authToken) {
+      setPortfolioLoading(true);
+
+      try {
+        const payload = {
+          method: 'deleteStock',
+          data: {
+            portfolioName: portfolioName,
+            stockSymbol: symbol,
+          },
+        }
+
+        await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(payload),
+        }).catch((error) => console.error('Server error: ', error));
+
+        fetchPortfolio();
+      } catch (error) {
+        console.error('Error deleting stock from portfolio:', error);
+      } finally {
+        setPortfolioLoading(false);
+      }
+    }
+  }
+
   return (
     <div className="dashboard">
       <div className="dashboard__header">
         {isAuthenticated && user && (
-          <div className="dashboard__user-portfolio__container">
-            <button type="submit" className="button">
-              Create new portfolio
+          <div className="dashboard__user__portfolio__container">
+            <button type="submit" className="button" onClick={handleCreateNewPortfolio}>
+              {showCreateNewPortfolio ? "Cancel" : "Create New Portfolio"}
             </button>
+            {showCreateNewPortfolio && (
+              <div className="dashboard__create__portfolio__container">
+                <form onSubmit={createNewPortfolio}>
+                  <input type="text" name="portfolioName" className="dashboard__create__portfolio__textbox" placeholder="Portfolio name" required/>
+                  <button type="submit" className="dashboard__create__portfolio__button">
+                    Create
+                  </button>
+                </form>
+              </div>
+            )}
             {portfolioLoading ? (
               <LoadingSpinner />
             ) : (
@@ -251,7 +343,10 @@ function Dashboard() {
                   </div>
                   <div className="portfolio-stocks">
                     {portfolio.stocks.map((stock) => (
-                      <DashboardItem key={stock.symbol} {...stock} onClick={() => handleItemClick(stock.symbol)} />
+                      <DashboardItem key={stock.symbol} {...stock}
+                        onClick={() => handleItemClick(stock.symbol)}
+                        portfolio={true}
+                        onClickDelete={() => deleteStockFromPortfolio(portfolio.portfolioName, stock.symbol)} />
                     ))}
                   </div>
                 </div>

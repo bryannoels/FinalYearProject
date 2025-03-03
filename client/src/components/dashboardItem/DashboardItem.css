@@ -76,3 +76,9 @@
     justify-content: center;
     margin-top: 20px;
 }
+
+.delete__icon{
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+}
