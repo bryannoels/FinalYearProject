@@ -4,8 +4,9 @@ import { fetchData, getCachedData, setCachedData } from '../../components/utils/
 import { StockInfo } from '../../types/StockInfo';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
-import { createStockObject } from '../dashboard/utils';
+import { createStockObject } from '../utils/utils';
 import Dropdown from '../../components/dropdown/Dropdown';
+import { searchStocks } from '../utils/searchStocks';
 
 export function CurrentMarket () {
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -18,20 +19,6 @@ export function CurrentMarket () {
     const [showSearchedStocks, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
-
-    const searchStocks = async (query: string) => {
-        if (query.length >= 1) {
-          try {
-            const response = await fetch(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/search/${query}`);
-            const result = await response.json();
-            setSuggestions(result);
-          } catch (error) {
-            console.error('Error fetching search suggestions:', error);
-          }
-        } else {
-          setSuggestions([]);
-        }
-      };
     
 
     const fetchStocks = async () => {
@@ -60,23 +47,15 @@ export function CurrentMarket () {
       };
 
       useEffect(() => {
-        if (debounceTimeout.current) {
-          clearTimeout(debounceTimeout.current);
-        }
+        debounceTimeout.current && clearTimeout(debounceTimeout.current);
     
         if (searchTerm.length >= 1) {
-          debounceTimeout.current = setTimeout(() => {
-            searchStocks(searchTerm);
-          }, 200);
+          debounceTimeout.current = setTimeout(() => searchStocks(searchTerm, setSuggestions), 200);
         } else {
           setSuggestions([]);
         }
     
-        return () => {
-          if (debounceTimeout.current) {
-            clearTimeout(debounceTimeout.current);
-          }
-        };
+        return () => { debounceTimeout.current && clearTimeout(debounceTimeout.current); };
       }, [searchTerm]);
 
       useEffect(() => {
@@ -84,13 +63,8 @@ export function CurrentMarket () {
       }, []);
 
       useEffect(() => {
-        if (searchStockResult.length > 0) {
-          setShowDropdown(true);
-        } else {
-          setShowDropdown(false);
-        }
-      }, [searchStockResult]);
-    
+        setShowDropdown(searchStockResult.length > 0);
+      }, [searchStockResult]);      
 
     return (
         <div>
