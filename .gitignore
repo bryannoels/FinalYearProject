@@ -4,3 +4,4 @@ server/python-dependencies/python
 server/python-dependencies/python-dependencies.zip
 server/python-getPortfolioStockData-dependencies
 server/node_modules
+.DS_Store
