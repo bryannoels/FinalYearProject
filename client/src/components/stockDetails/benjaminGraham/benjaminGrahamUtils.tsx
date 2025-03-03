@@ -63,7 +63,7 @@ export function goodForEnterprisingInvestor(stockData: Stock): string {
   if (parseFloat(stockData.detail?.currentRatio ?? "0") < 1.5) return "BAD";
   if (isEarningsStable(stockData.eps ?? [], 5) === "BAD") return "BAD";
   if (isDividendStable(stockData.dividends ?? [], 1) === "BAD") return "BAD";
-  if (hasEarningsIncreased(stockData.eps ?? []) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps ?? [], "enterprising")) <= 1) return "BAD";
+  if (hasEarningsIncreased(stockData.eps ?? []) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps ?? [], "enterprising")) >= 1) return "BAD";
   if (stockData.detail?.priceToBook === null || parseFloat(priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found")) > 18) return "BAD";
   return "GOOD";
 }
