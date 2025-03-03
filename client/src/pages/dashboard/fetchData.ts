@@ -14,8 +14,6 @@ export const fetchPortfolioData = async (authToken: string) => {
     const result = await response.json();
     return result.data;
   };
-  
-
 
   export const fetchStockData = async () => {
       const cacheKey = 'most_active_stocks';

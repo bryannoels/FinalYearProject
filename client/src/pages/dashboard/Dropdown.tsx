@@ -3,11 +3,12 @@ import React from 'react';
 interface DropdownProps {
   suggestions: { ticker: string; name: string }[];
   dropdownRef: React.RefObject<HTMLDivElement | null>;
-  onItemClick: (symbol: string) => void;
+  portfolioName?: string;
+  onItemClick: (symbol: string, portfolioName?: string) => void;
   isOpen: boolean;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ suggestions, dropdownRef, onItemClick, isOpen }) => {
+const Dropdown: React.FC<DropdownProps> = ({ suggestions, dropdownRef, portfolioName, onItemClick, isOpen }) => {
   return (
     <div className={`search-suggestions ${isOpen ? 'open' : ''}`} ref={dropdownRef}>
       {suggestions.length === 0 ? (
@@ -19,7 +20,7 @@ const Dropdown: React.FC<DropdownProps> = ({ suggestions, dropdownRef, onItemCli
           <div
             key={suggestion.ticker}
             className="search-suggestion-item"
-            onClick={() => onItemClick(suggestion.ticker)}
+            onClick={() => portfolioName ? onItemClick(suggestion.ticker, portfolioName) : onItemClick(suggestion.ticker)}
           >
             <div className="dashboard__dropdown-item__ticker">
               {suggestion.ticker}

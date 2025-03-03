@@ -25,7 +25,15 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
                         {symbol}
                     </div>
                 </div>
-                <DashboardItem key={symbol} {...stockData?.info} onClick={() => {}} />
+                <DashboardItem 
+                    key={symbol}
+                    name={stockData?.info?.name ?? 'Unknown'}
+                    symbol={stockData?.info?.symbol ?? ''}
+                    price={stockData?.info?.price ?? 0}
+                    change={stockData?.info?.change ?? 0}
+                    percentChange={stockData?.info?.percentChange ?? 0}
+                    onClick={() => {}} 
+                />
             </div>
         </>
     );
