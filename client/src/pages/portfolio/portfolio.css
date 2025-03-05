@@ -1,0 +1,98 @@
+.dashboard__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.dashboard__user__portfolio__container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dashboard__create__portfolio__container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.5rem 0;
+    width: 100%;
+}
+
+.dashboard__create__portfolio__textbox{
+    height: 35px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    max-width: 180px;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    color: #333;
+}
+
+.dashboard__create__portfolio__button{
+    width: 100px;
+    padding: 1rem 0;
+    color: var(--primary-white);
+    background-color: var(--primary-blue);
+}
+
+.portfolio__group{
+    width: 100%;
+}
+
+.portfolio__title__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0.5rem 0;
+}
+
+.portfolio__title {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: var(--primary-light-dark);
+    font-weight: bold;
+    margin-left: 20px;
+    margin-right: 20px;
+    overflow-wrap: anywhere;
+}
+
+.delete__portfolio__icon{
+    width: 15px;
+    height: 15px;
+    margin-left: 20px;
+}
+
+.portfolio__add__stock__container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    z-index: 7;
+}
+
+.dashboard__portfolio__search {
+    height: 35px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    max-width: 100px;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    color: #333;
+}
+
+.dashboard__portfolio__search::placeholder {
+    color: #888;
+}
+
+.dashboard__portfolio__search:focus {
+    border-color: #007bff;
+    outline: none;
+}
