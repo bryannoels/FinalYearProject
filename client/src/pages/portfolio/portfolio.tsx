@@ -8,6 +8,8 @@ import { createStockObject } from '../utils/utils';
 import { fetchPortfolioData } from '../utils/fetchData';
 import { searchStocks } from '../utils/searchStocks';
 import Dropdown from '../../components/dropdown/Dropdown';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
 import './portfolio.css';
 
 export function Portfolio(){
@@ -210,6 +212,36 @@ export function Portfolio(){
       }
     }
   };
+
+  const deletePortfolio = async (portfolioName: string) => {
+    const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (authToken) {
+      setPortfolioLoading(true);
+      try {
+        const payload = {
+          method: 'deletePortfolio',
+          data: {
+            portfolioName: portfolioName
+          },
+        }
+
+        await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(payload),
+        }).catch((error) => console.error('Server error: ', error));
+
+        fetchPortfolio();
+      } catch (error) {
+        console.error('Error deleting portfolio:', error);
+      } finally {
+        setPortfolioLoading(false);
+      }
+    }
+  };
     
   return(
       <div className="dashboard__header">
@@ -234,7 +266,10 @@ export function Portfolio(){
                 <div key={portfolio.portfolioName} className="portfolio__group">
                   <div className="portfolio__title__container">
                     <div className="portfolio__title">
-                      {portfolio.portfolioName}
+                      <div>
+                        {portfolio.portfolioName}
+                      </div>
+                      <FontAwesomeIcon icon={faTrash} className="delete__portfolio__icon" onClick={() => deletePortfolio(portfolio.portfolioName)}/>
                     </div>
                     <div className="portfolio__add__stock__container">
                       <input

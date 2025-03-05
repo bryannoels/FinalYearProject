@@ -53,13 +53,20 @@
 }
 
 .portfolio__title {
+    display: flex;
+    align-items: center;
     font-size: 18px;
     color: var(--primary-light-dark);
     font-weight: bold;
-    padding-top: 0.5em;
     margin-left: 20px;
     margin-right: 20px;
     overflow-wrap: anywhere;
+}
+
+.delete__portfolio__icon{
+    width: 15px;
+    height: 15px;
+    margin-left: 20px;
 }
 
 .portfolio__add__stock__container {
