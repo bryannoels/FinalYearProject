@@ -1,0 +1,8 @@
+.stock-list{
+    background-color: var(--light-gray);
+    min-height: 100vh;
+    width: calc(100vw - 40px);
+    margin: 0px;
+    padding: 20px;
+    width: calc(100vw - 40px);
+}
