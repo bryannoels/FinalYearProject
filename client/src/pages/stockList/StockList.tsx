@@ -9,6 +9,7 @@ import { StockInfo } from '../../types/StockInfo';
 import './StockList.css';
 
 function StockList() {
+  const [category, setCategory] = useState<string>('trending');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const [searchStockResult, setSuggestions] = useState<{ ticker: string; name: string }[]>([]);
@@ -20,21 +21,23 @@ function StockList() {
   const [message, setMessage] = useState<string>('');
   const navigate = useNavigate();
 
-  const fetchStocks = async () => {
+  const fetchStocks = async (category: string) => {
     setLoading(true);
     try {
-      const cachedStocks = getCachedData("10_most_active_stocks");
+      const cacheKey = `stocks_${category}`;
+      const cachedStocks = getCachedData(cacheKey);
+  
       if (cachedStocks) {
         setMarketStockList(cachedStocks);
-      }
-      else {
-        const response = await fetchData('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-most-active-stocks');
-        const formattedData: StockInfo[] = JSON.parse(response).map(createStockObject);
-        setCachedData(`10_most_active_stocks`, formattedData);
+      } else {
+        const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
+        const response = await fetchData(url);
+        const formattedData: StockInfo[] = response.map(createStockObject);
+        setCachedData(cacheKey, formattedData);
         setMarketStockList(formattedData);
       }
     } catch (error) {
-      setMessage('Error fetching stocks: ' + error);
+      setMessage(`Error fetching stocks: ${error}`);
       setShowMessage(true);
     } finally {
       setLoading(false);
@@ -46,7 +49,7 @@ function StockList() {
   };
 
   useEffect(() => {
-    fetchStocks();
+    fetchStocks(category);
   }, []);   
 
   useEffect(() => {
