@@ -2,6 +2,7 @@
 import { StockInfo } from '../../types/StockInfo';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
+import './CurrentMarket.css';
 
 interface CurrentMarketProps {
     marketStockList: StockInfo[];
@@ -13,7 +14,7 @@ interface CurrentMarketProps {
 
 export const CurrentMarket: React.FC<CurrentMarketProps> = ({ marketStockList, loading, showMessage, message, handleItemClick }) => { 
     return (
-        <div>
+        <div className = "current-market">
             {loading ? (
                 <LoadingSpinner />
             ) : (

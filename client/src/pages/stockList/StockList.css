@@ -4,5 +4,19 @@
     width: calc(100vw - 40px);
     margin: 0px;
     padding: 20px;
-    width: calc(100vw - 40px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dashboard__market__container {
+    display: flex;
+    justify-content: space-between;
+    width: calc(max(100vw - 40px, 85%));
+}
+
+.market__title {
+    font-size: 22px;
+    color: var(--primary-light-dark);
+    font-weight: bold;
 }

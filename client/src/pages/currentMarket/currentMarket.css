@@ -1,0 +1,14 @@
+.current-market{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+}
+
+.current-market > * {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
