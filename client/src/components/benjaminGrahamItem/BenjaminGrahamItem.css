@@ -4,12 +4,13 @@
     flex-direction: row;
     align-items: center;
     padding: 0px;
-    margin: 0px;
+    margin: 10px;
     border-radius: 10px;
     color: var(--primary-black);
-    width: calc(min(100% - 40px, 85%));
+    width: 85vw;
     cursor: pointer;
     transition: transform 0.3s ease;
+    height: 60px;
 }
 
 .benjamin__graham__item:hover{
@@ -19,7 +20,7 @@
 .benjamin__graham__item__left{
     padding: 0px;
     margin-left: 20px;
-    width: calc(100% - 140px);
+    width: calc(85vw - 200px);
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -37,7 +38,7 @@
 }
 
 .benjamin__graham__item__right{
-    width: 120px;
+    width: 160px;
     margin-left: auto;
     display: flex;
     flex-direction: column;
@@ -45,14 +46,14 @@
     align-items: center;
 }
 
-.benjamin__graham__item__price{
-    font-size: 20px;
+.benjamin__graham__item__sort__by{
+    font-size: 12px;
     font-weight: bold;
     margin: 0px;
 }
 
-.benjamin__graham__item__change{
-    font-size: 16px;
+.benjamin__graham__item__value{
+    font-size: 12px;
     margin: 0px;
 }
 
