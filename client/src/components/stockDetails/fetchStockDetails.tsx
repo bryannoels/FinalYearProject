@@ -16,17 +16,18 @@ export const fetchStockDetails = async (
     try {
         const cachedStock = getCachedData(`stock_${symbol}`);
         if (cachedStock) {
-            setStockData(cachedStock);
+            setStockData(cachedStock.data);
+            console.log(cachedStock.data)
             setLoading(false);
             return;
         }
-
+    
         const [stockInfoResp, priceData, profileData] = await Promise.all([
             fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-stock-data/${symbol}`),
             fetchData(`${API_BASE_URL}/get-historical-data/${symbol}`),
             fetchData(`${API_BASE_URL}/get-profile/${symbol}`),
         ]);
-
+    
         const stockInfo = JSON.parse(stockInfoResp);
         const currentStock = {
             name: stockInfo.companyName,
@@ -35,7 +36,7 @@ export const fetchStockDetails = async (
             change: parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose),
             percentChange: ((parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose)) / parseFloat(stockInfo.previousClose)) * 100,
         };
-
+    
         const initialStockData: Stock = {
             info: currentStock,
             detail: stockInfo,
@@ -49,10 +50,10 @@ export const fetchStockDetails = async (
             bondYield: null,
             dividends: stockInfo?.dividends,
         };
-
+    
         setStockData(initialStockData);
         setLoading(false);
-
+    
         Promise.allSettled([
             fetchData(`${API_BASE_URL}/get-forecast/${symbol}`),
             fetchData(`${API_BASE_URL}/analysis/${symbol}`),
@@ -63,7 +64,7 @@ export const fetchStockDetails = async (
             const [forecastData, analysisData, epsData, peRatioData, bondYieldData] = results.map(result =>
                 result.status === "fulfilled" ? result.value : null
             );
-
+    
             const newData = {
                 info: initialStockData.info,
                 detail: initialStockData.detail,
@@ -77,24 +78,19 @@ export const fetchStockDetails = async (
                 bondYield: bondYieldData?.aaaCorporateBondYield || null,
                 dividends: stockInfo?.dividends,
             };
-
+    
             setStockData(newData);
-
+    
             setCachedData(`stock_${symbol}`, {
-                ...initialStockData,
-                forecast: forecastData,
-                analysis: analysisData,
-                eps: epsData?.EPS_Data,
-                peRatio: peRatioData?.PE_Ratio_Data,
-                growthRate: stockInfo?.growthRate,
-                bondYield: bondYieldData?.aaaCorporateBondYield,
+                data: newData,
+                timestamp: new Date().toISOString(),
             });
         });
-
+    
     } catch (err: any) {
         setError(err.message || 'An error occurred while fetching stock data');
         setLoading(false);
-    }
+    }    
 
     const endTime = performance.now();
     console.log(`UI updated in ${endTime - startTime} ms`);
