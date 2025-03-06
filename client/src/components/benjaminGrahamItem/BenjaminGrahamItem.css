@@ -1,0 +1,79 @@
+.benjamin__graham__item{
+    background-color: var(--primary-white);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+    margin: 0px;
+    border-radius: 10px;
+    color: var(--primary-black);
+    width: calc(min(100% - 40px, 85%));
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.benjamin__graham__item:hover{
+    transform: scale(1.02);
+}
+
+.benjamin__graham__item__left{
+    padding: 0px;
+    margin-left: 20px;
+    width: calc(100% - 140px);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.benjamin__graham__item__name{
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.benjamin__graham__item__symbol{
+    font-size: 12px;
+    margin: 0px;
+}
+
+.benjamin__graham__item__right{
+    width: 120px;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.benjamin__graham__item__price{
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.benjamin__graham__item__change{
+    font-size: 16px;
+    margin: 0px;
+}
+
+.stock-up{
+    color: var(--primary-green);
+}
+
+.stock-down{
+    color: var(--primary-red);
+}
+
+.dashboard__user-portfolio__container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.delete__icon{
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+}
