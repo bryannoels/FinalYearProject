@@ -74,8 +74,17 @@ const getStockProfile = (req: Request, res: Response): void => {
     });
 };
 
-const getTop10MostActiveStocks = (req: Request, res: Response): void => {
-    const pythonProcess = spawn('python3', ['src/stocks/getTopStock.py']);
+const getTopStocks = (req: Request, res: Response): void => {
+    const { category } = req.query;
+    const validCategories = ["most-active", "trending", "gainers", "losers", "52-week-gainers", "52-week-losers"];
+
+    if (category && !validCategories.includes(category as string)) {
+        res.status(400).json({ error: "Invalid category parameter" });
+        return;
+    }
+
+    const pythonProcess = spawn('python3', ['src/stocks/getTopStock.py', category as string || "most-active"]);
+
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
@@ -449,7 +458,7 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
 export {
     getStockData,
     getStockProfile,
-    getTop10MostActiveStocks,
+    getTopStocks,
     getAnalysis,
     getHistoricalData,
     getForecastData,
