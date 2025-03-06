@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { fetchData, getCachedData, setCachedData } from '../../components/utils/utils';
 import { useNavigate } from 'react-router-dom';
-import { CurrentMarket } from '../currentMarket/currentMarket';
-import { StockInfo } from '../../types/StockInfo';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
+import BenjaminGrahamItem from '../../components/benjaminGrahamItem/BenjaminGrahamItem';
+import { BenjaminGrahamStockInfo } from '../../types/BenjaminGrahamStockInfo';
 import { createStockObject } from '../utils/utils';
 import './BenjaminGrahamList.css';
 
@@ -10,7 +11,7 @@ function BenjaminGrahamList() {
   const [sortBy, setSortBy] = useState<string>('Overall');
   const [filterBy, setFilterBy] = useState<string>('0000000');
   const [page, setPage] = useState<number>(1);
-  const [marketStockList, setMarketStockList] = useState<StockInfo[]>([]);
+  const [marketStockList, setMarketStockList] = useState<BenjaminGrahamStockInfo[]>([]);
   const [dateTime, setDateTime] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function BenjaminGrahamList() {
         const url = `http://localhost:8000/api/stocks/get-benjamin-graham-list?sortBy=${encodeURIComponent(sortBy)}&filterBy=${encodeURIComponent(filterBy)}&page=${encodeURIComponent(page)}`;
         const response = await fetchData(url);
         console.log(response);
-        const formattedData: StockInfo[] = response.data.map(createStockObject)
+        const formattedData: BenjaminGrahamStockInfo[] = response.data.map(createStockObject)
         console.log(formattedData);
         const currentTimestamp = new Date().toLocaleString('en-US', {
           weekday: 'long',
@@ -67,11 +68,15 @@ function BenjaminGrahamList() {
           <div className="market__search-box">
           </div>
       </div>
-      <CurrentMarket 
-        loading={loading} 
-        marketStockList={marketStockList} 
-        handleItemClick={handleItemClick}
-      />
+      <div className = "current-market">
+        {loading ? (
+            <LoadingSpinner />
+        ) : (
+            marketStockList.map((stock: BenjaminGrahamStockInfo) => (
+            <BenjaminGrahamItem key={stock.symbol} {...stock} onClick={() => handleItemClick(stock.symbol)} />
+            ))
+        )}
+      </div>
       <div className="data-date-time">
         Data is accurate as of <br /> <strong>{dateTime}</strong>
       </div>
