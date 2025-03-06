@@ -20,6 +20,7 @@ function StockList() {
   const [loading, setLoading] = useState<boolean>(true);
   const [showMessage, setShowMessage] = useState<boolean>(true);
   const [message, setMessage] = useState<string>('');
+  const [dateTime, setDateTime] = useState<string>('');
   const navigate = useNavigate();
 
   const fetchStocks = async (category: string) => {
@@ -29,13 +30,27 @@ function StockList() {
       const cachedStocks = getCachedData(cacheKey);
   
       if (cachedStocks) {
-        setMarketStockList(cachedStocks);
+        setMarketStockList(cachedStocks.data);
+        setDateTime(cachedStocks.timestamp);
       } else {
         const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
         const response = await fetchData(url);
         const formattedData: StockInfo[] = response.map(createStockObject);
-        setCachedData(cacheKey, formattedData);
+        const currentTimestamp = new Date().toLocaleString('en-US', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+          timeZoneName: 'short',
+          timeZone: 'America/New_York',
+        });        
+
+        setCachedData(cacheKey, { data: formattedData, timestamp: currentTimestamp });
         setMarketStockList(formattedData);
+        setDateTime(currentTimestamp);
       }
     } catch (error) {
       setMessage(`Error fetching stocks: ${error}`);
@@ -67,7 +82,7 @@ function StockList() {
 
   useEffect(() => {
     setShowDropdown(searchStockResult.length > 0);
-  }, [searchStockResult]);   
+  }, [searchStockResult]);  
 
   return (
     <div className="stock-list">
@@ -105,10 +120,11 @@ function StockList() {
       <CurrentMarket 
         loading={loading} 
         marketStockList={marketStockList} 
-        showMessage={showMessage} 
-        message={message} 
         handleItemClick={handleItemClick}
       />
+      <div className="data-date-time">
+        Data is accurate as of <br /> <strong>{dateTime}</strong>
+      </div>
     </div>
   );
 }
