@@ -12,6 +12,7 @@ def get_benjamin_graham_list(stock_symbol):
     defensive = ""
     enterprising_value = 0
     enterprising = ""
+    overall_value = 0
     stock_data = {}
     stock_info = stock.info
     
@@ -147,13 +148,16 @@ def get_benjamin_graham_list(stock_symbol):
     else:
         defensive += "0"
         enterprising += "0"
+        
+    overall_value = defensive_value + enterprising_value
     
     return {
         "Stock Symbol": stock_symbol,
         "Defensive Value": defensive_value,
         "Defensive": defensive,
         "Enterprising Value": enterprising_value,
-        "Enterprising": enterprising
+        "Enterprising": enterprising,
+        "Overall Value": overall_value
     }
 
 if __name__ == "__main__":
