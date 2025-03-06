@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get('/info/:symbol', getStockData);
 router.get('/get-profile/:symbol', getStockProfile);
-router.get('/most-active', getTopStocks);
+router.get('/get-top-stocks', getTopStocks);
 router.get('/analysis/:symbol', getAnalysis);
 router.get('/get-historical-data/:symbol', getHistoricalData);
 router.get('/get-forecast/:symbol', getForecastData);
