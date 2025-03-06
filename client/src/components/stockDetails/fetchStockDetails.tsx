@@ -9,7 +9,8 @@ export const fetchStockDetails = async (
     symbol: string,
     setStockData: (data: Stock | null) => void,
     setLoading: (loading: boolean) => void,
-    setError: (error: string | null) => void
+    setError: (error: string | null) => void,
+    setDateTime: (dateTime: string) => void
 ) => {
     const startTime = performance.now();
     setLoading(true);
@@ -17,11 +18,10 @@ export const fetchStockDetails = async (
         const cachedStock = getCachedData(`stock_${symbol}`);
         if (cachedStock) {
             setStockData(cachedStock.data);
-            console.log(cachedStock.data)
+            setDateTime(cachedStock.timestamp);
             setLoading(false);
             return;
         }
-    
         const [stockInfoResp, priceData, profileData] = await Promise.all([
             fetchData(`https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-stock-data/${symbol}`),
             fetchData(`${API_BASE_URL}/get-historical-data/${symbol}`),
@@ -50,8 +50,21 @@ export const fetchStockDetails = async (
             bondYield: null,
             dividends: stockInfo?.dividends,
         };
+
+        const currentTimestamp = new Date().toLocaleString('en-US', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+            timeZoneName: 'short',
+            timeZone: 'America/New_York',
+          });  
     
         setStockData(initialStockData);
+        setDateTime(currentTimestamp);
         setLoading(false);
     
         Promise.allSettled([
@@ -83,7 +96,7 @@ export const fetchStockDetails = async (
     
             setCachedData(`stock_${symbol}`, {
                 data: newData,
-                timestamp: new Date().toISOString(),
+                timestamp: currentTimestamp,
             });
         });
     
