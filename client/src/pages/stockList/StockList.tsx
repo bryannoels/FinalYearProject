@@ -18,8 +18,6 @@ function StockList() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [marketStockList, setMarketStockList] = useState<StockInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [showMessage, setShowMessage] = useState<boolean>(true);
-  const [message, setMessage] = useState<string>('');
   const [dateTime, setDateTime] = useState<string>('');
   const navigate = useNavigate();
 
