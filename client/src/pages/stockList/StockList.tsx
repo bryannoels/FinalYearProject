@@ -50,9 +50,7 @@ function StockList() {
         setMarketStockList(formattedData);
         setDateTime(currentTimestamp);
       }
-    } catch (error) {
-      setMessage(`Error fetching stocks: ${error}`);
-      setShowMessage(true);
+    } catch (_error) {
     } finally {
       setLoading(false);
     }
