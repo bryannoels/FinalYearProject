@@ -393,7 +393,6 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
       
     try {
       let stockData: BenjaminGrahamData[] = [];
-      console.log("Current working directory:", process.cwd());
       
       await new Promise<void>((resolve, reject) => {
         fs.createReadStream("src/sp500/data.csv")
@@ -405,11 +404,9 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
             stockData.push(row as BenjaminGrahamData);
           })
           .on("end", () => {
-            console.log("CSV file successfully processed");
             resolve();
           })
           .on("error", (err) => {
-            console.error("Error processing CSV:", err);
             reject(err);
           });
       });
