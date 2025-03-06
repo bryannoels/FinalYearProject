@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import BenjaminGrahamItem from '../../components/benjaminGrahamItem/BenjaminGrahamItem';
 import { BenjaminGrahamStockInfo } from '../../types/BenjaminGrahamStockInfo';
-import { createStockObject } from '../utils/utils';
+import { createBenjaminGrahamStockObject } from '../utils/utils';
 import './BenjaminGrahamList.css';
 
 function BenjaminGrahamList() {
@@ -29,7 +29,7 @@ function BenjaminGrahamList() {
         const url = `http://localhost:8000/api/stocks/get-benjamin-graham-list?sortBy=${encodeURIComponent(sortBy)}&filterBy=${encodeURIComponent(filterBy)}&page=${encodeURIComponent(page)}`;
         const response = await fetchData(url);
         console.log(response);
-        const formattedData: BenjaminGrahamStockInfo[] = response.data.map(createStockObject)
+        const formattedData: BenjaminGrahamStockInfo[] = response.data.map(createBenjaminGrahamStockObject)
         console.log(formattedData);
         const currentTimestamp = new Date().toLocaleString('en-US', {
           weekday: 'long',
@@ -73,7 +73,7 @@ function BenjaminGrahamList() {
             <LoadingSpinner />
         ) : (
             marketStockList.map((stock: BenjaminGrahamStockInfo) => (
-            <BenjaminGrahamItem key={stock.symbol} {...stock} onClick={() => handleItemClick(stock.symbol)} />
+            <BenjaminGrahamItem key={stock.symbol} {...stock} sortBy={sortBy} onClick={() => handleItemClick(stock.symbol)} />
             ))
         )}
       </div>
