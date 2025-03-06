@@ -15,10 +15,11 @@ const StockDetails = () => {
     const [loading, setLoading] = useState(true);
     const [_error, setError] = useState<string | null>(null);
     const [stockData, setStockData] = useState<Stock | null>(null);
+    const [dateTime, setDateTime] = useState<string>('');
 
     useEffect(() => {
         if (!symbol) return;
-        fetchStockDetails(symbol, setStockData, setLoading, setError);
+        fetchStockDetails(symbol, setStockData, setLoading, setError, setDateTime);
     }, [symbol]);
 
     return (
@@ -30,6 +31,9 @@ const StockDetails = () => {
                     <StockInfo symbol={symbol} stockData={stockData} />
                     <StockPriceChart stockData={stockData} />
                     <TabContents stockData={stockData} />
+                    <div className="data-date-time">
+                        Data is accurate as of <br /> <strong>{dateTime}</strong>
+                    </div>
                 </>
             )}
         </div>
