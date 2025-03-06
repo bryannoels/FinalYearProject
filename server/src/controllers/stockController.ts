@@ -7,6 +7,7 @@ import fs from "fs";
 
 type BenjaminGrahamData = {
     "Stock Symbol": string;
+    "Company Name": string;
     "Defensive Value": number;
     "Defensive": string;
     "Enterprising Value": number;
