@@ -9,7 +9,8 @@ import {
   getEPSData, 
   getPeRatioData,
   getAaaCorporateBondYield,
-  searchStock
+  searchStock,
+  getBenjaminGrahamList
 } from '../controllers/stockController';
 
 const router = express.Router();
@@ -24,5 +25,6 @@ router.get('/get-eps/:symbol', getEPSData);
 router.get('/get-pe-ratio/:symbol', getPeRatioData);
 router.get('/get-aaa-corp-bond-yield', getAaaCorporateBondYield);
 router.get('/search/:query', searchStock);
+router.get('/get-benjamin-graham-list', getBenjaminGrahamList);
 
 export default router;

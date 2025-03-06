@@ -2,6 +2,17 @@ import { Request, Response } from 'express';
 import { spawn } from 'child_process';
 import { StockAnalysis } from '../types/stockAnalysis';
 import axios from 'axios';
+import csv from "csv-parser";
+import fs from "fs";
+
+type BenjaminGrahamData = {
+    "Stock Symbol": string;
+    "Defensive Value": number;
+    "Defensive": string;
+    "Enterprising Value": number;
+    "Enterprising": string;
+    "Overall Value": number;
+  };
 
 const getStockData = (req: Request, res: Response): void => {
     const stockSymbol = req.params.symbol.toUpperCase();
@@ -355,6 +366,89 @@ const searchStock = (req: Request, res: Response): void => {
     });
 };
 
+const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defensive" | "Enterprising") => {
+    return data.filter((row) => {
+      const value = row[type];
+      return filterBy.split("").every((bit, index) => bit === "0" || value[index] === "1");
+    });
+  };
+  
+  const getBenjaminGrahamList = async (req: Request, res: Response): Promise<void> => {
+    const { sortBy, filterBy, page = "1" } = req.query;
+    
+    const pageNumber = parseInt(page as string, 10) || 1;
+    const pageSize = 10;
+    
+    if (!sortBy || !["Defensive", "Enterprising", "Overall"].includes(sortBy as string)) {
+      res.status(400).json({ error: "Invalid sortBy parameter" });
+      return;
+    }
+      
+    if (filterBy && typeof filterBy === "string" && (sortBy === "Defensive" || sortBy === "Enterprising")) {
+      if (!/^[01]{7}$/.test(filterBy)) {
+        res.status(400).json({ error: "Invalid filterBy format" });
+        return;
+      }
+    }
+      
+    try {
+      let stockData: BenjaminGrahamData[] = [];
+      console.log("Current working directory:", process.cwd());
+      
+      await new Promise<void>((resolve, reject) => {
+        fs.createReadStream("src/sp500/data.csv")
+          .pipe(csv())
+          .on("data", (row) => {
+            row["Defensive Value"] = parseInt(row["Defensive Value"], 10);
+            row["Enterprising Value"] = parseInt(row["Enterprising Value"], 10);
+            row["Overall Value"] = parseInt(row["Overall Value"], 10);
+            stockData.push(row as BenjaminGrahamData);
+          })
+          .on("end", () => {
+            console.log("CSV file successfully processed");
+            resolve();
+          })
+          .on("error", (err) => {
+            console.error("Error processing CSV:", err);
+            reject(err);
+          });
+      });
+      
+      if (filterBy && sortBy !== "Overall") {
+        stockData = applyFilter(stockData, filterBy as string, sortBy as "Defensive" | "Enterprising");
+      }
+          
+      const sortKey = `${sortBy} Value` as keyof BenjaminGrahamData;
+      stockData.sort((a, b) => (b[sortKey] as number) - (a[sortKey] as number));
+      
+      const totalItems = stockData.length;
+      const totalPages = Math.ceil(totalItems / pageSize);
+    
+      const validPageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+    
+      const startIndex = (validPageNumber - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, totalItems);
+      
+      const paginatedData = stockData.slice(startIndex, endIndex);
+      
+      res.json({
+        data: paginatedData,
+        pagination: {
+          currentPage: validPageNumber,
+          totalPages,
+          pageSize,
+          totalItems,
+          hasNextPage: validPageNumber < totalPages,
+          hasPreviousPage: validPageNumber > 1
+        }
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ error: "Failed to process CSV data" });
+    }
+  };
+  
+
 export {
     getStockData,
     getStockProfile,
@@ -365,5 +459,6 @@ export {
     getEPSData,
     getPeRatioData,
     getAaaCorporateBondYield,
-    searchStock
+    searchStock,
+    getBenjaminGrahamList
 };
