@@ -4,12 +4,13 @@ import { fetchData, getCachedData, setCachedData } from '../../components/utils/
 import { CurrentMarket } from '../currentMarket/currentMarket';
 import Dropdown from '../../components/dropdown/Dropdown';
 import { searchStocks } from '../utils/searchStocks';
-import { createStockObject } from '../utils/utils';
+import { createStockObject, formatCategoryName } from '../utils/utils';
 import { StockInfo } from '../../types/StockInfo';
 import './StockList.css';
 
 function StockList() {
-  const [category, setCategory] = useState<string>('trending');
+  const categories = ['most-active', 'trending', 'gainers', 'losers', '52-week-gainers', '52-week-losers'];
+  const [category, setCategory] = useState<string>('most-active');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const [searchStockResult, setSuggestions] = useState<{ ticker: string; name: string }[]>([]);
@@ -50,7 +51,7 @@ function StockList() {
 
   useEffect(() => {
     fetchStocks(category);
-  }, []);   
+  }, [category]);   
 
   useEffect(() => {
     debounceTimeout.current && clearTimeout(debounceTimeout.current);
@@ -71,24 +72,35 @@ function StockList() {
   return (
     <div className="stock-list">
       <div className="dashboard__market__container">
-          <p className="market__title">Current Market</p>
-          <div className="market__search-box">
+        <p className="market__title">Current Market</p>
+        <div className="market__search-box">
           <input
-              type="text"
-              className="dashboard__search"
-              placeholder="Search stocks..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+            type="text"
+            className="dashboard__search"
+            placeholder="Search stocks..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           {showSearchedStocks && searchStockResult.length > 0 && (
-              <Dropdown
+            <Dropdown
               suggestions={searchStockResult}
               dropdownRef={dropdownRef}
               onItemClick={handleItemClick}
               isOpen={showSearchedStocks}
-              />
+            />
           )}
+        </div>
+      </div>
+      <div className="benjamin-graham-list-buttons">
+        {categories.map((cat) => (
+          <div 
+            key={cat} 
+            className={`benjamin-graham-list-button ${category === cat ? 'active' : ''}`} 
+            onClick={() => setCategory(cat)}
+          >
+            {formatCategoryName(cat)}
           </div>
+        ))}
       </div>
       <CurrentMarket 
         loading={loading} 
