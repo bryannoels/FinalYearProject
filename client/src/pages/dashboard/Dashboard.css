@@ -23,18 +23,6 @@
     opacity: 1;
 }
 
-.market__title {
-    font-size: 22px;
-    color: var(--primary-light-dark);
-    font-weight: bold;
-}
-
-.dashboard__market__container {
-    display: flex;
-    width: calc(100%  - 40px);
-    justify-content: space-between;
-}
-
 .market__search-box {
     position: relative;
     display: flex;
