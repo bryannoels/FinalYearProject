@@ -18,7 +18,7 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
         <>
             <div className="stock-details__top">
                 <div className="stock-details__top__head">
-                    <button className="stock-details__back" onClick={() => navigate('/')}>
+                    <button className="stock-details__back" onClick={() => navigate(-1)}>
                         <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />
                     </button>
                     <div className="stock-details__name">
