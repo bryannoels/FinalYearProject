@@ -16,6 +16,8 @@ def get_benjamin_graham_list(stock_symbol):
     stock_data = {}
     stock_info = stock.info
     
+    company_name = stock_info.get('longName', None)
+    
     # 1. total revenue
     total_revenue = stock_info.get('totalRevenue', None)
     if (total_revenue and total_revenue >= 100000000):
@@ -153,6 +155,7 @@ def get_benjamin_graham_list(stock_symbol):
     
     return {
         "Stock Symbol": stock_symbol,
+        "Company Name": company_name,
         "Defensive Value": defensive_value,
         "Defensive": defensive,
         "Enterprising Value": enterprising_value,
