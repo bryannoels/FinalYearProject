@@ -2,7 +2,7 @@ import express from 'express';
 import { 
   getStockData, 
   getStockProfile,
-  getTop10MostActiveStocks, 
+  getTopStocks, 
   getAnalysis, 
   getHistoricalData, 
   getForecastData, 
@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get('/info/:symbol', getStockData);
 router.get('/get-profile/:symbol', getStockProfile);
-router.get('/most-active', getTop10MostActiveStocks);
+router.get('/most-active', getTopStocks);
 router.get('/analysis/:symbol', getAnalysis);
 router.get('/get-historical-data/:symbol', getHistoricalData);
 router.get('/get-forecast/:symbol', getForecastData);
