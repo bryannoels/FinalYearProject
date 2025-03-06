@@ -7,12 +7,10 @@ import './CurrentMarket.css';
 interface CurrentMarketProps {
     marketStockList: StockInfo[];
     loading: boolean;
-    showMessage: boolean;
-    message: string;
     handleItemClick: (symbol: string) => void;
 }
 
-export const CurrentMarket: React.FC<CurrentMarketProps> = ({ marketStockList, loading, showMessage, message, handleItemClick }) => { 
+export const CurrentMarket: React.FC<CurrentMarketProps> = ({ marketStockList, loading, handleItemClick }) => { 
     return (
         <div className = "current-market">
             {loading ? (
@@ -22,7 +20,6 @@ export const CurrentMarket: React.FC<CurrentMarketProps> = ({ marketStockList, l
                 <DashboardItem key={stock.symbol} {...stock} onClick={() => handleItemClick(stock.symbol)} />
                 ))
             )}
-            {showMessage && <div className="message">{message}</div>}
         </div>
   );
 }
