@@ -33,7 +33,15 @@
     margin-bottom: 5px;
     width: 92.5vw;
     white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
+
+.benjamin-graham-list-buttons::-webkit-scrollbar { 
+    display: none;
+}
+
+
 
 .benjamin-graham-list-buttons::after {
     content: '';
