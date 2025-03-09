@@ -3,67 +3,81 @@ import { Dividend } from '../../../types/Dividend';
 import { PeRatio } from '../../../types/PeRatio';
 import { Stock } from '../../../types/Stock';
 
-export function isEarningsStable(epsData: Eps[], years: number = 10): string {
-  if (!epsData || epsData.length === 0) return "BAD";
+export function isEarningsStable(epsData: Eps[] | null, years: number): number {
+  if (!epsData || epsData.length === 0) return 0;
   const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
-  if (sortedEpsData.length < years) return "BAD";
+  if (sortedEpsData.length < years){
+    for (let i = 0; i < sortedEpsData.length; i++) {
+      if (sortedEpsData[i].EPS < 0) return 0;
+    }
+    return 1;
+  }
   for (let i = 0; i < years; i++) {
-    if (sortedEpsData[i].EPS < 0) return "BAD";
+    if (sortedEpsData[i].EPS < 0) return 0;
   }
-  return "GOOD";
+  return 1;
 }
 
-export function isDividendStable(dividendData: Dividend[], years: number = 20): string {
-  if (!dividendData || dividendData.length === 0) return "BAD";
+export function isDividendStable(dividendData: Dividend[] | null, years: number): number {
+  if (!dividendData || dividendData.length === 0) return 0;
   const sortedDividendData = dividendData.sort((a, b) => b.Year - a.Year);
-  if (sortedDividendData.length < years) return "BAD";
-  for (let i = 1; i < years; i++) {
-    if (sortedDividendData[i - 1].Year !== sortedDividendData[i].Year + 1) return "BAD";
+  if (sortedDividendData.length < years){
+    for (let i = 0; i < sortedDividendData.length; i++) {
+      if (sortedDividendData[i].Dividend < 0) return 0;
+    }
+    return 1;
   }
-  return "GOOD";
+  for (let i = 0; i < years; i++) {
+    if (sortedDividendData[i].Dividend < 0) return 0;
+  }
+  return 1;
 }
 
-export function hasEarningsIncreased(epsData: Eps[], investorType: string = "defensive"): string {
-  if (!epsData || epsData.length < 10) return "N/A";
+export function hasEarningsIncreased(epsData: Eps[] | null, investorType: string = "defensive"): number {
+  if (!epsData || epsData.length == 0) return 0;
   const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
-  const lastNonZeroEps = [...sortedEpsData].reverse().find(item => item.EPS > 0)?.EPS || 0;
-  const initialAverage = investorType === "enterprising" 
-    ? lastNonZeroEps 
-    : (sortedEpsData[7].EPS + sortedEpsData[8].EPS + sortedEpsData[9].EPS) / 3;
-  const finalAverage = investorType === "enterprising" 
-    ? sortedEpsData[0].EPS 
-    : (sortedEpsData[0].EPS + sortedEpsData[1].EPS + sortedEpsData[2].EPS) / 3;
-  return (finalAverage / initialAverage).toFixed(2);
+
+  if (investorType === "defensive") {
+    let initialAverage = (sortedEpsData[7].EPS + sortedEpsData[8].EPS + sortedEpsData[9].EPS) / 3;
+    let finalAverage = (sortedEpsData[0].EPS + sortedEpsData[1].EPS + sortedEpsData[2].EPS) / 3;
+    if (initialAverage > 0 && finalAverage/initialAverage >= 4.0/3) return 1;
+    return 0;
+  } 
+  if (sortedEpsData[sortedEpsData.length-1].EPS > 0 && sortedEpsData[0].EPS/sortedEpsData[-1].EPS >= 1) return 1;
+  return 0;
 }
 
-export function threeYearsPeRatio(peRatioData: PeRatio[]): string {
-  if (!peRatioData || peRatioData.length < 3) return "N/A";
+export function threeYearsPeRatio(peRatioData: PeRatio[] | null): number {
+  if (!peRatioData || peRatioData.length < 3) return 0
   const sortedPeData = peRatioData.sort((a, b) => b.Year - a.Year);
-  return ((sortedPeData[0].PE_Ratio + sortedPeData[1].PE_Ratio + sortedPeData[2].PE_Ratio) / 3).toFixed(2);
+  if ((sortedPeData[0].PE_Ratio + sortedPeData[1].PE_Ratio + sortedPeData[2].PE_Ratio) / 3 >= 15.0) return 1;
+  return 0;
 }
 
-export function priceToAssetRatio(peRatioData: PeRatio[], priceToBook: string): string {
-  if (!peRatioData || peRatioData.length === 0 || priceToBook === "Not found") return "N/A";
-  return (peRatioData.sort((a, b) => b.Year - a.Year)[0].PE_Ratio * parseFloat(priceToBook)).toFixed(2);
+export function priceToAssetRatio(peRatioData: PeRatio[] | null, priceToBook: string | null, threshold: number): number {
+  if (!peRatioData || peRatioData.length === 0 || !priceToBook || priceToBook === "Not found") return 0;
+  return (peRatioData.sort((a, b) => b.Year - a.Year)[0].PE_Ratio * parseFloat(priceToBook)) <= threshold ? 1 : 0;
 }
 
 export function goodForDefensiveInvestor(stockData: Stock): string {
-  if (parseFloat(stockData.detail?.totalRevenue ?? "0") < 100000000) return "BAD";
-  if (parseFloat(stockData.detail?.currentRatio ?? "0") < 2) return "BAD";
-  if (isEarningsStable(stockData.eps ?? []) === "BAD") return "BAD";
-  if (isDividendStable(stockData.dividends ?? []) === "BAD") return "BAD";
-  if (hasEarningsIncreased(stockData.eps ?? []) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps ?? [], "defensive")) > 4.0 / 3) return "BAD";
-  if (threeYearsPeRatio(stockData.peRatio ?? []) === "N/A" || parseFloat(threeYearsPeRatio(stockData.peRatio ?? [])) > 15.0) return "BAD";
-  if (priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found") === "N/A" || parseFloat(priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found")) > 22.5) return "BAD";
-  return "GOOD";
+  let count = 0;
+  if (parseFloat(stockData.detail?.totalRevenue ?? "0") >= 100000000) count++;
+  if (parseFloat(stockData.detail?.currentRatio ?? "0") >= 2) count++;
+  if (isEarningsStable(stockData.eps, 10)) count++;
+  if (isDividendStable(stockData.dividends, 20)) count++;
+  if (hasEarningsIncreased(stockData.eps, "defensive")) count++;
+  if (threeYearsPeRatio(stockData.peRatio)) count++;
+  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook, 22.5)) count++;
+  return `${count} out of 7`;
 }
 
 export function goodForEnterprisingInvestor(stockData: Stock): string {
-  if (parseFloat(stockData.detail?.totalRevenue ?? "0") <= 0) return "BAD";
-  if (parseFloat(stockData.detail?.currentRatio ?? "0") < 1.5) return "BAD";
-  if (isEarningsStable(stockData.eps ?? [], 5) === "BAD") return "BAD";
-  if (isDividendStable(stockData.dividends ?? [], 1) === "BAD") return "BAD";
-  if (hasEarningsIncreased(stockData.eps ?? []) === "N/A" || parseFloat(hasEarningsIncreased(stockData.eps ?? [], "enterprising")) >= 1) return "BAD";
-  if (stockData.detail?.priceToBook === null || parseFloat(priceToAssetRatio(stockData.peRatio ?? [], stockData.detail?.priceToBook ?? "Not Found")) > 18) return "BAD";
-  return "GOOD";
+  let count = 0;
+  if (parseFloat(stockData.detail?.totalRevenue) >= 0) count++;
+  if (parseFloat(stockData.detail?.currentRatio) >= 1.5) count++;
+  if (isEarningsStable(stockData.eps, 5)) count++;
+  if (isDividendStable(stockData.dividends, 1)) count++;
+  if (hasEarningsIncreased(stockData.eps, "enterprising")) count++;
+  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook, 18)) count++;
+  return `${count} out of 7`;
 }
