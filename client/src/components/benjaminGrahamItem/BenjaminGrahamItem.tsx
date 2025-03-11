@@ -10,9 +10,7 @@ const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({
   symbol, 
   companyName, 
   defensiveValue, 
-  defensive, 
   enterprisingValue, 
-  enterprising, 
   overallValue, 
   sortBy, 
   onClick = () => {}
