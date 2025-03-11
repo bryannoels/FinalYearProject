@@ -38,12 +38,13 @@ export function hasEarningsIncreased(epsData: Eps[] | null, investorType: string
   const sortedEpsData = epsData.sort((a, b) => b.Year - a.Year);
 
   if (investorType === "defensive") {
+    if (sortedEpsData.length < 10) return -1;
     let initialAverage = (sortedEpsData[7].EPS + sortedEpsData[8].EPS + sortedEpsData[9].EPS) / 3;
     let finalAverage = (sortedEpsData[0].EPS + sortedEpsData[1].EPS + sortedEpsData[2].EPS) / 3;
-    if (initialAverage === 0) return finalAverage;
+    if (initialAverage <= 0 ) return -1;
     return finalAverage/initialAverage;
   } 
-  if (sortedEpsData[sortedEpsData.length-1].EPS === 0) return sortedEpsData[0].EPS;
+  if (sortedEpsData[sortedEpsData.length-1].EPS < 0) return -1;
   return sortedEpsData[0].EPS/sortedEpsData[sortedEpsData.length-1].EPS;
 }
 
@@ -65,7 +66,7 @@ export function goodForDefensiveInvestor(stockData: Stock): string {
   if (isEarningsStable(stockData.eps, 10)) count++;
   if (isDividendStable(stockData.dividends, 20)) count++;
   if (hasEarningsIncreased(stockData.eps, "defensive") >= 4.0/3) count++;
-  if (threeYearsPeRatio(stockData.peRatio) >= 15.0) count++;
+  if (threeYearsPeRatio(stockData.peRatio) <= 15.0) count++;
   if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) <= 22.5) count++;
   return `${count} out of 7`;
 }

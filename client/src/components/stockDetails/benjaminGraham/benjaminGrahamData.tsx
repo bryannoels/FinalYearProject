@@ -25,12 +25,12 @@ export const getDefensiveData = (stockData: Stock) => ({
     "Earnings Growth": {
       value: hasEarningsIncreased(stockData.eps, "defensive") !== -1 ? hasEarningsIncreased(stockData.eps, "defensive").toFixed(2) : "N/A",
       description: "The average growth of earnings per share in the past ten years using three-year averages.",
-      color: hasEarningsIncreased(stockData.eps, "defensive") !== -1 ? "green" : "red",
+      color: hasEarningsIncreased(stockData.eps, "defensive") >= 4.0/3 ? "green" : "red",
     },
     "Price/Earnings Ratio": {
       value: threeYearsPeRatio(stockData.peRatio).toFixed(2),
       description: "The current price against the average earnings per share over the last three years.",
-      color: threeYearsPeRatio(stockData.peRatio) >= 15.0 ? "green" : "red",
+      color: threeYearsPeRatio(stockData.peRatio) <= 15.0 ? "green" : "red",
     },
     "Price/Assets Ratio": {
       value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) !== Infinity ? priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook).toFixed(2) : "N/A",
@@ -68,7 +68,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
     "Earnings Growth": {
       value: hasEarningsIncreased(stockData.eps, "enterprising") !== -1 ? hasEarningsIncreased(stockData.eps, "enterprising").toFixed(2) : "N/A",
       description: "The average growth of earnings per share compared to the initial years.",
-      color: hasEarningsIncreased(stockData.eps, "enterprising") !== -1 ? "green" : "red",
+      color: hasEarningsIncreased(stockData.eps, "enterprising") >= 1.0 ? "green" : "red",
     },
     "Price/Earnings Ratio": {
       value: stockData?.peRatio?.length ? stockData.peRatio.sort((a, b) => b.Year - a.Year)[0].PE_Ratio.toFixed(2) : "N/A",
