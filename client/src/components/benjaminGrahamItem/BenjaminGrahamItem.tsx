@@ -1,4 +1,3 @@
-
 import { BenjaminGrahamStockInfo } from '../../types/BenjaminGrahamStockInfo';
 import './BenjaminGrahamItem.css';
 
@@ -7,7 +6,27 @@ interface BenjaminGrahamItemProps extends BenjaminGrahamStockInfo {
     sortBy: string;
 }
 
-const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({ symbol, companyName, defensiveValue, defensive, enterprisingValue, enterprising, overallValue, sortBy, onClick = () => {}}) => {
+const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({ 
+  symbol, 
+  companyName, 
+  defensiveValue, 
+  defensive, 
+  enterprisingValue, 
+  enterprising, 
+  overallValue, 
+  sortBy, 
+  onClick = () => {}
+}) => {
+    const displayValue = sortBy === 'Defensive' 
+      ? defensiveValue
+      : sortBy === 'Enterprising' 
+        ? enterprisingValue
+        : overallValue;
+    
+    const totalValue = sortBy === 'Defensive' || sortBy === 'Enterprising' 
+      ? 7 
+      : 14;
+    
     return (
         <div className="benjamin__graham__item">
             <div className="benjamin__graham__item__left" onClick={onClick}>
@@ -15,22 +34,14 @@ const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({ symbol, company
                 <p className="benjamin__graham__item__symbol">{symbol}</p>
             </div>
             <div className="benjamin__graham__item__right" onClick={onClick}>
-                <p className="benjamin__graham__item__sort__by">
-                    Sort by {sortBy == 'defensive' ? 
-                    'Long Term Value' : sortBy == 'enterprising' ?
-                    'Short Term Value' : 'Overall Value'
-                    }
-            </p>
-                <p className={`benjamin__graham__item__value`}>
-                {
-                    sortBy === 'defensive' ? `${defensiveValue} out of 7 points`
-                    : sortBy === 'enterprising' ? `${enterprisingValue} out of 7 points`
-                    : `${overallValue} out of 14 points`
-                }
-                </p>
+                <div className="score-container">
+                    <div className="score-circle">
+                        <span className="score-value">{displayValue}</span>
+                    </div>
+                    <span className="score-total">out of {totalValue}</span>
+                </div>
             </div>
         </div>
-        
     );
 };
 
