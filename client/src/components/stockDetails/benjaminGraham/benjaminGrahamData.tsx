@@ -71,7 +71,7 @@ export const getEnterprisingData = (stockData: Stock) => ({
       color: hasEarningsIncreased(stockData.eps, "enterprising") >= 1.0 ? "green" : "red",
     },
     "Price/Earnings Ratio": {
-      value: stockData?.peRatio?.length ? stockData.peRatio.sort((a, b) => b.Year - a.Year)[0].PE_Ratio.toFixed(2) : "N/A",
+      value: threeYearsPeRatio(stockData.peRatio).toFixed(2),
       description: "The P/E ratio reflects the price of the stock compared to the company's earnings per share.",
       color: "green",
     },
