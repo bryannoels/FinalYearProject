@@ -95,7 +95,7 @@ def get_benjamin_graham_list(stock_symbol):
         eps_data = eps['EPS_Data']
         sorted_eps_data = sorted(eps_data, key=lambda x: x['Year'])
         
-        if (len(sorted_eps_data) >= 10 and (sum([entry['EPS'] for entry in sorted_eps_data[-10:-7]]) > 0) and (sum([entry['EPS'] for entry in sorted_eps_data[-3:0]]) / 3) / (sum([entry['EPS'] for entry in sorted_eps_data[-10:-7]]) / 3) >= 4.0 / 3):
+        if (len(sorted_eps_data) >= 10 and (sum([entry['EPS'] for entry in sorted_eps_data[-10:-7]]) > 0) and  (sum([entry['EPS'] for entry in sorted_eps_data[-3:]]) / 3) / (sum([entry['EPS'] for entry in sorted_eps_data[-10:-7]]) / 3) >= 4.0 / 3):
             defensive_value += 1
             defensive += "1"
         else:
