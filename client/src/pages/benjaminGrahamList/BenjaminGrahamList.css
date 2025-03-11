@@ -1,8 +1,238 @@
-.benjamin-graham-list{
+.benjamin-graham-list {
     background-color: var(--light-gray);
     min-height: 100vh;
     width: calc(100vw - 40px);
     margin: 0px;
     padding: 20px;
-    width: calc(100vw - 40px);
+  }
+  
+  .benjamin-graham-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .benjamin-graham-header h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  .filter-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-white);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .filter-button:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  
+  .filter-button:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(var(--primary-blue), 0.1);
+    opacity: 0;
+    border-radius: 8px;
+    transform: scale(0);
+    transition: all 0.3s ease;
+  }
+  
+  .filter-button:active:after {
+    opacity: 1;
+    transform: scale(1);
+    transition: 0s;
+  }
+  
+  .filter-icon {
+    margin-right: 6px;
+    transition: transform 0.3s ease;
+  }
+  
+  .filter-button.active .filter-icon {
+    transform: rotate(180deg);
+  }
+  
+  .filter-dropdown {
+    background-color: var(--primary-white);
+    border-radius: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease-out;
+  }
+  
+  .filter-dropdown.show {
+    max-height: 300px;
+    padding: 15px;
+    margin-bottom: 20px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .filter-section {
+    margin-bottom: 15px;
+  }
+  
+  .filter-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .filter-section h3 {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+  }
+  
+  .radio-options {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .radio-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .radio-label:hover {
+    opacity: 0.7;
+  }
+  
+  .radio-label:last-child {
+    margin-bottom: 0;
+  }
+  
+  .radio-label input {
+    margin-right: 8px;
+  }
+  
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .checkbox-label:hover {
+    opacity: 0.7;
+  }
+  
+  .checkbox-label input {
+    margin-right: 8px;
+  }
+  
+  .benjamin-graham-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .data-timestamp {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  /* Add these styles to your BenjaminGrahamList.css file */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  gap: 5px;
 }
+
+.pagination-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  background-color: var(--primary-white);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 10px;
+}
+
+.pagination-button.active {
+  background-color: var(--primary-blue, #0066cc);
+  color: white;
+  border-color: var(--primary-blue, #0066cc);
+}
+
+.pagination-button:hover:not(:disabled):not(.active) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-arrow {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    flex-wrap: wrap;
+  }
+  
+  .pagination-button {
+    min-width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  
+  
