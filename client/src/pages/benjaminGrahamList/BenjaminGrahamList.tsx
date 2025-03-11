@@ -193,7 +193,7 @@ function BenjaminGrahamList() {
         <div className="filter-section">
           <h3>Filter by</h3>
           <div className="checkbox-grid">
-            {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map((letter, index) => (
+            {['Total Revenue', 'Current Ratio', 'Earning Stability', 'Dividend Record', 'Earnings Growth', 'Price/Earnings Ratio', 'Price/Assets Ratio'].map((letter, index) => (
               <label key={letter} className="checkbox-label">
                 <input 
                   type="checkbox" 
