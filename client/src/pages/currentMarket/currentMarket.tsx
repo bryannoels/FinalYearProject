@@ -2,7 +2,7 @@
 import { StockInfo } from '../../types/StockInfo';
 import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
-import './CurrentMarket.css';
+import './currentMarket.css';
 
 interface CurrentMarketProps {
     marketStockList: StockInfo[];
