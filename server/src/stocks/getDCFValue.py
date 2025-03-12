@@ -2,40 +2,18 @@ import yfinance as yf
 import sys
 import json
 
-def calculate_cagr(stock_symbol, start_date, end_date):
-    stock = yf.Ticker(stock_symbol)
-    data = stock.history(start=start_date, end=end_date)
-
-    start_price = data['Close'].iloc[0]
-    end_price = data['Close'].iloc[-1]
-    
-    num_years = (data.index[-1] - data.index[0]).days / 365.25
-    
-    # Calculate CAGR
-    cagr = (end_price / start_price) ** (1 / num_years) - 1
-    
-    return cagr
-
-
 def get_dcf_value(stock_symbol):
-    stock = yf.Ticker(stock_symbol)  
+    stock = yf.Ticker(stock_symbol)
+    
+    free_cashflow_list = stock.cashflow.loc["Free Cash Flow"].dropna()
 
     try:
-        free_cashflow = stock.cashflow.loc["Free Cash Flow"].dropna().iloc[0]
+        free_cashflow = free_cashflow_list.iloc[0]
     except:
         print("Error fetching Free Cash Flow")
         free_cashflow = 0
-        
-    start_date = "2020-01-01"
-    end_date = "2025-01-01"
-    cagr = calculate_cagr("AAPL", start_date, end_date)
-    print(f"CAGR: {cagr}")
-    
-    eps_growth = stock.info.get('earningsGrowth', None)
-    print("Eps Growth:", eps_growth)
 
-    growth_rate = stock.growth_estimates.get('stockTrend', {}).get('0q', None)
-
+    growth_rate = ((free_cashflow_list.iloc[0] / free_cashflow_list.iloc[-1]) ** (1 / len(free_cashflow_list)) - 1).real
     market_cap = stock.info.get("marketCap", None)
     total_debt = stock.info.get("totalDebt", None)
     total_cash = stock.info.get("totalCash", None)
@@ -85,14 +63,14 @@ def get_dcf_value(stock_symbol):
         shares_outstanding = stock.info.get("floatShares", None)
 
     if shares_outstanding:
-        intrinsic_value = (enterprise_value - net_debt) / shares_outstanding
+        intrinsic_value = round((enterprise_value - net_debt) / shares_outstanding,2)
     else:
         intrinsic_value = None
 
     current_price = stock.info.get("currentPrice", None)
 
     
-    print(f"Growth Rate: {growth_rate}")
+    print(f"Growth Rate: {round(growth_rate*100, 2)} %")
     print(f"Intrinsic Value per Share: {intrinsic_value}")
     print(f"Current Stock Price: {current_price}")
     
