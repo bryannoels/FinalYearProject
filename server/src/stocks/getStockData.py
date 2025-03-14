@@ -22,7 +22,7 @@ def get_stock_data(stock_symbol):
     stock_data['earningsGrowth'] = stock_info.get('earningsGrowth', None)
     stock_data['revenuePerShare'] = stock_info.get('revenuePerShare', None)
     stock_data['ebitda'] = stock_info.get('ebitda', None)
-    stock_data['growthRate'] = growth_rate.get('stock', {}).get('+1y', None)
+    stock_data['growthRate'] = growth_rate.get('stockTrend', {}).get('+1y', None)
     stock_data['eps'] = stock_info.get('trailingEps', None)
     stock_data['totalDebt'] = stock_info.get('totalDebt', None)
     stock_data['debtToEquity'] = stock_info.get('debtToEquity', None)
