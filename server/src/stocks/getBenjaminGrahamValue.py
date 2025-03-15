@@ -1,0 +1,22 @@
+import yfinance as yf
+import sys
+import json
+
+def get_benjamin_graham_value(stock_symbol):
+    stock = yf.Ticker(stock_symbol)
+    eps = stock.info.get("trailingEps", None)
+    growth = stock.growth_estimates.get("stockTrend", {}).get("+1y", 0)*100
+    current_yield = 5.32
+    intrinsic_value = round(eps * (8.5 + 2 * growth) * 4.4 / current_yield, 2)
+    print("EPS:", eps)
+    print("Growth:", growth)
+    print("Current Yield:", current_yield)
+    print("Intrinsic Value:", intrinsic_value)
+    print("Current Price:", stock.info.get("currentPrice", None))
+
+    return intrinsic_value
+
+if __name__ == "__main__":
+    stock_symbol = sys.argv[1]
+    stock_data = get_benjamin_graham_value(stock_symbol)
+    print(json.dumps(stock_data, indent=2))
