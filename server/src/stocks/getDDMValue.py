@@ -13,15 +13,15 @@ def get_ddm_value(stock_symbol):
     cost_of_equity = round(get_cost_of_equity(beta),6)
     
     intrinsic_value = round(dividend * (1 + growth_rate) / (cost_of_equity - growth_rate), 2)
-
-    print("Dividend:", dividend)
-    print("Growth Rate:", growth_rate)
-    print("Next Year Dividend:", round(dividend * (1 + growth_rate), 2))
-    print("Beta:", beta)
-    print("Cost of Equity:", cost_of_equity)
-    print("Intrinsic Value:", intrinsic_value)
-    print("Current Price:", stock.info.get("currentPrice", None))
-    return intrinsic_value
+    
+    return {
+        "Symbol": stock_symbol,
+        "Dividend": dividend,
+        "GrowthRate": growth_rate,
+        "Beta": beta,
+        "CostOfEquity": cost_of_equity,
+        "DDMIntrinsicValue": intrinsic_value,
+    }
 
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
