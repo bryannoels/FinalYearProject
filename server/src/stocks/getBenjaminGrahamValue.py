@@ -9,13 +9,14 @@ def get_benjamin_graham_value(stock_symbol):
     growth = stock.growth_estimates.get("stockTrend", {}).get("+1y", 0)*100
     current_yield = float(get_aaa_corporate_bond_yield()['aaaCorporateBondYield'][:-1])
     intrinsic_value = round(eps * (8.5 + 2 * growth) * 4.4 / current_yield, 2)
-    print("EPS:", eps)
-    print("Growth:", growth)
-    print("Current Yield:", current_yield)
-    print("Intrinsic Value:", intrinsic_value)
-    print("Current Price:", stock.info.get("currentPrice", None))
 
-    return intrinsic_value
+    return {
+        "Symbol": stock_symbol,
+        "EPS": eps,
+        "GrowthRate": growth,
+        "CurrentYield": current_yield,
+        "BenjaminGrahamIntrinsicValue": intrinsic_value,
+    }
 
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
