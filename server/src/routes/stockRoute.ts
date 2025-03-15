@@ -10,7 +10,10 @@ import {
   getPeRatioData,
   getAaaCorporateBondYield,
   searchStock,
-  getBenjaminGrahamList
+  getBenjaminGrahamList,
+  getDCFValue,
+  getDDMValue,
+  getBenjaminGrahamValue
 } from '../controllers/stockController';
 
 const router = express.Router();
@@ -26,5 +29,8 @@ router.get('/get-pe-ratio/:symbol', getPeRatioData);
 router.get('/get-aaa-corp-bond-yield', getAaaCorporateBondYield);
 router.get('/search/:query', searchStock);
 router.get('/get-benjamin-graham-list', getBenjaminGrahamList);
+router.get('/get-dcf-value/:symbol', getDCFValue);
+router.get('/get-ddm-value/:symbol', getDDMValue);
+router.get('/get-benjamin-graham-value/:symbol', getBenjaminGrahamValue);
 
 export default router;
