@@ -1,6 +1,7 @@
 import yfinance as yf
 import sys
 import json
+from getCostOfEquity import get_cost_of_equity
 
 def get_dcf_value(stock_symbol):
     stock = yf.Ticker(stock_symbol)
@@ -25,14 +26,8 @@ def get_dcf_value(stock_symbol):
 
     total_value = market_cap + total_debt
 
-    risk_free_rate = 0.045
-    beta = stock.info.get("beta", None)
-    expected_market_return = 0.10
-
-    if beta:
-        cost_of_equity = risk_free_rate + beta * (expected_market_return - risk_free_rate)
-    else:
-        cost_of_equity = 0.08
+    beta = stock.info.get("beta", 0)
+    cost_of_equity = get_cost_of_equity(beta)
 
     try:
         interest_expense = stock.financials.loc["Interest Expense"].dropna().iloc[0]
