@@ -11,7 +11,6 @@ def get_dcf_value(stock_symbol):
     try:
         free_cashflow = free_cashflow_list.iloc[0]
     except:
-        print("Error fetching Free Cash Flow")
         free_cashflow = 0
 
     growth_rate = ((free_cashflow_list.iloc[0] / free_cashflow_list.iloc[-1]) ** (1 / len(free_cashflow_list)) - 1).real
@@ -33,7 +32,6 @@ def get_dcf_value(stock_symbol):
         interest_expense = stock.financials.loc["Interest Expense"].dropna().iloc[0]
         cost_of_debt = (interest_expense / total_debt) * (1 - 0.21) if total_debt else 0.03
     except:
-        print("Error fetching Interest Expense")
         cost_of_debt = 0.03
 
     if total_value > 0:
@@ -62,22 +60,14 @@ def get_dcf_value(stock_symbol):
     else:
         intrinsic_value = None
 
-    current_price = stock.info.get("currentPrice", None)
-
-    
-    print(f"Growth Rate: {round(growth_rate*100, 2)} %")
-    print(f"Intrinsic Value per Share: {intrinsic_value}")
-    print(f"Current Stock Price: {current_price}")
-    
-    if (intrinsic_value and current_price):
-        if intrinsic_value > current_price:
-            print("Recommendation: Buy")
-            print("Undervalued by ", round((intrinsic_value - current_price) / intrinsic_value * 100, 2), "%")
-        else:
-            print("Recommendation: Sell")
-            print("Overvalued by ", round((current_price - intrinsic_value) / intrinsic_value * 100, 2), "%")
-
-    return intrinsic_value
+    return {
+        "FreeCashFlow": free_cashflow,
+        "GrowthRate": round(growth_rate*100, 2),
+        "WACC": round(wacc*100, 2),
+        "EnterpriseValue": enterprise_value,
+        "NetDebt": net_debt,
+        "DCFIntrinsicValue": intrinsic_value,
+    }
 
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
