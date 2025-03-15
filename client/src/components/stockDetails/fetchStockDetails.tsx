@@ -49,6 +49,7 @@ export const fetchStockDetails = async (
             growthRate: null,
             bondYield: null,
             dividends: stockInfo?.dividends,
+            beta: priceData.beta
         };
 
         const currentTimestamp = new Date().toLocaleString('en-US', {
@@ -90,6 +91,7 @@ export const fetchStockDetails = async (
                 growthRate: stockInfo?.growthRate || null,
                 bondYield: bondYieldData?.aaaCorporateBondYield || null,
                 dividends: stockInfo?.dividends,
+                beta: initialStockData.beta
             };
     
             setStockData(newData);
