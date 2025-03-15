@@ -61,6 +61,7 @@ def get_dcf_value(stock_symbol):
         intrinsic_value = None
 
     return {
+        "Symbol": stock_symbol,
         "FreeCashFlow": free_cashflow,
         "GrowthRate": round(growth_rate*100, 2),
         "WACC": round(wacc*100, 2),
