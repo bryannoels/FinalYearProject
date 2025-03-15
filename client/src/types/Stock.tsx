@@ -20,4 +20,5 @@ export type Stock = {
     dividends: Dividend[] | null;
     growthRate: string | null;
     bondYield: string | null;
+    beta: number | null;
 }
