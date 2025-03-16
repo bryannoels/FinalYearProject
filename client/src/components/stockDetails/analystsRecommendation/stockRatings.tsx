@@ -10,8 +10,6 @@ const StockRatings: React.FC<StockRatingsProps> = ({ stockData }) => {
     if (stockData == null || stockData.analysis == null || stockData.analysis.ratings == null || stockData.analysis.ratings.length === 0) return null;
     
     return (
-        <>
-            <hr className = "stock-details__analysts__divider" />
             <div className = "stock-details__analysts-recommendation">
                 { stockData.analysis.ratings.map((item: StockRatings, index: number) => {
                     const ratingClass =
@@ -27,7 +25,6 @@ const StockRatings: React.FC<StockRatingsProps> = ({ stockData }) => {
                     );
                 })}
             </div>
-        </>
     );
 };
 
