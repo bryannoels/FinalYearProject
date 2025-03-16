@@ -4,7 +4,7 @@ import { Stock } from '../../types/Stock';
 import { fetchStockDetails } from '../../components/stockDetails/fetchStockDetails';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import StockInfo from '../../components/stockDetails/stockInfo';
-import StockPriceChart from '../../components/stockDetails/stockPriceChart';
+import StockPriceChart from '../../components/stockDetails/stockPriceChart/stockPriceChart';
 import TabContents from '../../components/stockDetails/tabContents';
 import './StockDetails.css';
 
@@ -29,7 +29,7 @@ const StockDetails = () => {
             ) : (
                 <>
                     <StockInfo symbol={symbol} stockData={stockData} />
-                    <StockPriceChart stockData={stockData} />
+                    <StockPriceChart stockData={stockData}/>
                     <TabContents stockData={stockData} />
                     <div className="data-date-time">
                         Data is accurate as of <br /> <strong>{dateTime}</strong>
