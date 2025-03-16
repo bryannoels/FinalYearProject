@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Stock } from '../../types/Stock';
-import type { StockRatings } from '../../types/StockRatings';
+import type { Stock } from '../../../types/Stock';
+import type { StockRatings } from '../../../types/StockRatings';
 
 interface StockRatingsProps {
   stockData: Stock | null;
@@ -12,7 +12,6 @@ const StockRatings: React.FC<StockRatingsProps> = ({ stockData }) => {
     return (
         <>
             <hr className = "stock-details__analysts__divider" />
-            <p className = "stock-details__analysts__rating__title">Analysts' Rating</p>
             <div className = "stock-details__analysts-recommendation">
                 { stockData.analysis.ratings.map((item: StockRatings, index: number) => {
                     const ratingClass =

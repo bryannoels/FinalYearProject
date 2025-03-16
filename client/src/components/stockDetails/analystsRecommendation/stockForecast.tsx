@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stock } from '../../types/Stock';
+import { Stock } from '../../../types/Stock';
 
 interface StockForecastProps {
   stockData: Stock | null;
