@@ -1,107 +1,284 @@
-/* Keep existing styles as base */
-.benjamin__graham__item{
-    background-color: var(--primary-white);
+/* Root variables for consistent styling */
+:root {
+    --color-primary: #4361ee;
+    --color-secondary: #3f37c9;
+    --color-accent: #4895ef;
+    --color-background: #f8f9fa;
+    --color-card: #ffffff;
+    --color-text-primary: #212529;
+    --color-text-secondary: #6c757d;
+    --color-excellent: #4cc9f0;
+    --color-good: #4361ee;
+    --color-average: #7209b7;
+    --color-poor: #f72585;
+    --color-defensive: #4cc9f0;
+    --color-enterprising: #4361ee;
+    --color-overall: #7209b7;
+    --card-radius: 16px;
+    --transition-speed: 0.3s;
+  }
+  
+  /* Main card container */
+  .benjamin-graham-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 16px auto;
+    background-color: var(--color-card);
+    border-radius: var(--card-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform var(--transition-speed) ease, 
+                box-shadow var(--transition-speed) ease;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .benjamin-graham-card:hover,
+  .benjamin-graham-card:focus-within {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Card top content */
+  .card-content {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0px;
-    margin: 10px;
-    border-radius: 10px;
-    color: var(--primary-black);
-    width: 85vw;
+    padding: 16px 20px;
+    position: relative;
     cursor: pointer;
-    transition: transform 0.3s ease;
-    height: 60px;
-}
-
-.benjamin__graham__item:hover{
-    transform: scale(1.02);
-}
-
-.benjamin__graham__item__left{
-    padding: 0px;
-    margin-left: 20px;
-    width: calc(85vw - 100px);
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    z-index: 2;
+  }
+  
+  .card-content::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent);
+    transform-origin: center;
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+  
+  .benjamin-graham-card:hover .card-content::after {
+    transform: scaleX(1);
+  }
+  
+  /* Stock information styling */
+  .stock-info {
+    flex: 1;
     overflow: hidden;
-}
-
-.benjamin__graham__item__name{
+  }
+  
+  .company-name {
     font-size: 16px;
-    font-weight: bold;
-    margin: 0px;
-}
-
-.benjamin__graham__item__symbol{
-    font-size: 12px;
-    margin: 0px;
-}
-
-.benjamin__graham__item__right{
-    margin-left: auto;
-    margin-right: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.sort-label {
-    font-size: 11px;
-    color: rgba(0, 0, 0, 0.6);
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .stock-symbol {
+    font-size: 13px;
+    color: var(--color-text-secondary);
     font-weight: 500;
-    margin-bottom: 2px;
-}
-
-.score-container {
+    display: block;
+  }
+  
+  /* Score display styling */
+  .score-display {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.score-circle {
-    width: 32px;
-    height: 32px;
-    background-color: color-mix(in srgb, var(--primary-blue) 10%, transparent);
-    border-radius: 50%;
+    margin-left: 16px;
+  }
+  
+  .score-circle {
+    position: relative;
+    width: 60px;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 10px rgba(0, 100, 255, 0.15);
-}
-
-.score-value {
+    margin-bottom: 4px;
+  }
+  
+  .score-value {
     font-size: 20px;
-    font-weight: bold;
-    color: var(--primary-black);
-}
-
-.score-total {
-    font-size: 10px;
-    color: rgba(0, 0, 0, 0.6);
-    margin-top: 4px;
-}
-
-.stock-up{
-    color: var(--primary-green);
-}
-
-.stock-down{
-    color: var(--primary-red);
-}
-
-.dashboard__user-portfolio__container{
+    font-weight: 700;
+    color: var(--color-text-primary);
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Circular progress indicator - clock style */
+  .score-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 3;
+    /* Remove the -90deg rotation to start from the top */
+    transform: rotate(0deg);
+  }
+  
+  .score-background {
+    stroke: #eaeaea;
+  }
+  
+  .score-progress {
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease;
+    /* This makes sure the animation starts from top (12 o'clock) */
+    transform-origin: center;
+  }
+  
+  /* Score color classes */
+  .score-excellent .score-progress {
+    stroke: var(--color-excellent);
+  }
+  
+  .score-good .score-progress {
+    stroke: var(--color-good);
+  }
+  
+  .score-average .score-progress {
+    stroke: var(--color-average);
+  }
+  
+  .score-poor .score-progress {
+    stroke: var(--color-poor);
+  }
+  
+  .score-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+  
+  .score-total {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+  
+  /* Card details section (expandable) */
+  .card-details {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.4s ease;
+    padding: 0 20px;
+    background-color: rgba(248, 249, 250, 0.5);
+  }
+  
+  .benjamin-graham-card:hover .card-details,
+  .benjamin-graham-card:focus-within .card-details {
+    height: 130px; /* Fixed height for animation */
+  }
+  
+  /* Score breakdown section */
+  .score-breakdown {
+    padding: 16px 0;
+  }
+  
+  .score-type {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.delete__icon{
-    width: 15px;
-    height: 15px;
-    margin-left: 10px;
-}
+    margin-bottom: 12px;
+  }
+  
+  .score-type:last-child {
+    margin-bottom: 0;
+  }
+  
+  .type-label {
+    width: 85px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+  
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0 12px;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    width: var(--width, 0%);
+    border-radius: 3px;
+    transform-origin: left;
+    transition: transform 1s ease;
+    transform: scaleX(0);
+  }
+  
+  .benjamin-graham-card:hover .progress-fill,
+  .benjamin-graham-card:focus-within .progress-fill {
+    transform: scaleX(1);
+  }
+  
+  .progress-fill.defensive {
+    background-color: var(--color-defensive);
+  }
+  
+  .progress-fill.enterprising {
+    background-color: var(--color-enterprising);
+  }
+  
+  .progress-fill.overall {
+    background-color: var(--color-overall);
+  }
+  
+  .type-score {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    width: 36px;
+    text-align: right;
+  }
+  
+  /* Animation for cards when they appear (for use with scroll effects) */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Apply this class when cards come into view */
+  .animate-in {
+    animation: fadeInUp 0.6s ease forwards;
+  }
+  
+  /* Responsive adjustments for very small screens */
+  @media screen and (max-width: 320px) {
+    .card-content {
+      padding: 12px 16px;
+    }
+    
+    .score-circle {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .score-value {
+      font-size: 18px;
+    }
+    
+    .company-name {
+      font-size: 14px;
+    }
+  }
