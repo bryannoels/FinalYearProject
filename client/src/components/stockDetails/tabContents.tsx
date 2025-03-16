@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Stock } from '../../types/Stock';
 import StockProfile from './stockProfile/stockProfile';
-import ValuationMeasures from './valuationMeasures';
+import ValuationMeasures from './valuationMeasures/valuationMeasures';
 import AnalystsRecommendation from './analystsRecommendation/analystsRecommendation';
 import EPSChart from './epsChart';
 import PeRatioChart from './peRatioChart';
