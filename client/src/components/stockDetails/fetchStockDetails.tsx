@@ -27,7 +27,7 @@ export const fetchStockDetails = async (
             fetchData(`${API_BASE_URL}/get-historical-data/${symbol}`),
             fetchData(`${API_BASE_URL}/get-profile/${symbol}`),
         ]);
-    
+        
         const stockInfo = JSON.parse(stockInfoResp);
         const currentStock = {
             name: stockInfo.companyName,
@@ -50,7 +50,7 @@ export const fetchStockDetails = async (
             bondYield: null,
             dividends: stockInfo?.dividends,
         };
-
+        
         const currentTimestamp = new Date().toLocaleString('en-US', {
             weekday: 'long',
             day: 'numeric',

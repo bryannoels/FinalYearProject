@@ -42,11 +42,11 @@ def lambda_handler(event, context):
     range_param = event.get("range_param") if event.get("range_param") else '1d'
 
     stock_data = get_historical_data(stock_symbol, range_param)
-    return json.dumps(stock_data)
+    return stock_data
 
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
     range_param = sys.argv[2] if len(sys.argv) > 2 else '1d'
 
     stock_data = get_historical_data(stock_symbol, range_param)
-    print(json.dumps(stock_data))
+    print(stock_data)
