@@ -31,11 +31,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
       case 'pe':
         return stockData.peRatio && stockData.peRatio.length > 0;
       case 'intrinsic':
-        return (
-          !isNaN(parseFloat(stockData.detail.eps))  &&
-          !isNaN(parseFloat(stockData.growthRate ?? "NA")) &&
-          !isNaN(parseFloat(stockData.bondYield ?? "NA"))
-        );
+        return stockData.intrinsicValue !== null;
       case 'defensive':
       case 'enterprising':
         return stockData !== null;
