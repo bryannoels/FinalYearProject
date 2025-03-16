@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Stock } from '../../types/Stock';
-import StockProfile from './stockProfile';
+import StockProfile from './stockProfile/stockProfile';
 import ValuationMeasures from './valuationMeasures';
-import AnalystsRecommendation from './analystsRecommendation';
+import AnalystsRecommendation from './analystsRecommendation/analystsRecommendation';
 import EPSChart from './epsChart';
 import PeRatioChart from './peRatioChart';
 import IntrinsicValue from './intrinsicValue';
