@@ -295,7 +295,7 @@
     box-shadow: 0 4px 12px var(--color-shadow);
     position: relative;
     overflow: hidden;
-    width: 85%;
+    width: 100%;
     transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
   }
   
@@ -306,11 +306,13 @@
   
   .stock-details__analysts__row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: 0px;
     position: relative;
     transition: transform 0.2s ease;
+    width: 100%;
+    height: 60px;
     width: 100%;
   }
   
@@ -333,30 +335,35 @@
     font-weight: 500;
     color: var(--color-text-primary);
     margin-right: 30px;
+    margin-left:20px;
+    width: 50%;
   }
   
   .stock-details__analysts__rating {
-    font-size: 14px;
     font-weight: 600;
-    padding: 4px 12px;
+    padding: 2px 18px;
     border-radius: 20px;
     position: relative;
     overflow: hidden;
+    text-align: center;
   }
   
   .stock-details__analysts__rating.green-rating {
     color: var(--color-green);
     background-color: var(--color-green-light);
+    font-size: 14px;
   }
   
   .stock-details__analysts__rating.blue-rating {
     color: var(--color-blue);
     background-color: var(--color-blue-light);
+    font-size: 14px;
   }
   
   .stock-details__analysts__rating.red-rating {
     color: var(--color-red);
     background-color: var(--color-red-light);
+    font-size: 14px;
   }
   
   /* Animations and responsive styles */
@@ -387,27 +394,8 @@
   .stock-details__analysts-recommendation.animate-in {
     animation-delay: 0.3s;
   }
-  
-  
-  /* Responsive adjustments */
-  @media screen and (max-width: 320px) {
-    :root {
-      --card-padding: 16px;
-    }
-    
-    .stock-details__title {
-      font-size: 16px;
-    }
-    
-    .stock-detailss__analysis__left__text {
-      font-size: 24px;
-    }
-    
-    .stock-detailss__analysis__value {
-      font-size: 20px;
-    }
-    
-    .stock-details__forecast__value {
-      font-size: 16px;
-    }
+
+  .section-wrapper{
+    width: 100%;
   }
+  

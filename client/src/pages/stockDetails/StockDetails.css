@@ -248,26 +248,6 @@
     text-align: left;
 }
 
-.stock-details__analysts-recommendation{
-    width: 100%;
-}
-
-.stock-details__analysts__row{
-    width: calc(100% - 20px); 
-    margin-left: 20px;
-    height: 60px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.stock-details__analysts__firm{
-    font-size: 16px;
-    margin-left: 20px;
-    width: 60%;
-}
-
 .stock-details__analysts__rating{
     font-size: 16px;
     margin-right: 20px;
