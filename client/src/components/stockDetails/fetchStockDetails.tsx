@@ -2,8 +2,8 @@ import { fetchData, getCachedData, setCachedData } from '../utils/utils';
 import { Stock} from '../../types/Stock';
 
 const API_BASE_URL = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:8000/api/stocks'
-    : 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock';
+    ? 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock'
+    : 'http://localhost:8000/api/stocks';
 
 export const fetchStockDetails = async (
     symbol: string,

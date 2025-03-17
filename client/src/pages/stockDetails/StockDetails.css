@@ -37,13 +37,22 @@
     font-size: 30px;
     font-weight: bold;
     left: 0px;
-    width: 100px;
+    width: 33%;
 }
 
 .stock-details__name{
-    width: 150px;
+    width: 33%;
     text-align: center;
     margin-left: calc(50% - 175px);
+}
+
+.stock-details__add-to-portfolio{
+    background-color: var(--primary-white);
+    color: var(--primary-blue);
+    font-size: 0.9rem;
+    font-weight: bold;
+    width: 33%;
+    margin: 20px;
 }
 
 .stock-details__chart {

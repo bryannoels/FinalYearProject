@@ -11,6 +11,11 @@ interface StockInfoProps {
     stockData: Stock | null;
 }
 
+const showAddToPortfolioDialog = (stockName: string, symbol: string) => {
+    //TO-DO, if not logged in, ask to login. If logged in, choose which portfolio. portfolio names alr stored somewhere
+    console.log(`Adding ${stockName} (${symbol}) to portfolio`);
+}
+
 const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
     if (symbol == null || stockData == null) return null;
     const navigate = useNavigate();
@@ -24,6 +29,9 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
                     <div className="stock-details__name">
                         {symbol}
                     </div>
+                    <button className="stock-details__add-to-portfolio" onClick={() => showAddToPortfolioDialog(stockData.info.name, symbol)}>
+                        Add to Portfolio
+                    </button>
                 </div>
                 <DashboardItem 
                     key={symbol}

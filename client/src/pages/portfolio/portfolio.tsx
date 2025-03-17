@@ -10,6 +10,7 @@ import { searchStocks } from '../utils/searchStocks';
 import Dropdown from '../../components/dropdown/Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
+import CustomDialogBox from '../../components/customDialogBox/customDialogBox';
 import './portfolio.css';
 
 export function Portfolio(){
@@ -24,6 +25,24 @@ export function Portfolio(){
   const [searchAddStockResult, setAddStockResult] = useState<{ ticker: string; name: string }[]>([]);
   const ddAddStockRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
+
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogType, setDialogType] = useState<"add" | "removeStock" | "removePortfolio">("removeStock");
+  const [selectedStock, setSelectedStock] = useState<{ name: string; symbol: string } | null>(null);
+  const [selectedPortfolio, setSelectedPortfolio] = useState<string>("");
+
+  const openRemovePortfolioDialog = (portfolioName: string) => {
+    setDialogType("removePortfolio");
+    setSelectedPortfolio(portfolioName);
+    setDialogOpen(true);
+  }
+
+  const openRemoveStockDialog = (portfolioName: string, stockName: string, stockSymbol: string) => {
+    setDialogType("removeStock");
+    setSelectedPortfolio(portfolioName);
+    setSelectedStock({ name: stockName, symbol: stockSymbol });
+    setDialogOpen(true);
+  }
 
   const fetchPortfolio = async () => {
     const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
@@ -242,68 +261,88 @@ export function Portfolio(){
       }
     }
   };
+
+  const handleDialogConfirmButton = () => {
+    if (dialogType === "removePortfolio") {
+      deletePortfolio(selectedPortfolio);
+    } else if (dialogType === "removeStock") {
+      deleteStockFromPortfolio(selectedPortfolio, selectedStock!.symbol);
+    }
+    setDialogOpen(false);
+  }
     
   return(
-      <div className="dashboard__header">
-      {isAuthenticated && user && (
-        <div className="dashboard__user__portfolio__container">
-          {portfolioLoading ? (
-            <LoadingSpinner />
-          ) : (
-            <>
-              <button type="submit" className="button" onClick={handleCreateNewPortfolio}>
-                {showCreateNewPortfolio ? "Cancel" : "Create New Portfolio"}
-              </button>
-              {showCreateNewPortfolio && (
-                <form className="dashboard__create__portfolio__container" onSubmit={createNewPortfolio}>
-                  <input type="text" name="portfolioName" className="dashboard__create__portfolio__textbox" placeholder="Portfolio name" required/>
-                  <button type="submit" className="dashboard__create__portfolio__button">
-                    Create
-                  </button>
-                </form>
-              )}
-              {userPortfolioStocks.map((portfolio) => (
-                <div key={portfolio.portfolioName} className="portfolio__group">
-                  <div className="portfolio__title__container">
-                    <div className="portfolio__title">
-                      <div>
-                        {portfolio.portfolioName}
-                      </div>
-                      <FontAwesomeIcon icon={faTrash} className="delete__portfolio__icon" onClick={() => deletePortfolio(portfolio.portfolioName)}/>
+    <div className="dashboard__header">
+    {isAuthenticated && user && (
+      <div className="dashboard__user__portfolio__container">
+        {portfolioLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            <button type="submit" className="button" onClick={handleCreateNewPortfolio}>
+              {showCreateNewPortfolio ? "Cancel" : "Create New Portfolio"}
+            </button>
+            {showCreateNewPortfolio && (
+              <form className="dashboard__create__portfolio__container" onSubmit={createNewPortfolio}>
+                <input type="text" name="portfolioName" className="dashboard__create__portfolio__textbox" placeholder="Portfolio name" required/>
+                <button type="submit" className="dashboard__create__portfolio__button">
+                  Create
+                </button>
+              </form>
+            )}
+            {userPortfolioStocks.map((portfolio) => (
+              <div key={portfolio.portfolioName} className="portfolio__group">
+                <div className="portfolio__title__container">
+                  <div className="portfolio__title">
+                    <div>
+                      {portfolio.portfolioName}
                     </div>
-                    <div className="portfolio__add__stock__container">
-                      <input
-                        type="text"
-                        className="dashboard__portfolio__search"
-                        placeholder="Add a stock"
-                        value={portfolioSearchTerms[portfolio.portfolioName] || ''}
-                        onChange={(e) => handlePortfolioSearchChange(portfolio.portfolioName, e.target.value)}
-                      />
-                      {portfolioDropdowns[portfolio.portfolioName] && searchAddStockResult.length > 0 && (
-                        <Dropdown
-                          suggestions={searchAddStockResult}
-                          dropdownRef={ddAddStockRef}
-                          onItemClick={(symbol) => addStockToPortfolio(symbol, portfolio.portfolioName)}
-                          isOpen={portfolioDropdowns[portfolio.portfolioName]}
-                        />
-                      )}
-                    </div>
+                    <FontAwesomeIcon icon={faTrash} className="delete__portfolio__icon" onClick={() => openRemovePortfolioDialog(portfolio.portfolioName)}/>
                   </div>
-                  <div className="portfolio__stocks">
-                    {portfolio.stocks.map((stock) => (
-                      <DashboardItem key={stock.symbol} {...stock}
-                        onClick={() => handleItemClick(stock.symbol)}
-                        portfolio={true}
-                        onClickDelete={() => deleteStockFromPortfolio(portfolio.portfolioName, stock.symbol)} />
-                    ))}
+                  <div className="portfolio__add__stock__container">
+                    <input
+                      type="text"
+                      className="dashboard__portfolio__search"
+                      placeholder="Add a stock"
+                      value={portfolioSearchTerms[portfolio.portfolioName] || ''}
+                      onChange={(e) => handlePortfolioSearchChange(portfolio.portfolioName, e.target.value)}
+                    />
+                    {portfolioDropdowns[portfolio.portfolioName] && searchAddStockResult.length > 0 && (
+                      <Dropdown
+                        suggestions={searchAddStockResult}
+                        dropdownRef={ddAddStockRef}
+                        onItemClick={(symbol) => addStockToPortfolio(symbol, portfolio.portfolioName)}
+                        isOpen={portfolioDropdowns[portfolio.portfolioName]}
+                      />
+                    )}
                   </div>
                 </div>
-              ))}
-            </>
-          )}
-          {showMessage && <div className="message">{message}</div>}
-        </div>
-      )}
+                <div className="portfolio__stocks">
+                  {portfolio.stocks.map((stock) => (
+                    <DashboardItem key={stock.symbol} {...stock}
+                      onClick={() => handleItemClick(stock.symbol)}
+                      portfolio={true}
+                      onClickDelete={() => openRemoveStockDialog(portfolio.portfolioName, stock.name, stock.symbol)} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+        {showMessage && <div className="message">{message}</div>}
+      </div>
+    )}
+    <CustomDialogBox
+      isOpen={isDialogOpen}
+      dialogType={dialogType}
+      stockName={selectedStock?.name}
+      stockSymbol={selectedStock?.symbol}
+      portfolioNames={userPortfolioStocks.map((p) => p.portfolioName)}
+      selectedPortfolio={selectedPortfolio}
+      onPortfolioChange={setSelectedPortfolio}
+      onConfirm={handleDialogConfirmButton}
+      onCancel={() => setDialogOpen(false)}
+    />
     </div>
   );
 }

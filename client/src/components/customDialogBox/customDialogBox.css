@@ -1,0 +1,39 @@
+.custom-dialog-box__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  
+  .custom-dialog-box__container {
+    display: flex;
+    flex-direction: column;
+    background: var(--primary-white);
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .custom-dialog-box__message {
+    font-size: 1rem;
+    color: var(--primary-black);
+  }
+  
+  .custom-dialog-box__buttons-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .custom-dialog-box__button {
+    background-color: var(--primary-blue);
+    color: var(--primary-white);
+  }
