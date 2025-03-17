@@ -3,9 +3,9 @@ import { Stock } from '../../types/Stock';
 import StockProfile from './stockProfile/stockProfile';
 import ValuationMeasures from './valuationMeasures/valuationMeasures';
 import AnalystsRecommendation from './analystsRecommendation/analystsRecommendation';
-import EPSChart from './epsChart';
-import PeRatioChart from './peRatioChart';
-import IntrinsicValue from './intrinsicValue';
+import EPSChart from './epsChart/epsChart';
+import PeRatioChart from './peRatio/peRatioChart';
+import IntrinsicValue from './intrinsicValue/intrinsicValue';
 import TabButton from './tabButton';
 import BenjaminGraham from './benjaminGraham/benjaminGraham';
 
