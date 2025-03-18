@@ -1,21 +1,168 @@
 .loading-spinner {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    padding-top: 100px;
     width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.spinner {
-    border: 8px solid var(--primary-white);
-    border-top: 8px solid var(--primary-blue);
+.spinner-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.logo {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.chart-line {
+    position: absolute;
+    bottom: 30px;
+    left: 15px;
+    width: 90px;
+    height: 40px;
+    background: transparent;
+    overflow: hidden;
+}
+
+.chart-line::before {
+    content: '';
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background: #0047cc;
+    bottom: 0;
+    left: 0;
+    animation: drawLine 1.5s infinite ease-in-out;
+}
+
+.chart-point {
+    position: absolute;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
+    background: #0047cc;
+    bottom: -4px;
+    left: 0;
+    opacity: 0;
+    animation: movePoint 1.5s infinite ease-in-out;
+}
+
+.progress-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid rgba(0, 71, 204, 0.1);
+    border-top: 4px solid #0047cc;
+    border-right: 4px solid #0047cc;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+}
+
+.pulse-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(0, 71, 204, 0.05);
+    animation: pulse 2s infinite ease-out;
+}
+
+.loading-text {
+    margin-top: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    color: #343a40;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+
+@keyframes drawLine {
+    0% {
+        width: 0;
+    }
+    40% {
+        width: 100%;
+    }
+    60% {
+        width: 100%;
+    }
+    100% {
+        width: 0;
+    }
+}
+
+@keyframes movePoint {
+    0% {
+        left: 0;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    40% {
+        left: 100%;
+        opacity: 1;
+    }
+    60% {
+        left: 100%;
+        opacity: 1;
+    }
+    70% {
+        opacity: 0;
+    }
+    100% {
+        left: 0;
+        opacity: 0;
+    }
+}
+
+/* For smaller screens adjustment */
+@media (max-width: 412px) {
+    .spinner-container {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .chart-line {
+        width: 80px;
+    }
 }
