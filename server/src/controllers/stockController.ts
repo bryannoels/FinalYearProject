@@ -4,6 +4,8 @@ import { StockAnalysis } from '../types/stockAnalysis';
 import axios from 'axios';
 import csv from "csv-parser";
 import fs from "fs";
+import Redis from 'ioredis';
+import { set } from 'mongoose';
 
 type BenjaminGrahamData = {
     "Stock Symbol": string;
@@ -15,14 +17,38 @@ type BenjaminGrahamData = {
     "Overall Value": number;
   };
 
-const getStockData = (req: Request, res: Response): void => {
+const redis = new Redis();
+
+const cacheDuration = 3600;
+
+const getFromCache = async (key: string): Promise<any | null> => {
+    const cachedData = await redis.get(key);
+    return cachedData ? JSON.parse(cachedData) : null;
+};
+
+const setInCache = async (key: string, data: any): Promise<void> => {
+    await redis.setex(key, cacheDuration, JSON.stringify(data));
+};
+
+const getStockData = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
+    const cacheKey = `stockData:${stockSymbol}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        console.log("sending cached data");
+        res.json(cachedData);
+        return;
+    }
+
     const pythonProcess = spawn('python3', ['src/stocks/getStockData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                console.log("setting in cache");
+                setInCache(cacheKey, stockData);
                 res.json(stockData);
             }
         } catch (error) {
@@ -45,14 +71,28 @@ const getStockData = (req: Request, res: Response): void => {
     });
 };
 
-const getStockProfile = (req: Request, res: Response): void => {
+const getStockProfile = async (req: Request, res: Response): Promise<void> => {
+    const startTime = Date.now();
     const stockSymbol = req.params.symbol.toUpperCase();
+    const cacheKey = `stockProfile:${stockSymbol}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        const elapsedTime = Date.now() - startTime;
+        console.log(`Cache response time: ${elapsedTime} ms`);
+        res.json(cachedData);
+        return;
+    }
+
     const pythonProcess = spawn('python3', ['src/stocks/getStockProfile.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                setInCache(cacheKey, stockData);
+                const elapsedTime = Date.now() - startTime; // Calculate elapsed time
+                console.log(`No-cache response time: ${elapsedTime} ms`);
                 res.json(stockData);
             }
         } catch (error) {
@@ -75,12 +115,19 @@ const getStockProfile = (req: Request, res: Response): void => {
     });
 };
 
-const getTopStocks = (req: Request, res: Response): void => {
+const getTopStocks = async(req: Request, res: Response): Promise<void> => {
     const { category } = req.query;
     const validCategories = ["most-active", "trending", "gainers", "losers", "52-week-gainers", "52-week-losers"];
+    const cacheKey = `topStocks:${category || 'most-active'}`;
 
     if (category && !validCategories.includes(category as string)) {
         res.status(400).json({ error: "Invalid category parameter" });
+        return;
+    }
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
         return;
     }
 
@@ -90,6 +137,7 @@ const getTopStocks = (req: Request, res: Response): void => {
         try {
             const stocksData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                setInCache(cacheKey, stocksData);
                 res.json(stocksData);
             }
         } catch (error) {
@@ -112,36 +160,17 @@ const getTopStocks = (req: Request, res: Response): void => {
     });
 };
 
-    // Currently in lambda func: LABA-node-stock-get-combined-analysis
-    const handleGetVerdict = async (stock_symbol: string): Promise<any> => {
-        const url = `https://production.dataviz.cnn.io/quote/analystratings/${stock_symbol}`;
-        const headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-            'Accept': 'application/json'
-        };
-        try {
-            const response = await axios.get(url, { headers });
-            const data = response.data[0];
-
-            let verdict = '';
-            const { percent_buys, percent_holds, percent_sells } = data;
-            if (percent_buys >= percent_holds && percent_buys >= percent_sells) {
-                verdict = 'buy';
-            } else if (percent_holds >= percent_buys && percent_holds >= percent_sells) {
-                verdict = 'hold';
-            } else if (percent_sells >= percent_buys && percent_sells >= percent_holds) {
-                verdict = 'sell';
-            }
-
-            return { ...data, verdict };
-        } catch (error) {
-            throw new Error('Failed to fetch analyst ratings');
-        }
-    };
-
-    const getAnalysis = async (req: Request, res: Response): Promise<any> => {
+    const getAnalysis = async (req: Request, res: Response): Promise<void> => {
         try {
             const stockSymbol = req.params.symbol.toUpperCase();
+            const cacheKey = `stockAnalysis:${stockSymbol}`;
+
+            const cachedData = await getFromCache(cacheKey);
+            if (cachedData) {
+                res.json(cachedData);
+                return;
+            }
+
             const pythonProcess = spawn('python3', ['src/stocks/getAnalysis.py', stockSymbol]);
             pythonProcess.stdout.on('data', (data) => {
                 try {
@@ -152,6 +181,7 @@ const getTopStocks = (req: Request, res: Response): void => {
                     const num_of_sells = analysisData.number_of_sell;
                     const ratings = analysisData.ratings;
                     if (!res.headersSent) {
+                        setInCache(cacheKey, { verdict, num_of_buys, num_of_holds, num_of_sells, ratings });
                         res.json({ verdict, num_of_buys, num_of_holds, num_of_sells, ratings });
                     }
                 } catch (error) {
@@ -160,55 +190,23 @@ const getTopStocks = (req: Request, res: Response): void => {
                     }
                 }
             });
-    // Lambda func ver:
-    //         const params = {
-    //             FunctionName: "LABA-python-stock-get-analysis", 
-    //             Payload: JSON.stringify({ req.params.symbol.toUpperCase() })
-    //         };
-
-    //         const response = await lambda.invoke(params).promise();
-    //         const analysisData = JSON.parse(JSON.parse(response.Payload).body);
-            
-    //          const combinedAnalysis = [
-    //          ...analysisData.ratings.filter(item => item.rating === 1).slice(0, num_of_buys).map(item => ({ ...item, ActionType: "buy" })),
-    //          ...analysisData.ratings.filter(item => item.rating === 0).slice(0, num_of_holds).map(item => ({ ...item, ActionType: "hold" })),
-    //          ...analysisData.ratings.filter(item => item.rating === -1).slice(0, num_of_sells).map(item => ({ ...item, ActionType: "sell" })),
-    //          ];
-
-    //         return { 
-    //             combinedAnalysis,
-    //             num_of_buys,
-    //             num_of_holds,
-    //             num_of_sells,
-    //         };
-    //     } catch (error) {
-    //         console.error("Error in getAnalysis:", error);
-    //         throw new Error("Failed to process analysis data");
-    //     }
-    //     };
-
-    // try {
-    //     const { stock_symbol } = event
-        
-    //     const analysisResult = await getAnalysis(stock_symbol);
-    //     return {
-    //         statusCode: 200,
-    //         body: JSON.stringify(analysisResult)
-    //     };
     } catch (error) {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Failed to fetch verdict data' });
         }
-        // return {
-        //     statusCode: 500,
-        //     body: JSON.stringify({ error: error.message })
-        // };
     }
 };
 
-const getHistoricalData = (req: Request, res: Response): void => {
+const getHistoricalData = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
     const rangeParam = (req.query.range || '1d') as string;
+    const cacheKey = `historicalData:${stockSymbol}:${rangeParam}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
 
     const pythonProcess = spawn('python3', ['src/stocks/getHistoricalData.py', stockSymbol, rangeParam]);
 
@@ -216,6 +214,7 @@ const getHistoricalData = (req: Request, res: Response): void => {
         try {
             const historicalData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                setInCache(cacheKey, historicalData);
                 res.json(historicalData);
             }
         } catch (error) {
@@ -240,6 +239,14 @@ const getHistoricalData = (req: Request, res: Response): void => {
 
 const getForecastData = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
+    const cacheKey = `forecastData:${stockSymbol}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
+
     const url = `https://production.dataviz.cnn.io/quote/forecast/${stockSymbol}`;
     const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
@@ -249,6 +256,7 @@ const getForecastData = async (req: Request, res: Response): Promise<void> => {
     try {
         const response = await axios.get(url, { headers });
         if (!res.headersSent) {
+            setInCache(cacheKey, response.data[0]);
             res.json(response.data[0]);
         }
     } catch (error) {
@@ -258,14 +266,23 @@ const getForecastData = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-const getEPSData = (req: Request, res: Response): void => {
+const getEPSData = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
+    const cacheKey = `epsData:${stockSymbol}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
+
     const pythonProcess = spawn('python3', ['src/stocks/getEPSData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
             const epsData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                setInCache(cacheKey, epsData);
                 res.json(epsData);
             }
         } catch (error) {
@@ -288,15 +305,24 @@ const getEPSData = (req: Request, res: Response): void => {
     });
 };
 
-const getPeRatioData = (req: Request, res: Response): void => {
+const getPeRatioData = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
+    const cacheKey = `peRatio:${stockSymbol}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
+
     const pythonProcess = spawn('python3', ['src/stocks/getPeRatioData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
-            const epsData = JSON.parse(data.toString());
+            const peRatioData = JSON.parse(data.toString());
             if (!res.headersSent) {
-                res.json(epsData);
+                setInCache(cacheKey, peRatioData);
+                res.json(peRatioData);
             }
         } catch (error) {
             if (!res.headersSent) {
@@ -319,11 +345,19 @@ const getPeRatioData = (req: Request, res: Response): void => {
 };
 
 const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<void> => {
+    const cacheKey = `AaaCorporateBondYield`;
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
+
     const pythonProcess = spawn('python3', ['src/stocks/getAaaCorporateBondYield.py']);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                setInCache(cacheKey, stocksData);
                 res.json(stocksData);
             }
         } catch (error) {
@@ -346,14 +380,22 @@ const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<vo
     });
 };
 
-const searchStock = (req: Request, res: Response): void => {
+const searchStock = async (req: Request, res: Response): Promise<void> => {
     const query = req.params.query.toUpperCase();
+    const cacheKey = `seach:${query}`;
+
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
     const pythonProcess = spawn('python3', ['src/stocks/searchStock.py', query]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
             if (!res.headersSent) {
+                setInCache(cacheKey, stockData);
                 res.json(stockData);
             }
         } catch (error) {
@@ -400,6 +442,13 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
         return;
       }
     }
+
+    const cacheKey = `benjaminGrahamList:${sortBy}:${filterBy || ""}:${pageNumber}`;
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
       
     try {
       let stockData: BenjaminGrahamData[] = [];
@@ -438,7 +487,7 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
       
       const paginatedData = stockData.slice(startIndex, endIndex);
       
-      res.json({
+      const data = {
         data: paginatedData,
         pagination: {
           currentPage: validPageNumber,
@@ -448,22 +497,32 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
           hasNextPage: validPageNumber < totalPages,
           hasPreviousPage: validPageNumber > 1
         }
-      });
+      }
+
+      setInCache(cacheKey, data);
+      res.json(data);
     } catch (error) {
       console.error("Error:", error);
       res.status(500).json({ error: "Failed to process CSV data" });
     }
   };
 
-const getDCFValue = (req: Request, res: Response): void => {
+const getDCFValue = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['src/stocks/getDCFValue.py', stockSymbol]);
+    const cacheKey = `dcfValue:${stockSymbol}`;
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
 
+    const pythonProcess = spawn('python3', ['src/stocks/getDCFValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
-            const epsData = JSON.parse(data.toString());
+            const dcfData = JSON.parse(data.toString());
             if (!res.headersSent) {
-                res.json(epsData);
+                setInCache(cacheKey, dcfData);
+                res.json(dcfData);
             }
         } catch (error) {
             if (!res.headersSent) {
@@ -485,15 +544,22 @@ const getDCFValue = (req: Request, res: Response): void => {
     });
 };
 
-const getDDMValue = (req: Request, res: Response): void => {
+const getDDMValue = async (req: Request, res: Response): Promise<void> => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = spawn('python3', ['src/stocks/getDDMValue.py', stockSymbol]);
+    const cacheKey = `ddmValue:${stockSymbol}`;
+    const cachedData = await getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
 
+    const pythonProcess = spawn('python3', ['src/stocks/getDDMValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
-            const epsData = JSON.parse(data.toString());
+            const ddmData = JSON.parse(data.toString());
             if (!res.headersSent) {
-                res.json(epsData);
+                setInCache(cacheKey, ddmData);
+                res.json(ddmData);
             }
         } catch (error) {
             if (!res.headersSent) {
@@ -517,13 +583,20 @@ const getDDMValue = (req: Request, res: Response): void => {
 
 const getBenjaminGrahamValue = (req: Request, res: Response): void => {
     const stockSymbol = req.params.symbol.toUpperCase();
+    const cacheKey = `benjaminGrahamValue:${stockSymbol}`;
+    const cachedData = getFromCache(cacheKey);
+    if (cachedData) {
+        res.json(cachedData);
+        return;
+    }
     const pythonProcess = spawn('python3', ['src/stocks/getBenjaminGrahamValue.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
-            const epsData = JSON.parse(data.toString());
+            const bgData = JSON.parse(data.toString());
             if (!res.headersSent) {
-                res.json(epsData);
+                setInCache(cacheKey, bgData);
+                res.json(bgData);
             }
         } catch (error) {
             if (!res.headersSent) {
