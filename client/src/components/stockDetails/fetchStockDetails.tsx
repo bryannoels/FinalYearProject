@@ -88,8 +88,6 @@ export const fetchStockDetails = async (
                 DDM: ddmData,
                 BenjaminGraham: bgData
             };
-
-            console.log(intrinsicValue);
     
             const newData = {
                 info: initialStockData.info,
