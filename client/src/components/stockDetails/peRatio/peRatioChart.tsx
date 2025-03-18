@@ -15,7 +15,6 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
     const [isChartVisible, setIsChartVisible] = useState(false);
     const sortedData = stockData.peRatio.sort((a, b) => a.Year - b.Year);
     
-    // Calculate P/E ratio statistics
     const peValues = sortedData.map(item => item.PE_Ratio);
     const currentPE = sortedData[sortedData.length - 1].PE_Ratio;
     const peStats = {
@@ -28,7 +27,6 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
         current: currentPE
     };
     
-    // Classify P/E ratio
     const classifyPE = (pe: number): { category: string, message: string } => {
         if (pe < 0) {
             return { 
@@ -55,17 +53,7 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
     
     const currentPEClass = classifyPE(currentPE).category;
     const currentPEMessage = classifyPE(currentPE).message;
-    
-    // Calculate position for range indicator
-    const calculateRangePosition = (value: number): string => {
-        const min = peStats.min;
-        const max = peStats.max;
-        const range = max - min;
-        const percentage = ((value - min) / range) * 100;
-        return `${Math.max(0, Math.min(100, percentage))}%`;
-    };
 
-    // Intersection Observer for scroll animation
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
@@ -89,7 +77,7 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
         const svg = d3.select(peRatioChartRef.current);
         svg.selectAll("*").remove();
         
-        const width = 350;
+        const width = 330;
         const height = 200;
         const margin = { top: 20, right: 30, bottom: 30, left: 50 };
 
