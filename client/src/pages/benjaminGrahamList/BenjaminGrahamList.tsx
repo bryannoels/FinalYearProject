@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, cache } from 'react';
 import { fetchData, getCachedData, setCachedData } from '../../components/utils/utils';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
@@ -60,16 +60,17 @@ function BenjaminGrahamList() {
             totalItems: response.pagination.totalItems || 0,
             hasNextPage: response.pagination.hasNextPage || page < totalPages,
             hasPreviousPage: response.pagination.hasPreviousPage || page > 1
-          }
+          },
+          retrievedAt: response.retrievedAt
         };
         
         setCachedData(cacheKey, { 
           data: cachedValue, 
-          timestamp: currentTimestamp,
+          timestamp: cachedValue.retrievedAt,
         });
         
         setMarketStockList(formattedData);
-        setDateTime(currentTimestamp);
+        setDateTime(cachedValue.retrievedAt);
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);

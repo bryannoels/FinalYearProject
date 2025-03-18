@@ -36,22 +36,12 @@ function StockList() {
       } else {
         const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
         const response = await fetchData(url);
-        const formattedData: StockInfo[] = response.map(createStockObject);
-        const currentTimestamp = new Date().toLocaleString('en-US', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-          timeZoneName: 'short',
-          timeZone: 'America/New_York',
-        });        
+        const formattedData: StockInfo[] = response.data.map(createStockObject);
+        const timestamp = response.retrievedAt
 
-        setCachedData(cacheKey, { data: formattedData, timestamp: currentTimestamp });
+        setCachedData(cacheKey, { data: formattedData, timestamp: timestamp });
         setMarketStockList(formattedData);
-        setDateTime(currentTimestamp);
+        setDateTime(timestamp);
       }
     } catch (_error) {
     } finally {

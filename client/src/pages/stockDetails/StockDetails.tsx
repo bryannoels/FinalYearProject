@@ -32,7 +32,7 @@ const StockDetails = () => {
                     <StockPriceChart stockData={stockData}/>
                     <TabContents stockData={stockData} />
                     <div className="data-date-time">
-                        Data is accurate as of <br /> <strong>{dateTime}</strong>
+                        Data is accurate as of <br /> <strong>{stockData?.profile.retrievedAt}</strong>
                     </div>
                 </>
             )}
