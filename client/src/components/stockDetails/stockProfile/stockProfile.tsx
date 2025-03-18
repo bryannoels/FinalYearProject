@@ -28,15 +28,12 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
     "No. of Employees": stockData?.profile?.fullTimeEmployees,
   };
 
-  // Try to load the stock logo
   const [logoLoaded, setLogoLoaded] = useState(false);
   const logoPath = `/stockLogos/${stockData.info.symbol}.png`;
 
   useEffect(() => {
-    // Check if the logo exists
     const img = new Image();
     img.src = logoPath;
-    console.log(logoPath);
     img.onload = () => setLogoLoaded(true);
     img.onerror = () => setLogoLoaded(false);
   }, [logoPath]);

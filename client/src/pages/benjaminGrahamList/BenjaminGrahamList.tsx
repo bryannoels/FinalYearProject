@@ -21,7 +21,6 @@ function BenjaminGrahamList() {
   const navigate = useNavigate();
 
   const fetchStocks = async (sortBy: string, filterBy: string, page: number) => {
-    console.log(sortBy)
     setLoading(true);
     try {
       const cacheKey = `stocks_sort-by-${sortBy}_filter-by-${filterBy}_page-${page}`;
