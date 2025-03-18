@@ -4,6 +4,7 @@ import './BenjaminGrahamItem.css';
 interface BenjaminGrahamItemProps extends BenjaminGrahamStockInfo {
     onClick: () => void;
     sortBy: string;
+    animationDelay: number;
 }
 
 const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({ 
@@ -13,6 +14,7 @@ const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({
   enterprisingValue, 
   overallValue, 
   sortBy, 
+  animationDelay = 0,
   onClick = () => {}
 }) => {
     const displayValue = sortBy === 'Defensive' 
@@ -37,7 +39,7 @@ const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({
     };
     
     return (
-        <div className="benjamin-graham-card">
+        <div className="benjamin-graham-card" style={{ animationDelay: `${animationDelay * 100}ms` }}>
             <div className="card-content" onClick={onClick}>
                 <div className="stock-info">
                     <h3 className="company-name">{companyName}</h3>
