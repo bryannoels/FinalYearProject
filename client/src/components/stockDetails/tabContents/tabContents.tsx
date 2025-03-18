@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Stock } from '../../types/Stock';
-import StockProfile from './stockProfile/stockProfile';
-import ValuationMeasures from './valuationMeasures/valuationMeasures';
-import AnalystsRecommendation from './analystsRecommendation/analystsRecommendation';
-import EPSChart from './epsChart/epsChart';
-import PeRatioChart from './peRatio/peRatioChart';
-import IntrinsicValue from './intrinsicValue/intrinsicValue';
-import TabButton from './tabButton';
-import BenjaminGraham from './benjaminGraham/benjaminGraham';
+import { Stock } from '../../../types/Stock';
+import StockProfile from '../stockProfile/stockProfile';
+import ValuationMeasures from '../valuationMeasures/valuationMeasures';
+import AnalystsRecommendation from '../analystsRecommendation/analystsRecommendation';
+import EPSChart from '../epsChart/epsChart';
+import PeRatioChart from '../peRatio/peRatioChart';
+import IntrinsicValue from '../intrinsicValue/intrinsicValue';
+import TabButton from '../tabButton';
+import BenjaminGraham from '../benjaminGraham/benjaminGraham';
+import './tabContents.css';
 
 interface TabContentsProps {
   stockData: Stock | null;
@@ -72,7 +73,7 @@ const TabContents: React.FC<TabContentsProps> = ({ stockData }) => {
           <TabButton key={tab} label={tab} activeTab={activeTab} setActiveTab={setActiveTab} />
         ))}
       </div>
-      <hr className="stock-details__analysts__divider" />
+      <hr className="stock-details__divider" />
       {renderTabContent()}
     </div>
   );
