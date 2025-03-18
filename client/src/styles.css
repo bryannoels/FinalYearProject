@@ -1,0 +1,19 @@
+/* Add these styles to your main CSS file */
+
+.app-container {
+    position: relative;
+    min-height: 100vh;
+    max-width: 412px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+  }
+  
+  .main-content {
+    padding-bottom: 64px;
+  }
+  
+  @media (min-width: 769px) {
+    .app-container {
+      max-width: 100%;
+    }
+  }
