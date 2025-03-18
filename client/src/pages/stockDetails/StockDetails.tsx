@@ -15,7 +15,7 @@ const StockDetails = () => {
     const [loading, setLoading] = useState(true);
     const [_error, setError] = useState<string | null>(null);
     const [stockData, setStockData] = useState<Stock | null>(null);
-    const [dateTime, setDateTime] = useState<string>('');
+    const [_dateTime, setDateTime] = useState<string>('');
 
     useEffect(() => {
         if (!symbol) return;

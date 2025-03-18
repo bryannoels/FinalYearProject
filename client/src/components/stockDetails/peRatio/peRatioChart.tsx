@@ -95,12 +95,6 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
             .nice()
             .range([height - margin.bottom, margin.top]);
 
-        const colorScale = d3.scaleLinear<string>()
-            .domain([minimumValue < 0 ? minimumValue : 0, 0, maximumValue > 0 ? maximumValue : 0])
-            .range(["#e63946", "#ddd", "#2a9d8f"])
-            .clamp(true);
-
-        // Horizontal zero line if needed
         if (minimumValue < 0) {
             svg.append("line")
                 .attr("x1", margin.left)
@@ -186,7 +180,7 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
         // Animate bars with a staggered delay
         svg.selectAll(".bar")
             .transition()
-            .delay((d, i) => i * 100)
+            .delay((_d, i) => i * 100)
             .duration(800)
             .style("transform", "scaleY(1)");
 

@@ -41,14 +41,13 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData, investorType
 
       {/* Cards Grid */}
       <div className="criteria-cards">
-        {Object.entries(data).map(([label, { value, description, color }], index) => {
+        {Object.entries(data).map(([label, { value, description, color }]) => {
           const isExpanded = expandedCards.includes(label);
           const isPassed = color === 'green' || color === '#4caf50' || color === '#00a86b';
           const statusIcon = isPassed ? faCheckCircle : faTimesCircle;
 
           return (
             <div className="criteria-card" key={label}>
-              {/* Card Header */}
               <div className="card-header">
                 <div className="card-title">
                   <span className="status-icon">
