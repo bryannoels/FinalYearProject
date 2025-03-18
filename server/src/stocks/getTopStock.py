@@ -4,6 +4,8 @@ import json
 import re
 import random
 import sys
+from datetime import datetime
+import pytz
 
 USER_AGENTS = [
    "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36",
@@ -36,7 +38,7 @@ def get_top_stocks(category="most-active"):
    response = requests.get(url, headers=headers)
    if response.status_code == 200:
        soup = BeautifulSoup(response.text, 'html.parser')
-       stocks_data = []
+       data = []
 
        table = soup.find('table', {'class': 'markets-table'})
        if (table):
@@ -58,8 +60,15 @@ def get_top_stocks(category="most-active"):
                change_percent_tag = row.find('fin-streamer', attrs={'data-field': 'regularMarketChangePercent'})
                stock['Change%'] = re.sub(r'^\(|\)$', '', change_percent_tag.text) if change_percent_tag else 'N/A'
                
-               stocks_data.append(stock)
-       return stocks_data[:10]
+               data.append(stock)
+        
+       stocks_data = {}
+       stocks_data['data'] = data
+       edt_timezone = pytz.timezone('America/New_York')
+       current_time_edt = datetime.now(edt_timezone).strftime('%A, %d %B %Y at %H:%M %Z')
+       stocks_data['retrievedAt'] = current_time_edt
+       
+       return stocks_data
    else:
        return {"error": f"Failed to retrieve data. Status code: {response.status_code}"}
 
