@@ -3,11 +3,6 @@ import { Stock } from '../../../types/Stock';
 import * as d3 from 'd3';
 import './epsChart.css';
 
-interface EPSData {
-    Year: number;
-    EPS: number;
-}
-
 interface EPSChartProps {
     stockData: Stock | null;
 }
@@ -78,7 +73,7 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
         const svg = d3.select(epsChartRef.current);
         svg.selectAll("*").remove();
         
-        const width = 350;
+        const width = 300;
         const height = 200;
         const margin = { top: 20, right: 30, bottom: 30, left: 50 };
 
@@ -96,11 +91,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
             .nice()
             .range([height - margin.bottom, margin.top]);
 
-        // Define a color scale based on EPS value
-        const colorScale = d3.scaleLinear<string>()
-            .domain([minimumValue < 0 ? minimumValue : 0, 0, maximumValue > 0 ? maximumValue : 0])
-            .range(["#e63946", "#ddd", "#2a9d8f"])
-            .clamp(true);
 
         // Horizontal zero line if needed
         if (minimumValue < 0) {
@@ -188,7 +178,7 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
         // Animate bars with a staggered delay
         svg.selectAll(".bar")
             .transition()
-            .delay((d, i) => i * 100)
+            .delay((_d, i) => i * 100)
             .duration(800)
             .style("transform", "scaleY(1)");
 
