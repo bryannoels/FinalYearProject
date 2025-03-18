@@ -2,6 +2,8 @@ import yfinance as yf
 import sys
 import json
 import math
+from datetime import datetime
+import pytz
 
 def get_stock_profile(stock_symbol):
     stock = yf.Ticker(stock_symbol)
@@ -20,6 +22,10 @@ def get_stock_profile(stock_symbol):
     stock_data['CEO'] = next((officer['name'] for officer in stock_info.get('companyOfficers', None) if any(leader in officer.get('title', '') for leader in ["CEO", "President Director", "GM"])), None)
     stock_data['fullTimeEmployees'] = stock_info.get('fullTimeEmployees', None)
     stock_data['longBusinessSummary'] = stock_info.get('longBusinessSummary', None)
+    
+    edt_timezone = pytz.timezone('America/New_York')
+    current_time_edt = datetime.now(edt_timezone).strftime('%A, %d %B %Y at %H:%M %Z')
+    stock_data['retrievedAt'] = current_time_edt
 
     return stock_data
 
