@@ -12,6 +12,7 @@ function StockList() {
   const categories = ['most-active', 'trending', 'gainers', 'losers', '52-week-gainers', '52-week-losers'];
   const [category, setCategory] = useState<string>('most-active');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [displayedSearchTerm, setDisplayedSearchTerm] = useState<string>('');
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const [searchStockResult, setSuggestions] = useState<SearchResult[]>([]);
@@ -60,6 +61,7 @@ function StockList() {
 
   const handleItemClick = (symbol: string) => {
     setSearchTerm('');
+    setDisplayedSearchTerm('');
     setShowDropdown(false);
     navigate(`/stock/${symbol}`);
   };
@@ -67,18 +69,28 @@ function StockList() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
+    
+    if (value.length >= 1 && !isSearching) {
+      setIsSearching(true);
+    } else if (value.length === 0) {
+      setIsSearching(false);
+      setSuggestions([]);
+      setShowDropdown(false);
+      setDisplayedSearchTerm('');
+    }
   };
 
   const clearSearch = () => {
     setSearchTerm('');
+    setDisplayedSearchTerm('');
     setSuggestions([]);
     setShowDropdown(false);
+    setIsSearching(false);
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   };
 
-  // Highlight matching text in search results
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text;
     
@@ -90,7 +102,6 @@ function StockList() {
     );
   };
 
-  // Custom Dropdown Component with animations
   const CustomDropdown = () => {
     if (!showSearchedStocks || searchStockResult.length === 0) return null;
     
@@ -107,7 +118,7 @@ function StockList() {
             >
               <span className="dropdown-item-symbol">{item.ticker}</span>
               <span className="dropdown-item-name">
-                {highlightMatch(item.name, searchTerm)}
+                {highlightMatch(item.name, displayedSearchTerm)}
               </span>
             </div>
           ))
@@ -118,7 +129,6 @@ function StockList() {
     );
   };
 
-  // Handle clicks outside dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && 
@@ -141,26 +151,21 @@ function StockList() {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
     if (searchTerm.length >= 1) {
-      setIsSearching(true);
       debounceTimeout.current = setTimeout(() => {
+        setDisplayedSearchTerm(searchTerm);
+        
         searchStocks(searchTerm, (results: SearchResult[]) => {
           setSuggestions(results);
           setIsSearching(false);
+          setShowDropdown(results.length > 0);
         });
       }, 300);
-    } else {
-      setSuggestions([]);
-      setIsSearching(false);
     }
-
+  
     return () => { 
       if (debounceTimeout.current) clearTimeout(debounceTimeout.current); 
     };
   }, [searchTerm]);
-
-  useEffect(() => {
-    setShowDropdown(searchStockResult.length > 0 && searchTerm.length > 0);
-  }, [searchStockResult, searchTerm]);  
 
   return (
     <div className="stock-list">
@@ -201,7 +206,7 @@ function StockList() {
         </div>
       </div>
 
-      <div className = "stock-list-content">
+      <div className="stock-list-content">
         <CurrentMarket 
           loading={loading} 
           marketStockList={marketStockList} 
