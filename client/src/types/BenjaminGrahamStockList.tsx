@@ -3,5 +3,6 @@ import { BenjaminGrahamStockPagination } from './BenjaminGrahamStockPagination';
 
 export type BenjaminGrahamStockList = {
     data: BenjaminGrahamStockInfo[],
-    pagination: BenjaminGrahamStockPagination
+    pagination: BenjaminGrahamStockPagination,
+    retrievedAt: string
 }
