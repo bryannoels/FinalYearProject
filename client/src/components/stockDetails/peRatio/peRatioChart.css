@@ -356,6 +356,11 @@
     background-color: rgba(42, 157, 143, 0.1);
     color: #2a9d8f;
   }
+
+  .pe-interpretation.negative {
+    background-color: rgba(169, 169, 169, 0.1);
+    color: #555555;
+  }
   
   /* Axis styles */
   .pe-chart-container .x-axis path,

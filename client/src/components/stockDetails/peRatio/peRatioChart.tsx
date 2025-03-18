@@ -23,6 +23,7 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
         max: Math.max(...peValues),
         avg: parseFloat((peValues.reduce((sum, val) => sum + val, 0) / peValues.length).toFixed(2)),
         median: parseFloat(d3.median(peValues)?.toFixed(2) || "0"),
+        variance: parseFloat(d3.variance(peValues)?.toFixed(2) || "0"),
         stdDev: parseFloat(d3.deviation(peValues)?.toFixed(2) || "0"),
         current: currentPE
     };
@@ -254,6 +255,14 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
             </div>
             <div className="pe-stats-grid">
                 <div className="pe-stat-item">
+                    <div className="pe-stat-label">Max</div>
+                    <div className="pe-stat-value">{peStats.max.toFixed(2)}</div>
+                </div>
+                <div className="pe-stat-item">
+                    <div className="pe-stat-label">Min</div>
+                    <div className="pe-stat-value">{peStats.min.toFixed(2)}</div>
+                </div>
+                <div className="pe-stat-item">
                     <div className="pe-stat-label">Mean</div>
                     <div className="pe-stat-value">{peStats.avg.toFixed(2)}</div>
                 </div>
@@ -261,18 +270,18 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
                     <div className="pe-stat-label">Median</div>
                     <div className="pe-stat-value">{peStats.median.toFixed(2)}</div>
                 </div>
-                {/* <div className="pe-stat-item">
+                <div className="pe-stat-item">
                     <div className="pe-stat-label">Variance</div>
                     <div className="pe-stat-value">{peStats.variance.toFixed(2)}</div>
-                </div> */}
+                </div>
                 <div className="pe-stat-item">
                     <div className="pe-stat-label">Std Deviation</div>
                     <div className="pe-stat-value">{peStats.stdDev.toFixed(2)}</div>
                 </div>
             </div>
-            {/* <div className={`pe-trend-indicator pe-trend-${peStats.trend}`}>
-                {getTrendMessage()}
-            </div> */}
+            <div className={`pe-interpretation ${currentPEClass}`}>
+                {currentPEMessage}
+            </div>
         </div>
         
         <div className="pe-tooltip hidden" />
