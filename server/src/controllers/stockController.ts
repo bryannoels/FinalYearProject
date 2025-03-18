@@ -5,7 +5,7 @@ import axios from 'axios';
 import csv from "csv-parser";
 import fs from "fs";
 import Redis from 'ioredis';
-import { set } from 'mongoose';
+
 
 type BenjaminGrahamData = {
     "Stock Symbol": string;
@@ -72,14 +72,11 @@ const getStockData = async (req: Request, res: Response): Promise<void> => {
 };
 
 const getStockProfile = async (req: Request, res: Response): Promise<void> => {
-    const startTime = Date.now();
     const stockSymbol = req.params.symbol.toUpperCase();
     const cacheKey = `stockProfile:${stockSymbol}`;
 
     const cachedData = await getFromCache(cacheKey);
     if (cachedData) {
-        const elapsedTime = Date.now() - startTime;
-        console.log(`Cache response time: ${elapsedTime} ms`);
         res.json(cachedData);
         return;
     }
@@ -91,8 +88,6 @@ const getStockProfile = async (req: Request, res: Response): Promise<void> => {
             const stockData = JSON.parse(data.toString());
             if (!res.headersSent) {
                 setInCache(cacheKey, stockData);
-                const elapsedTime = Date.now() - startTime; // Calculate elapsed time
-                console.log(`No-cache response time: ${elapsedTime} ms`);
                 res.json(stockData);
             }
         } catch (error) {
@@ -486,6 +481,24 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
       const endIndex = Math.min(startIndex + pageSize, totalItems);
       
       const paginatedData = stockData.slice(startIndex, endIndex);
+
+      const getCurrentTimeEDT = () => {
+            const now = new Date();
+            const options: Intl.DateTimeFormatOptions = {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'America/New_York',
+                timeZoneName: 'short'
+            };
+        
+            return new Intl.DateTimeFormat('en-US', options).format(now);
+        };
+
       
       const data = {
         data: paginatedData,
@@ -496,9 +509,11 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
           totalItems,
           hasNextPage: validPageNumber < totalPages,
           hasPreviousPage: validPageNumber > 1
-        }
+        },
+        retrievedAt: getCurrentTimeEDT()
       }
 
+      console.log(data)
       setInCache(cacheKey, data);
       res.json(data);
     } catch (error) {
