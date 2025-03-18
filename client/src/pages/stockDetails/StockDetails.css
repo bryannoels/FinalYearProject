@@ -425,6 +425,10 @@
     overflow-x: auto;
 }
 
+.stock-details__tabs::-webkit-scrollbar { 
+    display: none;
+}
+
 
 .stock-details__tab {
     padding: 10px 15px;
