@@ -43,7 +43,6 @@ const MobileTabNavigation = () => {
   
 
   useEffect(() => {
-    // Find which tab is active based on current path
     const currentTab = tabs.find(tab => 
       location.pathname === tab.path || location.pathname.startsWith(`${tab.path}/`)
     );

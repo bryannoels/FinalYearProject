@@ -10,13 +10,11 @@ interface AnalystsRecommendationProps {
 }
 
 const AnalystsRecommendation: React.FC<AnalystsRecommendationProps> = ({ stockData }) => {
-    // Refs for animation on scroll
     const verdictRef = useRef<HTMLDivElement>(null);
     const forecastRef = useRef<HTMLDivElement>(null);
     const ratingsRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
-        // Set up intersection observer for scroll animations
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -26,7 +24,6 @@ const AnalystsRecommendation: React.FC<AnalystsRecommendationProps> = ({ stockDa
             });
         }, { threshold: 0.2 });
         
-        // Observe all section elements
         if (verdictRef.current) observer.observe(verdictRef.current);
         if (forecastRef.current) observer.observe(forecastRef.current);
         if (ratingsRef.current) observer.observe(ratingsRef.current);

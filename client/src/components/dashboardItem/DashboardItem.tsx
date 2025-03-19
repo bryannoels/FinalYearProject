@@ -22,7 +22,6 @@ const DashboardItem: React.FC<DashboardItemProps> = ({
     onClickDelete = () => {},
     animationDelay = 0
 }) => {
-    // Determine if price has increased or decreased
     const priceIncreased = change >= 0;
     
     return (
