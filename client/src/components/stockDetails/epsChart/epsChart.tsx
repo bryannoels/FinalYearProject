@@ -15,7 +15,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
     const [isChartVisible, setIsChartVisible] = useState(false);
     const sortedEps = stockData.eps.sort((a, b) => a.Year - b.Year);
     
-    // Calculate EPS statistics
     const epsValues = sortedEps.map(item => item.EPS);
     const epsStats = {
         mean: parseFloat((epsValues.reduce((sum, val) => sum + val, 0) / epsValues.length).toFixed(2)),
@@ -31,7 +30,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
             : "neutral"
     };
     
-    // Get the trend message
     const getTrendMessage = () => {
         if (sortedEps.length <= 1) return "Not enough data for trend analysis";
         
@@ -48,7 +46,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
         }
     };
 
-    // Intersection Observer for scroll animation
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
@@ -65,7 +62,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
         };
     }, []);
 
-    // D3 chart creation
     useEffect(() => {
         if (!epsChartRef.current || sortedEps.length === 0 || !isChartVisible) return;
         
@@ -91,8 +87,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
             .nice()
             .range([height - margin.bottom, margin.top]);
 
-
-        // Horizontal zero line if needed
         if (minimumValue < 0) {
             svg.append("line")
                 .attr("x1", margin.left)
@@ -108,7 +102,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
                 .style("opacity", 1);
         }
 
-        // Render the axes with animation
         const xAxis = svg.append("g")
             .attr("transform", `translate(0,${height - margin.bottom})`)
             .attr("class", "x-axis")
@@ -139,7 +132,6 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
             .duration(800)
             .style("opacity", 1);
 
-        // Create bars with staggered animation
         svg.selectAll(".bar")
             .data(sortedEps)
             .enter().append("rect")
@@ -175,14 +167,12 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
                 epsTooltip.classed('hidden', true);
             });
 
-        // Animate bars with a staggered delay
         svg.selectAll(".bar")
             .transition()
             .delay((_d, i) => i * 100)
             .duration(800)
             .style("transform", "scaleY(1)");
 
-        // Add mean line
         if (epsStats.mean !== 0) {
             svg.append("line")
                 .attr("x1", margin.left)
