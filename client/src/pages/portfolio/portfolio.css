@@ -72,6 +72,7 @@
 .portfolio__add__stock__container {
     position: relative;
     display: flex;
+    margin-right: 20px;
     align-items: center;
     z-index: 7;
 }

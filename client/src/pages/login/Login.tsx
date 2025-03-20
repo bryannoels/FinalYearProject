@@ -48,7 +48,7 @@ function Login() {
   return (
     <>
       <div className="content">
-        <a href="/" className="logo"><img src={labaLogo} className="logo" alt="Laba logo" /></a>
+        <a href="/" className="login-logo"><img src={labaLogo} className="login-logo" alt="Laba logo" /></a>
         <div className="container__form">
           <label className="message__welcome">Welcome Back!</label>
           <form onSubmit={userLogin}>

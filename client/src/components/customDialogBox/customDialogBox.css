@@ -1,7 +1,6 @@
 .custom-dialog-box__overlay {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
@@ -23,6 +22,18 @@
   
   .custom-dialog-box__message {
     font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-black);
+  }
+
+  .custom-dialog-box__dropdown {
+    height: 35px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
     color: var(--primary-black);
   }
   
@@ -34,6 +45,15 @@
   }
 
   .custom-dialog-box__button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s;
+    width: 100px;
     background-color: var(--primary-blue);
     color: var(--primary-white);
   }

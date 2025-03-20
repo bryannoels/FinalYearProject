@@ -34,9 +34,10 @@ function StockList() {
         setMarketStockList(cachedStocks.data);
         setDateTime(cachedStocks.timestamp);
       } else {
-        const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
+        const url = `https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-top-stocks?category=${encodeURIComponent(category)}`;
         const response = await fetchData(url);
-        const formattedData: StockInfo[] = response.data.map(createStockObject);
+        const result = JSON.parse(response.body);
+        const formattedData: StockInfo[] = result.data.map(createStockObject);
         const timestamp = response.retrievedAt
 
         setCachedData(cacheKey, { data: formattedData, timestamp: timestamp });

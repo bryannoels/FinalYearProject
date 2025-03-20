@@ -7,7 +7,7 @@
     flex-direction: column;
 }
 
-.logo{
+.login-logo{
     display: flex;
     width: 10rem;
     height: 10rem;

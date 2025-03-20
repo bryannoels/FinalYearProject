@@ -36,7 +36,7 @@ const CustomDialogBoxProps: React.FC<CustomDialogBoxProps> = ({
     } else if (actionType === "removePortfolio") {
         dialogMessage = (
             <>
-                Remove <strong>{selectedPortfolio}</strong> and all stocks in it?
+                Remove <strong>{selectedPortfolio}</strong> and <strong>all stocks</strong> in it?
             </>
         )
     } else if (actionType === "removeStock") {
@@ -56,6 +56,7 @@ const CustomDialogBoxProps: React.FC<CustomDialogBoxProps> = ({
                 {actionType === "add" && (
                     <div className="custom-dialog-box__portfolio">
                         <select
+                            className="custom-dialog-box__dropdown"
                             value={selectedPortfolio}
                             onChange={(e) => onPortfolioChange?.(e.target.value)}
                         >
