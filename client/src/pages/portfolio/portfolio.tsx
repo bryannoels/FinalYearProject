@@ -27,7 +27,7 @@ export function Portfolio(){
   const navigate = useNavigate();
 
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [dialogType, setDialogType] = useState<"add" | "removeStock" | "removePortfolio">("removeStock");
+  const [dialogType, setDialogType] = useState<"add" | "removeStock" | "removePortfolio" | "prompt">("removeStock");
   const [selectedStock, setSelectedStock] = useState<{ name: string; symbol: string } | null>(null);
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>("");
 
@@ -339,6 +339,7 @@ export function Portfolio(){
       stockSymbol={selectedStock?.symbol}
       portfolioNames={userPortfolioStocks.map((p) => p.portfolioName)}
       selectedPortfolio={selectedPortfolio}
+      isConfirmDisabled={false}
       onPortfolioChange={setSelectedPortfolio}
       onConfirm={handleDialogConfirmButton}
       onCancel={() => setDialogOpen(false)}

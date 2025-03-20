@@ -57,3 +57,7 @@
     background-color: var(--primary-blue);
     color: var(--primary-white);
   }
+
+  .custom-dialog-box__button:disabled {
+    background-color: #738bc2;
+  }

@@ -3,11 +3,13 @@ import './CustomDialogBox.css';
 
 interface CustomDialogBoxProps {
     isOpen: boolean;
-    dialogType: "add" | "removeStock" | "removePortfolio";
+    dialogType: "add" | "removeStock" | "removePortfolio" | "prompt";
+    promptMessage?: string;
     stockName?: string;
     stockSymbol?: string;
     portfolioNames?: string[];
     selectedPortfolio?: string;
+    isConfirmDisabled: boolean;
     onPortfolioChange?: (portfolioName: string) => void;
     onConfirm: () => void;
     onCancel: () => void;
@@ -16,34 +18,47 @@ interface CustomDialogBoxProps {
 const CustomDialogBoxProps: React.FC<CustomDialogBoxProps> = ({
     isOpen,
     dialogType: actionType,
+    promptMessage,
     stockName,
     stockSymbol,
     portfolioNames = [],
     selectedPortfolio,
+    isConfirmDisabled,
     onPortfolioChange,
     onConfirm,
     onCancel,
 }) => {
     if (!isOpen) return null;
+    
+    const getButtonLabel = (actionType: string) => {
+        switch (actionType){
+            case "add": return "Add";
+            case "removePortfolio": 
+            case "removeStock": return "Remove";
+            case "prompt": return "Confirm";
+            default: return "Confirm";
+        }
+    }
 
     let dialogMessage: JSX.Element = <></>;
+
     if (actionType === "add") {
         dialogMessage = (
-            <>
-                Add <strong>{stockName}</strong> (<strong>{stockSymbol}</strong>) to portfolio?
-            </>
+            <>Add <strong>{stockName}</strong> (<strong>{stockSymbol}</strong>) to portfolio?</>
         )
     } else if (actionType === "removePortfolio") {
         dialogMessage = (
-            <>
-                Remove <strong>{selectedPortfolio}</strong> and <strong>all stocks</strong> in it?
-            </>
+            <>Remove <strong>{selectedPortfolio}</strong> and <strong>all stocks</strong> in it?</>
         )
     } else if (actionType === "removeStock") {
         dialogMessage = (
             <>
                 Remove <strong>{stockName}</strong> (<strong>{stockSymbol}</strong>) from <strong>{selectedPortfolio}</strong>?
             </>
+        )
+    } else if (actionType === "prompt") {
+        dialogMessage = (
+            <>{promptMessage}</>
         )
     }
 
@@ -70,7 +85,7 @@ const CustomDialogBoxProps: React.FC<CustomDialogBoxProps> = ({
                     </div>
                 )}
                 <div className="custom-dialog-box__buttons-container">
-                    <button className="custom-dialog-box__button" onClick={onConfirm}>{actionType === "add" ? "Add" : "Remove"}</button>
+                    <button className="custom-dialog-box__button" onClick={onConfirm} disabled={isConfirmDisabled}>{getButtonLabel(actionType)}</button>
                     <button className="custom-dialog-box__button" onClick={onCancel}>Cancel</button>
                 </div>
             </div>
