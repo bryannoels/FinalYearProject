@@ -7,6 +7,7 @@ import { StockAnalysis } from './StockAnalysis';
 import { Eps } from './Eps';
 import { PeRatio } from './PeRatio';
 import { Dividend } from './Dividend';
+import { IntrinsicValue } from './IntrinsicValue';
 
 export type Stock = {
     info: StockInfo;
@@ -20,4 +21,6 @@ export type Stock = {
     dividends: Dividend[] | null;
     growthRate: string | null;
     bondYield: string | null;
+    beta: number | null;
+    intrinsicValue: IntrinsicValue | null;
 }

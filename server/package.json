@@ -5,10 +5,12 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^1.7.9",
+    "concurrently": "^9.1.2",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "ioredis": "^5.6.0",
     "mongoose": "^8.9.4"
   },
   "devDependencies": {
@@ -19,7 +21,7 @@
     "typescript": "^5.7.3"
   },
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "concurrently \"ts-node src/index.ts\" \"redis-server\"",
     "build": "tsc",
     "start": "node dist/index.js"
   }

@@ -33,6 +33,7 @@ def get_historical_data(stock_symbol, range_param):
     stock_data['range'] = range_param
     stock_data['interval'] = interval
     stock_data['data'] = json_data
+    stock_data['beta'] = stock.info.get('beta')
     
     return stock_data
 

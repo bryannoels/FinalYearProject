@@ -4,8 +4,8 @@ import { Stock } from '../../types/Stock';
 import { fetchStockDetails } from '../../components/stockDetails/fetchStockDetails';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import StockInfo from '../../components/stockDetails/stockInfo';
-import StockPriceChart from '../../components/stockDetails/stockPriceChart';
-import TabContents from '../../components/stockDetails/tabContents';
+import StockPriceChart from '../../components/stockDetails/stockPriceChart/stockPriceChart';
+import TabContents from '../../components/stockDetails/tabContents/tabContents';
 import './StockDetails.css';
 
 const StockDetails = () => {
@@ -15,7 +15,7 @@ const StockDetails = () => {
     const [loading, setLoading] = useState(true);
     const [_error, setError] = useState<string | null>(null);
     const [stockData, setStockData] = useState<Stock | null>(null);
-    const [dateTime, setDateTime] = useState<string>('');
+    const [_dateTime, setDateTime] = useState<string>('');
 
     useEffect(() => {
         if (!symbol) return;
@@ -29,10 +29,10 @@ const StockDetails = () => {
             ) : (
                 <>
                     <StockInfo symbol={symbol} stockData={stockData} />
-                    <StockPriceChart stockData={stockData} />
+                    <StockPriceChart stockData={stockData}/>
                     <TabContents stockData={stockData} />
                     <div className="data-date-time">
-                        Data is accurate as of <br /> <strong>{dateTime}</strong>
+                        Data is accurate as of <br /> <strong>{stockData?.profile.retrievedAt}</strong>
                     </div>
                 </>
             )}

@@ -1,0 +1,100 @@
+.mobile-tab-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 412px;
+    height: 64px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    z-index: 1000;
+    padding: 0 8px;
+    margin: 0 auto;
+    right: 0;
+  }
+  
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 8px 0;
+  }
+  
+  .tab-item:active {
+    transform: scale(0.9);
+  }
+  
+  .tab-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+    color: #8a8a8a;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tab-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #8a8a8a;
+    transition: all 0.3s ease;
+  }
+  
+  .tab-item.active .tab-icon {
+    color: #4a90e2;
+    transform: translateY(-2px);
+  }
+  
+  .tab-item.active .tab-label {
+    color: #4a90e2;
+    font-weight: 600;
+  }
+  
+  .tab-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 4px;
+    width: 40%;
+    background-color: #4a90e2;
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+  
+  .tab-highlight {
+    position: absolute;
+    height: 40px;
+    background-color: rgba(74, 144, 226, 0.1);
+    border-radius: 10px;
+    bottom: 12px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: -1;
+  }
+  
+  /* Add this to your existing layout styles */
+  body {
+    padding-bottom: 64px; /* Add padding to accommodate the tab bar */
+  }
+  
+  /* Animation for tab click */
+  @keyframes tabPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+  
+  .tab-item:active .tab-icon {
+    animation: tabPulse 0.3s ease-in-out;
+  }

@@ -1,0 +1,401 @@
+/* ===== ANALYSTS RECOMMENDATION SECTION STYLES ===== */
+:root {
+    /* Color variables */
+    --color-background: #f8f9fa;
+    --color-card: #ffffff;
+    --color-text-primary: #212529;
+    --color-text-secondary: #6c757d;
+    --color-border: #e9ecef;
+    --color-green: #10b981;
+    --color-blue: #3b82f6;
+    --color-red: #ef4444;
+    --color-green-light: rgba(16, 185, 129, 0.1);
+    --color-blue-light: rgba(59, 130, 246, 0.1);
+    --color-red-light: rgba(239, 68, 68, 0.1);
+    --color-verdict-buy: var(--color-green);
+    --color-verdict-hold: var(--color-blue);
+    --color-verdict-sell: var(--color-red);
+    --color-shadow: rgba(0, 0, 0, 0.08);
+    
+    /* Spacing and sizing */
+    --border-radius: 16px;
+    --border-radius-sm: 8px;
+    --card-padding: 20px;
+    --transition-speed: 0.3s;
+  }
+  
+  /* Main container styles */
+  .stock-details__recommendation {
+    max-width: 100%;
+    margin: 0px;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-sizing: border-box;
+}
+  
+  .stock-details__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 20px 0 12px;
+    letter-spacing: -0.01em;
+    position: relative;
+    padding-left: 12px;
+  }
+  
+  .stock-details__title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(to bottom, var(--color-blue), var(--color-green));
+    border-radius: 2px;
+  }
+  
+  /* ===== VERDICT SECTION ===== */
+  .stock-details__analysis {
+    background-color: var(--color-card);
+    border-radius: var(--border-radius) var(--border-radius) var(--border-radius-sm) var(--border-radius-sm);
+    padding: var(--card-padding);
+    box-shadow: 0 4px 12px var(--color-shadow);
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+  
+  .stock-details__analysis:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .stock-detailss__analysis__left {
+    margin-bottom: 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stock-detailss__analysis__left::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border), transparent);
+  }
+  
+  .stock-detailss__analysis__left__text {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 4px 20px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    color: white;
+  }
+  
+  .stock-detailss__analysis__left__text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.15;
+    z-index: -1;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+  }
+  
+  .stock-detailss__analysis__left__text:hover::before {
+    transform: scale(1.1);
+  }
+  
+  .stock-detailss__analysis__left__text.buy::before {
+    background-color: var(--color-verdict-buy);
+  }
+  
+  .stock-detailss__analysis__left__text.hold::before {
+    background-color: var(--color-verdict-hold);
+  }
+  
+  .stock-detailss__analysis__left__text.sell::before {
+    background-color: var(--color-verdict-sell);
+  }
+  
+  .stock-detailss__analysis__right {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 8px;
+  }
+  
+  .stock-detailss__analysis__buys,
+  .stock-detailss__analysis__holds,
+  .stock-detailss__analysis__sells {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+  
+  .stock-detailss__analysis__value {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    transition: transform 0.3s ease;
+  }
+  
+  .stock-detailss__analysis__buys:hover .stock-detailss__analysis__value,
+  .stock-detailss__analysis__holds:hover .stock-detailss__analysis__value,
+  .stock-detailss__analysis__sells:hover .stock-detailss__analysis__value {
+    transform: translateY(-3px) scale(1.1);
+  }
+  
+  .stock-detailss__analysis__buys .stock-detailss__analysis__value {
+    color: var(--color-verdict-buy);
+  }
+  
+  .stock-detailss__analysis__holds .stock-detailss__analysis__value {
+    color: var(--color-verdict-hold);
+  }
+  
+  .stock-detailss__analysis__sells .stock-detailss__analysis__value {
+    color: var(--color-verdict-sell);
+  }
+  
+  .stock-detailss__analysis__text {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* ===== FORECAST SECTION ===== */
+  .stock-details__forecast {
+    background-color: var(--color-card);
+    border-radius: var(--border-radius-sm);
+    padding: var(--card-padding);
+    box-shadow: 0 4px 12px var(--color-shadow);
+    margin-left: 0px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    width: 85%;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+  
+  .stock-details__forecast:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .stock-details__forecast::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--color-green), var(--color-blue), var(--color-red));
+  }
+  
+  .stock-details__forecast__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    position: relative;
+  }
+  
+  .stock-details__forecast__row:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border), transparent);
+  }
+  
+  .stock-details__forecast__row:hover {
+    background-color: rgba(0, 0, 0, 0.01);
+  }
+  
+  .stock-details__forecast__label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+  
+  .stock-details__forecast__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .stock-details__forecast__value {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    transition: transform 0.3s ease;
+  }
+  
+  .stock-details__forecast__row:hover .stock-details__forecast__value {
+    transform: scale(1.05);
+  }
+  
+  .stock-details__forecast__percent {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .green-rating .stock-details__forecast__value,
+  .green-rating .stock-details__forecast__percent {
+    color: var(--color-green);
+  }
+  
+  .blue-rating .stock-details__forecast__value,
+  .blue-rating .stock-details__forecast__percent {
+    color: var(--color-blue);
+  }
+  
+  .red-rating .stock-details__forecast__value,
+  .red-rating .stock-details__forecast__percent {
+    color: var(--color-red);
+  }
+  
+  /* ===== RATINGS SECTION ===== */
+  .stock-details__analysts__divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border), transparent);
+    margin: 16px 0;
+  }
+  
+  .stock-details__analysts__rating__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 12px 0;
+  }
+  
+  .stock-details__analysts-recommendation {
+    background-color: var(--color-card);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) var(--border-radius) var(--border-radius);
+    padding: 0px;
+    box-shadow: 0 4px 12px var(--color-shadow);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  }
+  
+  .stock-details__analysts-recommendation:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .stock-details__analysts__row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0px;
+    position: relative;
+    transition: transform 0.2s ease;
+    width: 100%;
+    height: 60px;
+    width: 100%;
+  }
+  
+  .stock-details__analysts__row:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border), transparent);
+  }
+  
+  .stock-details__analysts__row:hover {
+    transform: translateX(5px);
+    background-color: rgba(0, 0, 0, 0.01);
+  }
+  
+  .stock-details__analysts__firm {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-right: 30px;
+    margin-left:20px;
+    width: 50%;
+  }
+  
+  .stock-details__analysts__rating {
+    font-weight: 600;
+    padding: 2px 18px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  
+  .stock-details__analysts__rating.green-rating {
+    color: var(--color-green);
+    background-color: var(--color-green-light);
+    font-size: 14px;
+  }
+  
+  .stock-details__analysts__rating.blue-rating {
+    color: var(--color-blue);
+    background-color: var(--color-blue-light);
+    font-size: 14px;
+  }
+  
+  .stock-details__analysts__rating.red-rating {
+    color: var(--color-red);
+    background-color: var(--color-red-light);
+    font-size: 14px;
+  }
+  
+  /* Animations and responsive styles */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  
+  .animate-in {
+    animation: fadeInUp 0.5s ease forwards;
+  }
+  
+  .stock-details__analysis.animate-in {
+    animation-delay: 0.1s;
+  }
+  
+  .stock-details__forecast.animate-in {
+    animation-delay: 0.2s;
+  }
+  
+  .stock-details__analysts-recommendation.animate-in {
+    animation-delay: 0.3s;
+  }
+
+  .section-wrapper{
+    width: 100%;
+  }
+  

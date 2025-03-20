@@ -11,4 +11,5 @@ export type StockProfile = {
     CEO: string;
     fullTimeEmployees: string;
     longBusinessSummary: string;
+    retrievedAt: string;
 };

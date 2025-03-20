@@ -1,0 +1,7 @@
+.stock-details__divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border), transparent);
+    margin: 16px 0;
+    margin-bottom: 0px;
+  }

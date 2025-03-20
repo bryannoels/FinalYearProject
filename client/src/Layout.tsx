@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './pages/navbar/Navbar';
 import _Banner from './pages/banner/Banner';
+import MobileTabNavigation from './components/mobileTabNavigation/mobileTabNavigation';
 import { AuthProvider } from './context/AuthContext';
+import './styles.css';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -24,6 +26,7 @@ const Layout = () => {
         <Navbar />
         {/* {!_login && <_Banner />} */}
         <Outlet />
+        <MobileTabNavigation />
       </div>
     </AuthProvider>
   );

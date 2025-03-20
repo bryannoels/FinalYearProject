@@ -49,6 +49,8 @@ export const fetchStockDetails = async (
             growthRate: null,
             bondYield: null,
             dividends: stockInfo?.dividends,
+            beta: priceData.beta,
+            intrinsicValue: null
         };
         
         const currentTimestamp = new Date().toLocaleString('en-US', {
@@ -73,10 +75,19 @@ export const fetchStockDetails = async (
             fetchData(`${API_BASE_URL}/get-eps/${symbol}`),
             fetchData(`${API_BASE_URL}/get-pe-ratio/${symbol}`),
             fetchData(`${API_BASE_URL}/get-aaa-corp-bond-yield`),
+            fetchData(`${API_BASE_URL}/get-dcf-value/${symbol}`),
+            fetchData(`${API_BASE_URL}/get-ddm-value/${symbol}`),
+            fetchData(`${API_BASE_URL}/get-benjamin-graham-value/${symbol}`),
         ]).then(results => {
-            const [forecastData, analysisData, epsData, peRatioData, bondYieldData] = results.map(result =>
+            const [forecastData, analysisData, epsData, peRatioData, bondYieldData, dfcData, ddmData, bgData] = results.map(result =>
                 result.status === "fulfilled" ? result.value : null
             );
+
+            const intrinsicValue = {
+                DCF: dfcData,
+                DDM: ddmData,
+                BenjaminGraham: bgData
+            };
     
             const newData = {
                 info: initialStockData.info,
@@ -90,6 +101,8 @@ export const fetchStockDetails = async (
                 growthRate: stockInfo?.growthRate || null,
                 bondYield: bondYieldData?.aaaCorporateBondYield || null,
                 dividends: stockInfo?.dividends,
+                beta: initialStockData.beta,
+                intrinsicValue: intrinsicValue
             };
     
             setStockData(newData);

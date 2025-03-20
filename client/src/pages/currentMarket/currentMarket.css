@@ -1,17 +1,41 @@
-.current-market{
+/* Current Market Styles */
+.current-market {
+    max-width: 412px;
+    width: 100%;
+    margin: 0px auto;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+  
+  .market-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  .market-header h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin: 0 0 8px;
+  }
+  
+  .market-divider {
+    height: 4px;
+    width: 40px;
+    background: linear-gradient(to right, #0077b6, #00b4d8);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+  
+  .market-items-container {
     display: flex;
     flex-direction: column;
+    gap: 0px;
+    padding: 0px 0;
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0;
-    margin-top: 10px;
-    margin-bottom: 0px;
-}
-
-.current-market > * {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    width: 85vw;
-}
+    height: 200px;
+  }

@@ -5,7 +5,7 @@
     justify-content: space-between;
     min-height: 100vh;
     background-color: var(--light-gray);
-    padding-bottom: 30px;
+    padding-bottom: 80px;
     width: 100vw;
 }
 
@@ -257,26 +257,6 @@
     text-align: left;
 }
 
-.stock-details__analysts-recommendation{
-    width: 100%;
-}
-
-.stock-details__analysts__row{
-    width: calc(100% - 20px); 
-    margin-left: 20px;
-    height: 60px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.stock-details__analysts__firm{
-    font-size: 16px;
-    margin-left: 20px;
-    width: 60%;
-}
-
 .stock-details__analysts__rating{
     font-size: 16px;
     margin-right: 20px;
@@ -454,6 +434,10 @@
     overflow-x: auto;
 }
 
+.stock-details__tabs::-webkit-scrollbar { 
+    display: none;
+}
+
 
 .stock-details__tab {
     padding: 10px 15px;
@@ -531,4 +515,4 @@
   }
 
 
-  
+

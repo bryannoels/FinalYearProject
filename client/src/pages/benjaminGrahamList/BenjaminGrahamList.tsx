@@ -18,10 +18,10 @@ function BenjaminGrahamList() {
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const fetchStocks = async (sortBy: string, filterBy: string, page: number) => {
-    console.log(sortBy)
     setLoading(true);
     try {
       const cacheKey = `stocks_sort-by-${sortBy}_filter-by-${filterBy}_page-${page}`;
@@ -37,18 +37,6 @@ function BenjaminGrahamList() {
         
         const formattedData: BenjaminGrahamStockInfo[] = response.data.map(createBenjaminGrahamStockObject);
         
-        const currentTimestamp = new Date().toLocaleString('en-US', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-          timeZoneName: 'short',
-          timeZone: 'America/New_York',
-        });
-        
         const totalPages = response.pagination.totalPages || 1;
         setTotalPages(totalPages);
 
@@ -61,16 +49,17 @@ function BenjaminGrahamList() {
             totalItems: response.pagination.totalItems || 0,
             hasNextPage: response.pagination.hasNextPage || page < totalPages,
             hasPreviousPage: response.pagination.hasPreviousPage || page > 1
-          }
+          },
+          retrievedAt: response.retrievedAt
         };
         
         setCachedData(cacheKey, { 
           data: cachedValue, 
-          timestamp: currentTimestamp,
+          timestamp: cachedValue.retrievedAt,
         });
         
         setMarketStockList(formattedData);
-        setDateTime(currentTimestamp);
+        setDateTime(cachedValue.retrievedAt);
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);
@@ -142,6 +131,38 @@ function BenjaminGrahamList() {
     return pageNumbers;
   };
 
+  useEffect(() => {
+    // Set up intersection observer for scroll animations
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const itemsToAnimate = entry.target.querySelectorAll('.benjamin-graham-card');
+                itemsToAnimate.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, index * 100); // Stagger the animations
+                });
+            }
+        });
+    };
+    
+    const observer = new IntersectionObserver(handleIntersection, observerOptions);
+    
+    if (listRef.current) {
+        observer.observe(listRef.current);
+    }
+    
+    return () => {
+        observer.disconnect();
+    };
+}, [marketStockList]);
+
   return (
     <div className="benjamin-graham-list">
       <div className="benjamin-graham-header">
@@ -212,12 +233,13 @@ function BenjaminGrahamList() {
           <LoadingSpinner />
         ) : (
           marketStockList.length > 0 ? (
-            marketStockList.map((stock: BenjaminGrahamStockInfo) => (
+            marketStockList.map((stock: BenjaminGrahamStockInfo, index) => (
               <BenjaminGrahamItem 
                 key={stock.symbol}
                 {...stock}
                 sortBy={sortBy}
                 onClick={() => handleItemClick(stock.symbol)} 
+                animationDelay={index}
               />
             ))
           ) : (
