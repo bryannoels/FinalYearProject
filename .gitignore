@@ -1,7 +1,6 @@
 client/package-lock.json
 package-lock.json
-server/python-dependencies/python
-server/python-dependencies/python-dependencies.zip
+server/python-dependencies/*
 server/python-getPortfolioStockData-dependencies
 server/node_modules
 .DS_Store
