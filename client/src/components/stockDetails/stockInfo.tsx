@@ -6,13 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { fetchPortfolioData } from '../../pages/utils/fetchData';
 import CustomDialogBox from '../../components/CustomDialogBox/CustomDialogBox';
+import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 
 interface StockInfoProps {
     symbol: string,
     stockData: Stock | null;
 }
-
-
 
 const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
     if (symbol == null || stockData == null) return null;
@@ -27,8 +26,16 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
     const [selectedPortfolio, setSelectedPortfolio] = useState<string>("");
     const [userPortfolioList, setUserPortfolioList] = useState<string[]>([]);
     const [isConfirmDisabled, setConfirmDisabled] = useState<boolean>(true);
-    const [screenLoading, setScreenLoading] = useState<boolean>(true);
-    
+    const [screenLoading, setScreenLoading] = useState<boolean>(false);
+
+    const displayDialogPrompt = (message: string) => {
+        setDialogOpen(false);
+        setDialogType("prompt");
+        setPromptMessage(message);
+        setConfirmDisabled(false);
+        setDialogOpen(true);
+    }
+
     const openAddDialog = async (stockName: string, symbol: string) => {
         if (authToken) {
             setSelectedPortfolio("");
@@ -37,17 +44,11 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
             setUserPortfolioList(userPortfolioList);
 
             if (userPortfolio == null || userPortfolio.length === 0) {
-                setDialogType("prompt");
-                setPromptMessage("You need to create a portfolio first.");
-                setConfirmDisabled(false);
-                setDialogOpen(true);
+                displayDialogPrompt("You must create a portfolio first.");
                 return;
             }
         } else {
-            setDialogType("prompt");
-            setPromptMessage("You need to login to add stock to your portfolio.");
-            setConfirmDisabled(false);
-            setDialogOpen(true);
+            displayDialogPrompt("You must login to add stock to your portfolio.");
             return;
         }
 
@@ -58,22 +59,20 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
       };
     
     const handlePortfolioChange = (portfolioName: string) => {
-        console.log(portfolioName);
         setSelectedPortfolio(portfolioName);
-        setConfirmDisabled(false);
+        portfolioName == "" ? setConfirmDisabled(true) : setConfirmDisabled(false);
     };
 
     const handleConfirm = async () => {
         if (dialogType === "add") {
             setScreenLoading(true);
-        
             try {
                 const payload = {
-                method: 'addStock',
-                data: {
-                    portfolioName: selectedPortfolio,
-                    stockSymbol: symbol,
-                },
+                    method: 'addStock',
+                    data: {
+                        portfolioName: selectedPortfolio,
+                        stockSymbol: symbol,
+                    },
                 };
 
                 await fetch('https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/user/portfolio', {
@@ -83,19 +82,13 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
                     Authorization: `Bearer ${authToken}`,
                 },
                 body: JSON.stringify(payload),
-                }).catch((error) => console.error('Server error: ', error));
+                }).catch((error) => displayDialogPrompt('Server error: ' + error));
             } catch (error) {
-                //TO-DO: Refactor error dialog box into function with param message
-                console.error('Error adding stock to portfolio:', error);
+                displayDialogPrompt('Error adding stock to portfolio:' + error);
             } finally {
                 setScreenLoading(false);
             }
-            setDialogOpen(false);
-
-            setDialogType("prompt");
-            setPromptMessage("The stock has been added to the portfolio.");
-            setConfirmDisabled(false);
-            setDialogOpen(true);
+            displayDialogPrompt("The stock has been added to the portfolio.");
         } else {
             setDialogOpen(false);
         }
@@ -124,19 +117,27 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
                     percentChange={stockData?.info?.percentChange ?? 0}
                     onClick={() => {}} 
                 />
-                <CustomDialogBox
-                    isOpen={isDialogOpen}
-                    dialogType={dialogType}
-                    promptMessage={promptMessage}
-                    stockName={selectedStock?.name}
-                    stockSymbol={selectedStock?.symbol}
-                    portfolioNames={userPortfolioList}
-                    selectedPortfolio={selectedPortfolio}
-                    isConfirmDisabled={isConfirmDisabled}
-                    onPortfolioChange={handlePortfolioChange}
-                    onConfirm={handleConfirm}
-                    onCancel={() => setDialogOpen(false)}
-                />
+                {screenLoading ? (
+                    <>
+                        <div className="stock-details__loading-overlay">
+                            <LoadingSpinner />
+                        </div>
+                    </>
+                ) : (
+                    <CustomDialogBox
+                        isOpen={isDialogOpen}
+                        dialogType={dialogType}
+                        promptMessage={promptMessage}
+                        stockName={selectedStock?.name}
+                        stockSymbol={selectedStock?.symbol}
+                        portfolioNames={userPortfolioList}
+                        selectedPortfolio={selectedPortfolio}
+                        isConfirmDisabled={isConfirmDisabled}
+                        onPortfolioChange={handlePortfolioChange}
+                        onConfirm={handleConfirm}
+                        onCancel={() => setDialogOpen(false)}
+                    />
+                )}
             </div>
         </>
     );
