@@ -17,7 +17,7 @@ const child_process_1 = require("child_process");
 const axios_1 = __importDefault(require("axios"));
 const getStockData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getStockData.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getStockData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
@@ -45,7 +45,7 @@ const getStockData = (req, res) => {
 exports.getStockData = getStockData;
 const getStockProfile = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getStockProfile.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getStockProfile.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
@@ -72,7 +72,7 @@ const getStockProfile = (req, res) => {
 };
 exports.getStockProfile = getStockProfile;
 const getTop10MostActiveStocks = (req, res) => {
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getTopStock.py']);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getTopStock.py']);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
@@ -100,7 +100,7 @@ const getTop10MostActiveStocks = (req, res) => {
 exports.getTop10MostActiveStocks = getTop10MostActiveStocks;
 const getAnalysis = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getAnalysis.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getAnalysis.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const analysisData = JSON.parse(data.toString());
@@ -129,7 +129,7 @@ exports.getAnalysis = getAnalysis;
 const getHistoricalData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
     const rangeParam = (req.query.range || '1d');
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getHistoricalData.py', stockSymbol, rangeParam]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getHistoricalData.py', stockSymbol, rangeParam]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const historicalData = JSON.parse(data.toString());
@@ -177,7 +177,7 @@ const getForecastData = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.getForecastData = getForecastData;
 const getEPSData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getEPSData.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getEPSData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const epsData = JSON.parse(data.toString());
@@ -205,7 +205,7 @@ const getEPSData = (req, res) => {
 exports.getEPSData = getEPSData;
 const getPeRatioData = (req, res) => {
     const stockSymbol = req.params.symbol.toUpperCase();
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getPeRatioData.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getPeRatioData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const epsData = JSON.parse(data.toString());
@@ -232,7 +232,7 @@ const getPeRatioData = (req, res) => {
 };
 exports.getPeRatioData = getPeRatioData;
 const getAaaCorporateBondYield = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/getAaaCorporateBondYield.py']);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getAaaCorporateBondYield.py']);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
@@ -260,7 +260,7 @@ const getAaaCorporateBondYield = (req, res) => __awaiter(void 0, void 0, void 0,
 exports.getAaaCorporateBondYield = getAaaCorporateBondYield;
 const searchStock = (req, res) => {
     const query = req.params.query.toUpperCase();
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['src/dataExtractor/searchStock.py', query]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/searchStock.py', query]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
