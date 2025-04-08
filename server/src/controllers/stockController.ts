@@ -5,6 +5,7 @@ import axios from 'axios';
 import csv from "csv-parser";
 import fs from "fs";
 import Redis from 'ioredis';
+import path from 'path';
 
 
 type BenjaminGrahamData = {
@@ -451,9 +452,11 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
       
     try {
       let stockData: BenjaminGrahamData[] = [];
-      
+      console.log("masuk data")
       await new Promise<void>((resolve, reject) => {
-        fs.createReadStream("../sp500/data.csv")
+        const filePath = path.resolve(__dirname, '../../../dataExtractor/sp500/data.csv');
+        console.log("Resolved CSV path:", filePath);
+        fs.createReadStream(filePath)
           .pipe(csv())
           .on("data", (row) => {
             row["Defensive Value"] = parseInt(row["Defensive Value"], 10);
