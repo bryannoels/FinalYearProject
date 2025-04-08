@@ -37,7 +37,7 @@ const getStockData = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         return;
     }
     console.log("masuk");
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getStockData.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getStockData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         console.log("masuk data");
         try {
@@ -76,7 +76,7 @@ const getStockProfile = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getStockProfile.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getStockProfile.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
@@ -116,7 +116,7 @@ const getTopStocks = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getTopStock.py', category || "most-active"]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getTopStock.py', category || "most-active"]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
@@ -152,7 +152,7 @@ const getAnalysis = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.json(cachedData);
             return;
         }
-        const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getAnalysis.py', stockSymbol]);
+        const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getAnalysis.py', stockSymbol]);
         pythonProcess.stdout.on('data', (data) => {
             try {
                 const analysisData = JSON.parse(data.toString());
@@ -189,7 +189,7 @@ const getHistoricalData = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getHistoricalData.py', stockSymbol, rangeParam]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getHistoricalData.py', stockSymbol, rangeParam]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const historicalData = JSON.parse(data.toString());
@@ -251,7 +251,7 @@ const getEPSData = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getEPSData.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getEPSData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const epsData = JSON.parse(data.toString());
@@ -286,7 +286,7 @@ const getPeRatioData = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getPeRatioData.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getPeRatioData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const peRatioData = JSON.parse(data.toString());
@@ -320,7 +320,7 @@ const getAaaCorporateBondYield = (req, res) => __awaiter(void 0, void 0, void 0,
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getAaaCorporateBondYield.py']);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getAaaCorporateBondYield.py']);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
@@ -355,7 +355,7 @@ const searchStock = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/searchStock.py', query]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/searchStock.py', query]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stockData = JSON.parse(data.toString());
@@ -482,7 +482,7 @@ const getDCFValue = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getDCFValue.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getDCFValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const dcfData = JSON.parse(data.toString());
@@ -517,7 +517,7 @@ const getDDMValue = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getDDMValue.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getDDMValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const ddmData = JSON.parse(data.toString());
@@ -552,7 +552,7 @@ const getBenjaminGrahamValue = (req, res) => {
         res.json(cachedData);
         return;
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/getBenjaminGrahamValue.py', stockSymbol]);
+    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getBenjaminGrahamValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const bgData = JSON.parse(data.toString());

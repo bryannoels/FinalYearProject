@@ -44,7 +44,7 @@ const getStockData = async (req: Request, res: Response): Promise<void> => {
     console.log(
        "masuk"
     )
-    const pythonProcess = spawn('python3', ['../dataExtractor/getStockData.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getStockData.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         console.log("masuk data")
         try {
@@ -86,7 +86,7 @@ const getStockProfile = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getStockProfile.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getStockProfile.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -131,7 +131,7 @@ const getTopStocks = async(req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getTopStock.py', category as string || "most-active"]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getTopStock.py', category as string || "most-active"]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -171,7 +171,7 @@ const getTopStocks = async(req: Request, res: Response): Promise<void> => {
                 return;
             }
 
-            const pythonProcess = spawn('python3', ['../dataExtractor/getAnalysis.py', stockSymbol]);
+            const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getAnalysis.py', stockSymbol]);
             pythonProcess.stdout.on('data', (data) => {
                 try {
                     const analysisData: StockAnalysis = JSON.parse(data.toString());
@@ -208,7 +208,7 @@ const getHistoricalData = async (req: Request, res: Response): Promise<void> => 
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getHistoricalData.py', stockSymbol, rangeParam]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getHistoricalData.py', stockSymbol, rangeParam]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -276,7 +276,7 @@ const getEPSData = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getEPSData.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getEPSData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -315,7 +315,7 @@ const getPeRatioData = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getPeRatioData.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getPeRatioData.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -352,7 +352,7 @@ const getAaaCorporateBondYield = async (req: Request, res: Response): Promise<vo
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getAaaCorporateBondYield.py']);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getAaaCorporateBondYield.py']);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const stocksData = JSON.parse(data.toString());
@@ -389,7 +389,7 @@ const searchStock = async (req: Request, res: Response): Promise<void> => {
         res.json(cachedData);
         return;
     }
-    const pythonProcess = spawn('python3', ['../dataExtractor/searchStock.py', query]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/searchStock.py', query]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
@@ -454,7 +454,7 @@ const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defens
       let stockData: BenjaminGrahamData[] = [];
       console.log("masuk data")
       await new Promise<void>((resolve, reject) => {
-        const filePath = path.resolve(__dirname, '../../../dataExtractor/sp500/data.csv');
+        const filePath = path.resolve(__dirname, '../../../dataExtractor/stocks/sp500/data.csv');
         console.log("Resolved CSV path:", filePath);
         fs.createReadStream(filePath)
           .pipe(csv())
@@ -538,7 +538,7 @@ const getDCFValue = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getDCFValue.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getDCFValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const dcfData = JSON.parse(data.toString());
@@ -575,7 +575,7 @@ const getDDMValue = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const pythonProcess = spawn('python3', ['../dataExtractor/getDDMValue.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getDDMValue.py', stockSymbol]);
     pythonProcess.stdout.on('data', (data) => {
         try {
             const ddmData = JSON.parse(data.toString());
@@ -611,7 +611,7 @@ const getBenjaminGrahamValue = (req: Request, res: Response): void => {
         res.json(cachedData);
         return;
     }
-    const pythonProcess = spawn('python3', ['../dataExtractor/getBenjaminGrahamValue.py', stockSymbol]);
+    const pythonProcess = spawn('python3', ['../dataExtractor/stocks/getBenjaminGrahamValue.py', stockSymbol]);
 
     pythonProcess.stdout.on('data', (data) => {
         try {
