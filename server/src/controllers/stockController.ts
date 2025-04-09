@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { spawn } from 'child_process';
-import { StockAnalysis } from '../types/stockAnalysis';
 import axios from 'axios';
 import csv from "csv-parser";
 import fs from "fs";
