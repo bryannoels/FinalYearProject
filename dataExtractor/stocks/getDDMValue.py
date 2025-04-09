@@ -26,4 +26,4 @@ def get_ddm_value(stock_symbol):
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
     stock_data = get_ddm_value(stock_symbol)
-    print(json.dumps(stock_data, indent=2))
+    print(json.dumps(stock_data, indent=4))

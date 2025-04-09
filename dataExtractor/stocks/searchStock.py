@@ -31,4 +31,4 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
     query = sys.argv[1]
     stock_data = search_stock(query)
-    print(json.dumps(stock_data, indent=2))
+    print(json.dumps(stock_data, indent=4))

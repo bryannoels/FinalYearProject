@@ -88,4 +88,4 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
    category = sys.argv[1]
    top_stocks = get_top_stocks(category)
-   print(json.dumps(top_stocks, indent=2))
+   print(json.dumps(top_stocks, indent=4))
