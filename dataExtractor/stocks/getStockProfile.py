@@ -37,4 +37,4 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
     stock_symbol = sys.argv[1]
     stock_data = get_stock_profile(stock_symbol)
-    print(stock_data)
+    print(json.dumps(stock_data, indent=4))
