@@ -50,4 +50,4 @@ if __name__ == "__main__":
     range_param = sys.argv[2] if len(sys.argv) > 2 else '1d'
 
     stock_data = get_historical_data(stock_symbol, range_param)
-    print(stock_data)
+    print(json.dumps(stock_data, indent=4))
