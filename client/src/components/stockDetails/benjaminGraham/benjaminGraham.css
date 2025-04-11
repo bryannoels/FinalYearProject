@@ -92,7 +92,7 @@
   
   .card-title h3 {
     margin: 0;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 600;
   }
   
@@ -121,9 +121,10 @@
   
   .card-value {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 12px;
     padding: 4px 8px;
     border-radius: 4px;
+    width: 100%;
   }
   
   .card-value.passed {
@@ -174,20 +175,23 @@
   
   
   .criteria-description {
-    padding: 0 16px 16px 52px;
+    display: flex;
+    flex-direction: row;
+    padding: 0 16px 16px 0px;
     position: relative;
   }
   
   .criteria-description p {
-    margin: 0;
+    margin-top: 0px;
+    margin-left: 8px;
     font-size: 14px;
     line-height: 1.5;
-    color: #666;
+    color: #060606;
   }
   
   .info-icon {
     position: absolute;
-    left: 18px;
+    left: 0px;
     top: 0;
     color: #aaa;
     font-size: 14px;
