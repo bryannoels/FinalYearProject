@@ -34,9 +34,10 @@ function StockList() {
         setMarketStockList(cachedStocks.data);
         setDateTime(cachedStocks.timestamp);
       } else {
-        const url = `https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock/get-top-stocks?category=${encodeURIComponent(category)}`;
+        const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
         const response = await fetchData(url);
-        const result = JSON.parse(response.body);
+        const result = response;
+        console.log('Fetched stocks:', result);
         const formattedData: StockInfo[] = result.data.map(createStockObject);
         const timestamp = response.retrievedAt
 
@@ -45,6 +46,7 @@ function StockList() {
         setDateTime(timestamp);
       }
     } catch (_error) {
+      console.log('Error fetching stocks:', _error);
     } finally {
       setLoading(false);
     }
