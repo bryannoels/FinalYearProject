@@ -1,7 +1,11 @@
 import { fetchData, getCachedData, setCachedData } from '../utils/utils';
 import { Stock} from '../../types/Stock';
 
-const API_BASE_URL = 'http://localhost:8000/api/stocks';
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000/api/stocks'
+    : 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock';
+
+const INFO_PARAMETER = process.env.NODE_ENV === 'development' ? 'info' : 'get-stock-data';
 
 export const fetchStockDetails = async (
     symbol: string,
@@ -21,12 +25,12 @@ export const fetchStockDetails = async (
             return;
         }
         const [stockInfoResp, priceData, profileData] = await Promise.all([
-            fetchData(`${API_BASE_URL}/info/${symbol}`),
+            fetchData(`${API_BASE_URL}/${INFO_PARAMETER}/${symbol}`),
             fetchData(`${API_BASE_URL}/get-historical-data/${symbol}`),
             fetchData(`${API_BASE_URL}/get-profile/${symbol}`),
         ]);
         
-        const stockInfo = stockInfoResp;
+        const stockInfo = process.env.NODE_ENV === 'development' ? stockInfoResp : JSON.parse(stockInfoResp);
         const currentStock = {
             name: stockInfo.companyName,
             symbol,
@@ -102,8 +106,6 @@ export const fetchStockDetails = async (
                 beta: initialStockData.beta,
                 intrinsicValue: intrinsicValue
             };
-
-            console.log(newData.analysis);
     
             setStockData(newData);
     
@@ -114,7 +116,6 @@ export const fetchStockDetails = async (
         });
     
     } catch (err: any) {
-        console.log(err);
         setError(err.message || 'An error occurred while fetching stock data');
         setLoading(false);
     }    
