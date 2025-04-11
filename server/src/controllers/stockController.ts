@@ -176,7 +176,7 @@ const stockControllers = {
   },
   
   getEPSData: createPythonScriptController(
-    '../dataExtractor/stocks/getEPSData.py',
+    '../dataExtractor/stocks/getEpsData.py',
     (req) => `epsData:${req.params.symbol.toUpperCase()}`
   ),
   
