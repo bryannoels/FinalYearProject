@@ -12,570 +12,225 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBenjaminGrahamValue = exports.getDDMValue = exports.getDCFValue = exports.getBenjaminGrahamList = exports.searchStock = exports.getAaaCorporateBondYield = exports.getPeRatioData = exports.getEPSData = exports.getForecastData = exports.getHistoricalData = exports.getAnalysis = exports.getTopStocks = exports.getStockProfile = exports.getStockData = void 0;
+exports.stockControllerFactory = void 0;
 const child_process_1 = require("child_process");
 const axios_1 = __importDefault(require("axios"));
 const csv_parser_1 = __importDefault(require("csv-parser"));
 const fs_1 = __importDefault(require("fs"));
 const ioredis_1 = __importDefault(require("ioredis"));
+const path_1 = __importDefault(require("path"));
 const redis = new ioredis_1.default();
 const cacheDuration = 3600;
-const getFromCache = (key) => __awaiter(void 0, void 0, void 0, function* () {
-    const cachedData = yield redis.get(key);
-    return cachedData ? JSON.parse(cachedData) : null;
-});
-const setInCache = (key, data) => __awaiter(void 0, void 0, void 0, function* () {
-    yield redis.setex(key, cacheDuration, JSON.stringify(data));
-});
-const getStockData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `stockData:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        console.log("sending cached data");
-        res.json(cachedData);
-        return;
+const cacheUtils = {
+    getFromCache(key) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cachedData = yield redis.get(key);
+            return cachedData ? JSON.parse(cachedData) : null;
+        });
+    },
+    setInCache(key, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield redis.setex(key, cacheDuration, JSON.stringify(data));
+        });
     }
-    console.log("masuk");
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getStockData.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
-        console.log("masuk data");
+};
+const executePythonScript = (scriptPath_1, args_1, res_1, ...args_2) => __awaiter(void 0, [scriptPath_1, args_1, res_1, ...args_2], void 0, function* (scriptPath, args, res, cacheKey = null) {
+    const pythonProcess = (0, child_process_1.spawn)('python3', [scriptPath, ...args]);
+    pythonProcess.stdout.on('data', (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            console.log(data);
-            const stockData = JSON.parse(data.toString());
+            const parsedData = JSON.parse(data.toString());
             if (!res.headersSent) {
-                console.log("setting in cache");
-                setInCache(cacheKey, stockData);
-                res.json(stockData);
+                if (cacheKey) {
+                    yield cacheUtils.setInCache(cacheKey, parsedData);
+                }
+                res.json(parsedData);
             }
         }
         catch (error) {
-            console.log(error);
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
+            handleError(res, 'Failed to parse response');
         }
-    });
+    }));
     pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving stock data' });
-        }
+        handleError(res, 'Error executing Python script');
     });
     pythonProcess.on('close', (code) => {
         if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
+            handleError(res, `Python script exited with code ${code}`);
         }
     });
 });
-exports.getStockData = getStockData;
-const getStockProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `stockProfile:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
+const handleError = (res, message, statusCode = 500) => {
+    if (!res.headersSent) {
+        res.status(statusCode).json({ error: message });
     }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getStockProfile.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const stockData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, stockData);
-                res.json(stockData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving profile data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getStockProfile = getStockProfile;
-const getTopStocks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { category } = req.query;
-    const validCategories = ["most-active", "trending", "gainers", "losers", "52-week-gainers", "52-week-losers"];
-    const cacheKey = `topStocks:${category || 'most-active'}`;
-    if (category && !validCategories.includes(category)) {
-        res.status(400).json({ error: "Invalid category parameter" });
-        return;
-    }
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getTopStock.py', category || "most-active"]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const stocksData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, stocksData);
-                res.json(stocksData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', (data) => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving stock data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getTopStocks = getTopStocks;
-const getAnalysis = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const stockSymbol = req.params.symbol.toUpperCase();
-        const cacheKey = `stockAnalysis:${stockSymbol}`;
-        const cachedData = yield getFromCache(cacheKey);
+};
+const createPythonScriptController = (scriptName, getCacheKey) => {
+    return (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const cacheKey = getCacheKey(req);
+        const cachedData = yield cacheUtils.getFromCache(cacheKey);
         if (cachedData) {
             res.json(cachedData);
             return;
         }
-        const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getAnalysis.py', stockSymbol]);
-        pythonProcess.stdout.on('data', (data) => {
-            try {
-                const analysisData = JSON.parse(data.toString());
-                const verdict = analysisData.verdict;
-                const num_of_buys = analysisData.number_of_buy;
-                const num_of_holds = analysisData.number_of_hold;
-                const num_of_sells = analysisData.number_of_sell;
-                const ratings = analysisData.ratings;
-                if (!res.headersSent) {
-                    setInCache(cacheKey, { verdict, num_of_buys, num_of_holds, num_of_sells, ratings });
-                    res.json({ verdict, num_of_buys, num_of_holds, num_of_sells, ratings });
-                }
-            }
-            catch (error) {
-                if (!res.headersSent) {
-                    res.status(500).json({ error: 'Failed to parse response' });
-                }
-            }
-        });
-    }
-    catch (error) {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Failed to fetch verdict data' });
+        let args = [];
+        if (req.params.symbol) {
+            args.push(req.params.symbol.toUpperCase());
         }
-    }
-});
-exports.getAnalysis = getAnalysis;
-const getHistoricalData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const rangeParam = (req.query.range || '1d');
-    const cacheKey = `historicalData:${stockSymbol}:${rangeParam}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getHistoricalData.py', stockSymbol, rangeParam]);
-    pythonProcess.stdout.on('data', (data) => {
+        if (scriptName === '../dataExtractor/stocks/getHistoricalData.py' && req.query.range) {
+            args.push(req.query.range);
+        }
+        if (scriptName === '../dataExtractor/stocks/getTopStock.py' && req.query.category) {
+            args.push(req.query.category);
+        }
+        else if (scriptName === '../dataExtractor/stocks/getTopStock.py') {
+            args.push("most-active");
+        }
+        if (scriptName === '../dataExtractor/stocks/searchStock.py' && req.params.query) {
+            args = [req.params.query.toUpperCase()];
+        }
+        yield executePythonScript(scriptName, args, res, cacheKey);
+    });
+};
+const stockControllers = {
+    getStockData: createPythonScriptController('../dataExtractor/stocks/getStockData.py', (req) => `stockData:${req.params.symbol.toUpperCase()}`),
+    getStockProfile: createPythonScriptController('../dataExtractor/stocks/getStockProfile.py', (req) => `stockProfile:${req.params.symbol.toUpperCase()}`),
+    getTopStocks: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { category } = req.query;
+        const validCategories = ["most-active", "trending", "gainers", "losers", "52-week-gainers", "52-week-losers"];
+        const cacheKey = `topStocks:${category || 'most-active'}`;
+        if (category && !validCategories.includes(category)) {
+            handleError(res, "Invalid category parameter", 400);
+            return;
+        }
+        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        if (cachedData) {
+            res.json(cachedData);
+            return;
+        }
+        yield executePythonScript('../dataExtractor/stocks/getTopStock.py', [category || "most-active"], res, cacheKey);
+    }),
+    getAnalysis: createPythonScriptController('../dataExtractor/stocks/getAnalysis.py', (req) => `stockAnalysis:${req.params.symbol.toUpperCase()}`),
+    getHistoricalData: createPythonScriptController('../dataExtractor/stocks/getHistoricalData.py', (req) => `historicalData:${req.params.symbol.toUpperCase()}:${req.query.range || '1d'}`),
+    getForecastData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const stockSymbol = req.params.symbol.toUpperCase();
+        const cacheKey = `forecastData:${stockSymbol}`;
+        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        if (cachedData) {
+            res.json(cachedData);
+            return;
+        }
+        const url = `https://production.dataviz.cnn.io/quote/forecast/${stockSymbol}`;
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+            'Accept': 'application/json'
+        };
         try {
-            const historicalData = JSON.parse(data.toString());
+            const response = yield axios_1.default.get(url, { headers });
             if (!res.headersSent) {
-                setInCache(cacheKey, historicalData);
-                res.json(historicalData);
+                yield cacheUtils.setInCache(cacheKey, response.data[0]);
+                res.json(response.data[0]);
             }
         }
         catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
+            handleError(res, 'Failed to fetch forecast data');
+        }
+    }),
+    getEPSData: createPythonScriptController('../dataExtractor/stocks/getEpsData.py', (req) => `epsData:${req.params.symbol.toUpperCase()}`),
+    getPeRatioData: createPythonScriptController('../dataExtractor/stocks/getPeRatioData.py', (req) => `peRatio:${req.params.symbol.toUpperCase()}`),
+    getAaaCorporateBondYield: createPythonScriptController('../dataExtractor/stocks/getAaaCorporateBondYield.py', () => 'AaaCorporateBondYield'),
+    searchStock: createPythonScriptController('../dataExtractor/stocks/searchStock.py', (req) => `search:${req.params.query.toUpperCase()}`),
+    getBenjaminGrahamList: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        let { sortBy, filterBy, page = "1" } = req.query;
+        const pageNumber = parseInt(page, 10) || 1;
+        const pageSize = 10;
+        if (!sortBy || !["Defensive", "Enterprising", "Overall"].includes(sortBy)) {
+            sortBy = "Overall";
+        }
+        if (filterBy && typeof filterBy === "string" && (sortBy === "Defensive" || sortBy === "Enterprising")) {
+            if (!/^[01]{7}$/.test(filterBy)) {
+                handleError(res, "Invalid filterBy format", 400);
+                return;
             }
         }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving historical data' });
+        const cacheKey = `benjaminGrahamList:${sortBy}:${filterBy || ""}:${pageNumber}`;
+        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        if (cachedData) {
+            res.json(cachedData);
+            return;
         }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getHistoricalData = getHistoricalData;
-const getForecastData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `forecastData:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const url = `https://production.dataviz.cnn.io/quote/forecast/${stockSymbol}`;
-    const headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-        'Accept': 'application/json'
-    };
-    try {
-        const response = yield axios_1.default.get(url, { headers });
-        if (!res.headersSent) {
-            setInCache(cacheKey, response.data[0]);
-            res.json(response.data[0]);
-        }
-    }
-    catch (error) {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Failed to fetch forecast data' });
-        }
-    }
-});
-exports.getForecastData = getForecastData;
-const getEPSData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `epsData:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getEPSData.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
         try {
-            const epsData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, epsData);
-                res.json(epsData);
+            let stockData = [];
+            yield new Promise((resolve, reject) => {
+                const filePath = path_1.default.resolve(__dirname, '../../../dataExtractor/sp500/data.csv');
+                fs_1.default.createReadStream(filePath)
+                    .pipe((0, csv_parser_1.default)())
+                    .on("data", (row) => {
+                    row["Defensive Value"] = parseInt(row["Defensive Value"], 10);
+                    row["Enterprising Value"] = parseInt(row["Enterprising Value"], 10);
+                    row["Overall Value"] = parseInt(row["Overall Value"], 10);
+                    stockData.push(row);
+                })
+                    .on("end", () => {
+                    resolve();
+                })
+                    .on("error", (err) => {
+                    reject(err);
+                });
+            });
+            if (filterBy && sortBy !== "Overall") {
+                stockData = applyFilter(stockData, filterBy, sortBy);
             }
+            const sortKey = `${sortBy} Value`;
+            stockData.sort((a, b) => b[sortKey] - a[sortKey]);
+            const totalItems = stockData.length;
+            const totalPages = Math.ceil(totalItems / pageSize);
+            const validPageNumber = Math.max(1, Math.min(pageNumber, totalPages));
+            const startIndex = (validPageNumber - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalItems);
+            const paginatedData = stockData.slice(startIndex, endIndex);
+            const data = {
+                data: paginatedData,
+                pagination: {
+                    currentPage: validPageNumber,
+                    totalPages,
+                    pageSize,
+                    totalItems,
+                    hasNextPage: validPageNumber < totalPages,
+                    hasPreviousPage: validPageNumber > 1
+                },
+                retrievedAt: getCurrentTimeEDT()
+            };
+            yield cacheUtils.setInCache(cacheKey, data);
+            res.json(data);
         }
         catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
+            handleError(res, "Failed to process CSV data");
         }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving EPS data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getEPSData = getEPSData;
-const getPeRatioData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `peRatio:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getPeRatioData.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const peRatioData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, peRatioData);
-                res.json(peRatioData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving EPS data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getPeRatioData = getPeRatioData;
-const getAaaCorporateBondYield = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const cacheKey = `AaaCorporateBondYield`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getAaaCorporateBondYield.py']);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const stocksData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, stocksData);
-                res.json(stocksData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving stock data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getAaaCorporateBondYield = getAaaCorporateBondYield;
-const searchStock = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const query = req.params.query.toUpperCase();
-    const cacheKey = `seach:${query}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/searchStock.py', query]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const stockData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, stockData);
-                res.json(stockData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving the search result' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.searchStock = searchStock;
+    }),
+    getDCFValue: createPythonScriptController('../dataExtractor/stocks/getDCFValue.py', (req) => `dcfValue:${req.params.symbol.toUpperCase()}`),
+    getDDMValue: createPythonScriptController('../dataExtractor/stocks/getDDMValue.py', (req) => `ddmValue:${req.params.symbol.toUpperCase()}`),
+    getBenjaminGrahamValue: createPythonScriptController('../dataExtractor/stocks/getBenjaminGrahamValue.py', (req) => `benjaminGrahamValue:${req.params.symbol.toUpperCase()}`)
+};
 const applyFilter = (data, filterBy, type) => {
     return data.filter((row) => {
         const value = row[type];
         return filterBy.split("").every((bit, index) => bit === "0" || value[index] === "1");
     });
 };
-const getBenjaminGrahamList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { sortBy, filterBy, page = "1" } = req.query;
-    const pageNumber = parseInt(page, 10) || 1;
-    const pageSize = 10;
-    if (!sortBy || !["Defensive", "Enterprising", "Overall"].includes(sortBy)) {
-        res.status(400).json({ error: "Invalid sortBy parameter" });
-        return;
-    }
-    if (filterBy && typeof filterBy === "string" && (sortBy === "Defensive" || sortBy === "Enterprising")) {
-        if (!/^[01]{7}$/.test(filterBy)) {
-            res.status(400).json({ error: "Invalid filterBy format" });
-            return;
-        }
-    }
-    const cacheKey = `benjaminGrahamList:${sortBy}:${filterBy || ""}:${pageNumber}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    try {
-        let stockData = [];
-        yield new Promise((resolve, reject) => {
-            fs_1.default.createReadStream("../sp500/data.csv")
-                .pipe((0, csv_parser_1.default)())
-                .on("data", (row) => {
-                row["Defensive Value"] = parseInt(row["Defensive Value"], 10);
-                row["Enterprising Value"] = parseInt(row["Enterprising Value"], 10);
-                row["Overall Value"] = parseInt(row["Overall Value"], 10);
-                stockData.push(row);
-            })
-                .on("end", () => {
-                resolve();
-            })
-                .on("error", (err) => {
-                reject(err);
-            });
-        });
-        if (filterBy && sortBy !== "Overall") {
-            stockData = applyFilter(stockData, filterBy, sortBy);
-        }
-        const sortKey = `${sortBy} Value`;
-        stockData.sort((a, b) => b[sortKey] - a[sortKey]);
-        const totalItems = stockData.length;
-        const totalPages = Math.ceil(totalItems / pageSize);
-        const validPageNumber = Math.max(1, Math.min(pageNumber, totalPages));
-        const startIndex = (validPageNumber - 1) * pageSize;
-        const endIndex = Math.min(startIndex + pageSize, totalItems);
-        const paginatedData = stockData.slice(startIndex, endIndex);
-        const getCurrentTimeEDT = () => {
-            const now = new Date();
-            const options = {
-                weekday: 'long',
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-                timeZone: 'America/New_York',
-                timeZoneName: 'short'
-            };
-            return new Intl.DateTimeFormat('en-US', options).format(now);
-        };
-        const data = {
-            data: paginatedData,
-            pagination: {
-                currentPage: validPageNumber,
-                totalPages,
-                pageSize,
-                totalItems,
-                hasNextPage: validPageNumber < totalPages,
-                hasPreviousPage: validPageNumber > 1
-            },
-            retrievedAt: getCurrentTimeEDT()
-        };
-        console.log(data);
-        setInCache(cacheKey, data);
-        res.json(data);
-    }
-    catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: "Failed to process CSV data" });
-    }
-});
-exports.getBenjaminGrahamList = getBenjaminGrahamList;
-const getDCFValue = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `dcfValue:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getDCFValue.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const dcfData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, dcfData);
-                res.json(dcfData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving EPS data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getDCFValue = getDCFValue;
-const getDDMValue = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `ddmValue:${stockSymbol}`;
-    const cachedData = yield getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getDDMValue.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const ddmData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, ddmData);
-                res.json(ddmData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving EPS data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
-});
-exports.getDDMValue = getDDMValue;
-const getBenjaminGrahamValue = (req, res) => {
-    const stockSymbol = req.params.symbol.toUpperCase();
-    const cacheKey = `benjaminGrahamValue:${stockSymbol}`;
-    const cachedData = getFromCache(cacheKey);
-    if (cachedData) {
-        res.json(cachedData);
-        return;
-    }
-    const pythonProcess = (0, child_process_1.spawn)('python3', ['../dataExtractor/stocks/getBenjaminGrahamValue.py', stockSymbol]);
-    pythonProcess.stdout.on('data', (data) => {
-        try {
-            const bgData = JSON.parse(data.toString());
-            if (!res.headersSent) {
-                setInCache(cacheKey, bgData);
-                res.json(bgData);
-            }
-        }
-        catch (error) {
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to parse response' });
-            }
-        }
-    });
-    pythonProcess.stderr.on('data', () => {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error retrieving EPS data' });
-        }
-    });
-    pythonProcess.on('close', (code) => {
-        if (code !== 0 && !res.headersSent) {
-            res.status(500).json({ error: 'Python script exited with code ' + code });
-        }
-    });
+const getCurrentTimeEDT = () => {
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'America/New_York',
+        timeZoneName: 'short'
+    };
+    return new Intl.DateTimeFormat('en-US', options).format(now);
 };
-exports.getBenjaminGrahamValue = getBenjaminGrahamValue;
+exports.stockControllerFactory = createPythonScriptController;
+exports.default = stockControllers;
