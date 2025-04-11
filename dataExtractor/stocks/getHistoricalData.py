@@ -26,7 +26,7 @@ def get_historical_data(stock_symbol, range_param):
         json_data.append({
             "date": index.strftime("%Y-%m-%d"),
             "time": index.strftime("%H:%M:%S"),
-            "price": row["Close"]
+            "price": round(row["Close"], 2)
         })
     stock_data = {}
     stock_data['symbol'] = stock_symbol
@@ -50,4 +50,4 @@ if __name__ == "__main__":
     range_param = sys.argv[2] if len(sys.argv) > 2 else '1d'
 
     stock_data = get_historical_data(stock_symbol, range_param)
-    print(json.dumps(stock_data, indent=4))
+    print(json.dumps(stock_data))
