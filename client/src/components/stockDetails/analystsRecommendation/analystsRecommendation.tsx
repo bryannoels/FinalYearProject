@@ -36,7 +36,7 @@ const AnalystsRecommendation: React.FC<AnalystsRecommendationProps> = ({ stockDa
     return (
         <>
             { stockData.analysis || stockData.forecast ? 
-                <p className="stock-details__title">Analysts' Recommendation</p> : null }
+                <p className="stock-details__title">Analysts' Recommendations</p> : null }
             <div className="stock-details__recommendation">
                 {stockData.analysis && (
                     <div ref={verdictRef} className="section-wrapper">
@@ -53,7 +53,7 @@ const AnalystsRecommendation: React.FC<AnalystsRecommendationProps> = ({ stockDa
                 {stockData.analysis?.ratings?.length && stockData.analysis?.ratings?.length > 0 && (
                     <div ref={ratingsRef} className="section-wrapper">
                         <hr className="stock-details__analysts__divider" />
-                        <p className="stock-details__analysts__rating__title">Analysts' Rating</p>
+                        <p className="stock-details__analysts__rating__title">Analysts' Ratings</p>
                         <StockRatings stockData={stockData} />
                     </div>
                 )}
