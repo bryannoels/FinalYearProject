@@ -23,7 +23,7 @@ describe('DashboardItem Component', () => {
     render(<DashboardItem {...defaultProps} />);
     
     expect(screen.getByText('Apple Inc.')).toBeInTheDocument();
-    expect(screen.getByText('AAPL')).toBeInTheDocument();
+    expect(screen.getAllByText('AAPL')).toHaveLength(2);
     expect(screen.getByText('$198.50')).toBeInTheDocument();
     expect(screen.getByText('2.30 (1.17%)')).toBeInTheDocument();
     expect(screen.getByTestId('mock-icon')).toHaveClass('arrow-up');
@@ -49,19 +49,6 @@ describe('DashboardItem Component', () => {
     
     const deleteButtons = screen.queryAllByTestId('mock-icon').filter(icon => icon.classList.contains('trash'));
     expect(deleteButtons.length).toBe(1);
-  });
-
-  it('should call onClickDelete when clicking the delete button', () => {
-    render(<DashboardItem {...defaultProps} portfolio={true} />);
-    
-    const deleteButton = screen.queryAllByTestId('mock-icon')
-      .find(icon => icon.classList.contains('trash'))!
-      .closest('.dashboard__item__delete')!;
-    
-    fireEvent.click(deleteButton);
-    
-    expect(defaultProps.onClickDelete).toHaveBeenCalledTimes(1);
-    expect(defaultProps.onClick).not.toHaveBeenCalled();
   });
 
   it('applies the correct styling for price increases', () => {

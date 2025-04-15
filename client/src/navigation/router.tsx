@@ -3,14 +3,14 @@ import {
     createRoutesFromElements,
     Route
   } from "react-router-dom";
-import Layout from '../Layout.tsx';
-import LayoutUnique from '../LayoutUnique.tsx';
-import Dashboard from "../pages/dashboard/Dashboard.tsx";
-import Login from "../pages/login/Login.tsx"
-import Signup from "../pages/signup/Signup.tsx"
-import StockDetails from "../pages/stockDetails/StockDetails.tsx";
-import StockList from "../pages/stockList/StockList.tsx";
-import BenjaminGrahamList from "../pages/benjaminGrahamList/BenjaminGrahamList.tsx";
+import Layout from '../Layout';
+import LayoutUnique from '../LayoutUnique';
+import Dashboard from "../pages/dashboard/Dashboard";
+import Login from "../pages/login/Login"
+import Signup from "../pages/signup/Signup";
+import StockDetails from "../pages/stockDetails/StockDetails";
+import StockList from "../pages/stockList/StockList";
+import BenjaminGrahamList from "../pages/benjaminGrahamList/BenjaminGrahamList";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(

@@ -19,7 +19,7 @@ type BenjaminGrahamData = {
 const redis = new Redis();
 const cacheDuration = 3600;
 
-const cacheUtils = {
+export const cacheUtils = {
   async getFromCache(key: string): Promise<any | null> {
     const cachedData = await redis.get(key);
     return cachedData ? JSON.parse(cachedData) : null;
@@ -75,6 +75,7 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
     
     const cachedData = await cacheUtils.getFromCache(cacheKey);
     if (cachedData) {
+      console.log('Cache hit for', cacheKey);
       res.json(cachedData);
       return;
     }
@@ -121,6 +122,7 @@ const stockControllers = {
 
     if (category && !validCategories.includes(category as string)) {
       handleError(res, "Invalid category parameter", 400);
+      console.log("MASUK")
       return;
     }
 
