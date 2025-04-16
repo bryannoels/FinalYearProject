@@ -5,6 +5,7 @@ import time
 import sys
 import os
 import statistics
+import math
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'stocks')))
 print(sys.path)
@@ -27,16 +28,14 @@ df = pd.read_csv("../data.csv")
 
 start_time = time.time()
 
-result = collection.delete_many({})
-print(f"Deleted {result.deleted_count} documents from 'company_valuations' collection.")
-
-for index, row in df.head(20).iterrows():
+for index, row in df.iterrows():
     company_name = row["Company Name"]
     stock_symbol = row["Stock Symbol"]
     print(f"Processing {index} - {stock_symbol} - {company_name}...")
     
     opening_price = round(float(get_opening_price(stock_symbol)), 2)
-    beta = round(float(get_beta_value(stock_symbol)), 2)
+    beta = get_beta_value(stock_symbol)
+    rounded_beta = round(float(beta), 2) if beta is not None else None
     
 
     dcf = round(float(get_dcf_value(stock_symbol)["DCFIntrinsicValue"]), 2)
@@ -55,13 +54,19 @@ for index, row in df.head(20).iterrows():
     percent_average = round(((opening_price - average) / average) * 100,2) if average > 0 else None
     percent_abs_average = round((abs(opening_price - average) / average) * 100,2) if average > 0 else None
     
-    std_dev = round(statistics.stdev([dcf, ddm, graham]),2)
+    values = [dcf, ddm, graham]
+    valid_values = [v for v in values if isinstance(v, (int, float)) and not math.isnan(v)]
+
+    if len(valid_values) >= 2:
+        std_dev = round(statistics.stdev(valid_values), 2)
+    else:
+        std_dev = 0
 
     doc = {
         "Stock Symbol": stock_symbol,
         "Company Name": company_name,
         "Opening Price": opening_price,
-        "Beta": beta,
+        "Beta": rounded_beta,
         "DCF Value": dcf,
         "Percent DCF": percent_dcf,
         "Percent Abs DCF": percent_abs_dcf,
