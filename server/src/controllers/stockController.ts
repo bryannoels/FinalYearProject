@@ -5,6 +5,7 @@ import csv from "csv-parser";
 import fs from "fs";
 import Redis from 'ioredis';
 import path from 'path';
+import { MongoClient } from 'mongodb';
 
 type BenjaminGrahamData = {
   "Stock Symbol": string;
@@ -291,7 +292,42 @@ const stockControllers = {
   getBenjaminGrahamValue: createPythonScriptController(
     '../dataExtractor/stocks/getBenjaminGrahamValue.py',
     (req) => `benjaminGrahamValue:${req.params.symbol.toUpperCase()}`
-  )
+  ),
+
+  getIntrinsicValueList: async (req: Request, res: Response): Promise<void> => {
+    const cacheKey = 'intrinsicValueList';
+
+    try {
+      // Check cache first
+      const cachedData = await cacheUtils.getFromCache(cacheKey);
+      if (cachedData) {
+        res.json(cachedData);
+        return;
+      }
+
+      const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+      const dbName = "stock_analysis";
+      const collectionName = "company_valuations";
+      const client = new MongoClient(uri);
+      await client.connect();
+      const db = client.db(dbName);
+      const collection = db.collection(collectionName);
+
+      const mongoData = await collection.find({}).toArray();
+      await client.close();
+
+      const formattedData = {
+        data: mongoData,
+        retrievedAt: new Date().toISOString()
+      };
+
+      await cacheUtils.setInCache(cacheKey, formattedData);
+      res.json(formattedData);
+    } catch (error) {
+      console.error('MongoDB Error:', error);
+      handleError(res, 'Failed to fetch data from MongoDB');
+    }
+  }
 };
 
 const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defensive" | "Enterprising") => {
