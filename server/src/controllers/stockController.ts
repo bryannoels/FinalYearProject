@@ -105,6 +105,94 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
   };
 };
 
+type ValuationData = {
+  [key: string]: any;
+};
+
+const sortAndFilterData = (
+  formatted: { data: ValuationData[]; retrievedAt: string },
+  sortBy?: string,
+  pageParam?: string
+) => {
+  const config: Record<
+    string,
+    { field: string; returnFields: string[] }
+  > = {
+    beta: {
+      field: 'Beta',
+      returnFields: ['Stock Symbol', 'Company Name', 'Beta', 'Opening Price']
+    },
+    percent_dcf: {
+      field: 'Percent DCF',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent DCF']
+    },
+    percent_ddm: {
+      field: 'Percent DDM',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent DDM']
+    },
+    percent_graham: {
+      field: 'Percent Benjamin Graham',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Benjamin Graham']
+    },
+    percent_average: {
+      field: 'Percent Average',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Average']
+    },
+    percent_abs_dcf: {
+      field: 'Percent Abs DCF',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent Abs DCF']
+    },
+    percent_abs_ddm: {
+      field: 'Percent Abs DDM',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent Abs DDM']
+    },
+    percent_abs_graham: {
+      field: 'Percent Abs Benjamin Graham',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Abs Benjamin Graham']
+    },
+    percent_abs_average: {
+      field: 'Percent Abs Average',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Abs Average']
+    },
+    stddev: {
+      field: 'Intrinsic Value Standard Deviation',
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Intrinsic Value Standard Deviation']
+    }
+  };
+
+  const sortOption = config[sortBy || ''];
+  if (!sortOption) {
+    return formatted;
+  }
+
+  const { field, returnFields } = sortOption;
+
+  const filtered = formatted.data
+    .filter(item => item[field] !== null && item[field] !== undefined)
+    .sort((a, b) => (a[field] as number) - (b[field] as number))
+    .map(item => {
+      const filteredItem: ValuationData = {};
+      returnFields.forEach(f => {
+        filteredItem[f] = item[f];
+      });
+      return filteredItem;
+    });
+
+  const pageSize = 10;
+  const page = Math.max(parseInt(pageParam || '1'), 1);
+  const startIndex = (page - 1) * pageSize;
+  const paginatedData = filtered.slice(startIndex, startIndex + pageSize);
+
+  return {
+    data: paginatedData,
+    currentPage: page,
+    totalPages: Math.ceil(filtered.length / pageSize),
+    totalItems: filtered.length,
+    retrievedAt: formatted.retrievedAt
+  };
+};
+
+
 const stockControllers = {
   getStockData: createPythonScriptController(
     '../dataExtractor/stocks/getStockData.py',
@@ -298,12 +386,11 @@ const stockControllers = {
     const cacheKey = 'intrinsicValueList';
 
     try {
-      // Check cache first
       const cachedData = await cacheUtils.getFromCache(cacheKey);
-      if (cachedData) {
-        res.json(cachedData);
-        return;
-      }
+      // if (cachedData) {
+      //   res.json(cachedData);
+      //   return;
+      // }
 
       const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
       const dbName = "stock_analysis";
@@ -320,9 +407,9 @@ const stockControllers = {
         data: mongoData,
         retrievedAt: new Date().toISOString()
       };
-
+      console.log("MASUK");
       await cacheUtils.setInCache(cacheKey, formattedData);
-      res.json(formattedData);
+      res.json(sortAndFilterData(formattedData, req.query.sortBy as string, req.query.page as string));
     } catch (error) {
       console.error('MongoDB Error:', error);
       handleError(res, 'Failed to fetch data from MongoDB');
