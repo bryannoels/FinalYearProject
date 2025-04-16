@@ -40,20 +40,20 @@ for index, row in df.head(20).iterrows():
     
 
     dcf = round(float(get_dcf_value(stock_symbol)["DCFIntrinsicValue"]), 2)
-    percent_dcf = round(((dcf - opening_price) / dcf) * 100, 2) if dcf != 0 else None
-    percent_abs_dcf = round((abs(dcf - opening_price) / opening_price) * 100, 2) if dcf != 0 else None
+    percent_dcf = round(((opening_price - dcf) / dcf) * 100, 2) if dcf > 0 else None
+    percent_abs_dcf = round((abs(opening_price - dcf ) / dcf) * 100, 2) if dcf > 0 else None
 
     ddm = round(float(get_ddm_value(stock_symbol)["DDMIntrinsicValue"]), 2)
-    percent_ddm = round(((ddm - opening_price) / ddm) * 100, 2) if ddm != 0 else None
-    percent_abs_ddm = round((abs(ddm - opening_price) / opening_price) * 100, 2) if ddm != 0 else None
+    percent_ddm = round(((opening_price - ddm) / ddm) * 100, 2) if ddm > 0 else None
+    percent_abs_ddm = round((abs(opening_price - ddm) / ddm) * 100, 2) if ddm > 0 else None
 
     graham = round(float(get_benjamin_graham_value(stock_symbol)["BenjaminGrahamIntrinsicValue"]), 2)
-    percent_graham = round(((graham - opening_price) / graham) * 100, 2) if graham != 0 else None
-    percent_abs_graham = round((abs(graham - opening_price) / opening_price) * 100, 2) if graham != 0 else None
+    percent_graham = round(((opening_price - graham) / graham) * 100, 2) if graham > 0 else None
+    percent_abs_graham = round((abs(opening_price - graham) / graham) * 100, 2) if graham > 0 else None
 
     average = round((dcf + ddm + graham) / 3,2)
-    percent_average = round(((average - opening_price) / opening_price) * 100,2)
-    percent_abs_average = round((abs(average - opening_price) / opening_price) * 100,2)
+    percent_average = round(((opening_price - average) / average) * 100,2) if average > 0 else None
+    percent_abs_average = round((abs(opening_price - average) / average) * 100,2) if average > 0 else None
     
     std_dev = round(statistics.stdev([dcf, ddm, graham]),2)
 
