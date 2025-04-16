@@ -38,6 +38,12 @@ const MobileTabNavigation = () => {
       path: '/login',
       icon: '👤',
       activeIcon: '👤'
+    },
+    {
+      name: 'Intrinsic Value',
+      path: '/intrinsicValueList',
+      icon: '💰',
+      activeIcon: '💰'
     }
   ];
   
