@@ -5,4 +5,5 @@ server/python-getPortfolioStockData-dependencies
 server/node_modules
 .DS_Store
 dump.rdb
+coverage
 .env
