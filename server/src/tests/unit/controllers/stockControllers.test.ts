@@ -1,10 +1,12 @@
 import request from 'supertest';
 import express from 'express';
-import stockControllers from '../../../controllers/stockController';
+import stockControllers, { sortAndFilterData } from '../../../controllers/stockController';
+import { cacheUtils } from '../../../utils/cacheUtils';
 import Redis from 'ioredis';
 import fs from 'fs';
 import { spawn } from 'child_process';
 import axios from 'axios';
+import { MongoClient } from 'mongodb';
 
 jest.mock('ioredis');
 jest.mock('child_process');
@@ -18,20 +20,46 @@ interface MockStream {
   on: jest.Mock;
 }
 
-interface SpawnMock {
-  stdout: {
-    on: jest.Mock;
+jest.mock('../../../utils/cacheUtils', () => ({
+  cacheUtils: {
+    getFromCache: jest.fn(),
+    setInCache: jest.fn()
+  }
+}));
+
+jest.mock('mongodb', () => {
+  const mockFind = jest.fn();
+  const mockCollection = jest.fn().mockReturnValue({
+    find: mockFind,
+  });
+  const mockDb = jest.fn().mockReturnValue({
+    collection: mockCollection,
+  });
+  const mockConnect = jest.fn().mockResolvedValue({
+    db: mockDb,
+    close: jest.fn().mockResolvedValue(undefined),
+  });
+
+  return {
+    MongoClient: {
+      connect: mockConnect,
+    },
   };
-  stderr: {
-    on: jest.Mock;
-  };
-  on: jest.Mock;
-}
+});
+
+const mockMongoData = [
+  { ticker: 'AAPL', intrinsicValue: 150.25 },
+  { ticker: 'GOOGL', intrinsicValue: 2800.75 },
+];
+
+const mockFind = jest.fn().mockReturnValue({
+  toArray: jest.fn().mockResolvedValue(mockMongoData),
+});
+
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
-
 
 describe('Stock Controllers API Tests', () => {
   let app: express.Application;
@@ -55,11 +83,12 @@ describe('Stock Controllers API Tests', () => {
     app.get('/api/get-dcf-value/:symbol', stockControllers.getDCFValue);
     app.get('/api/get-ddm-value/:symbol', stockControllers.getDDMValue);
     app.get('/api/get-benjamin-graham-value/:symbol', stockControllers.getBenjaminGrahamValue);
+    app.get('/api/get-intrinsic-value-list', stockControllers.getIntrinsicValueList);
   });
 
   describe('getStockData', () => {
     it('should return stock data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', price: 150.25 };
       
@@ -89,7 +118,8 @@ describe('Stock Controllers API Tests', () => {
     it('should return cached data if available', async () => {
       const cachedData = { ticker: 'AAPL', price: 150.25 };
       MockRedis.prototype.get = jest.fn().mockResolvedValue(JSON.stringify(cachedData));
-      
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(cachedData);
+
       const response = await request(app).get('/api/info/AAPL');
       
       expect(response.status).toBe(200);
@@ -99,7 +129,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getStockProfile', () => {
     it('should return stock profile data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', name: 'Apple Inc.', sector: 'Technology' };
       
@@ -127,7 +157,7 @@ describe('Stock Controllers API Tests', () => {
     });
 
     it('should return stock data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       MockRedis.prototype.setex = jest.fn().mockResolvedValue('OK');
       
       const mockData = { ticker: 'AAPL', price: 150.25 };
@@ -158,7 +188,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getTopStocks', () => {
     it('should return top stocks with category parameter', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = [{ ticker: 'AAPL' }, { ticker: 'MSFT' }];
       (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
@@ -183,6 +213,17 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getTopStock.py', 'gainers']);
     });
+
+    it('should return top stocks from cache if available', async () => {
+      const cachedData = [{ ticker: 'AAPL' }, { ticker: 'MSFT' }];
+      MockRedis.prototype.get = jest.fn().mockResolvedValue(JSON.stringify(cachedData));
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(cachedData);
+
+      const response = await request(app).get('/api/get-top-stocks?category=gainers');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
     
     it('should return error for invalid category', async () => {
       const response = await request(app).get('/api/get-top-stocks?category=invalid-category');
@@ -194,7 +235,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getAnalysis', () => {
     it('should return stock analysis data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', recommendation: 'Buy', targetPrice: 180 };
       
@@ -224,7 +265,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getHistoricalData', () => {
     it('should return historical data with range parameter', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', data: [{ date: '2023-01-01', price: 150 }] };
       
@@ -252,7 +293,7 @@ describe('Stock Controllers API Tests', () => {
     });
 
     it('should pass range parameter to Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', data: [] };
       
@@ -280,7 +321,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getForecastData', () => {
     it('should fetch forecast data from external API', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = [{ ticker: 'AAPL', forecast: { min: 150, max: 200 } }];
       (axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValue({ data: mockData });
@@ -294,9 +335,20 @@ describe('Stock Controllers API Tests', () => {
         expect.any(Object)
       );
     });
+
+    it('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', forecast: { min: 150, max: 200 } };
+      MockRedis.prototype.get = jest.fn().mockResolvedValue(JSON.stringify(cachedData));
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(cachedData);
+
+      const response = await request(app).get('/api/get-forecast/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
     
     it('should handle failed API requests', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       (axios.get as jest.MockedFunction<typeof axios.get>).mockRejectedValue(new Error('API error'));
       
@@ -309,7 +361,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getEPSData', () => {
     it('should return EPS data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', epsHistory: [{ year: 2022, eps: 6.11 }] };
       
@@ -339,7 +391,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getPeRatioData', () => {
     it('should return PE ratio data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', peRatio: 25.4, industryAvg: 22.7 };
       
@@ -369,7 +421,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getAaaCorporateBondYield', () => {
     it('should return AAA corporate bond yield data from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { yield: 4.25, date: '2023-01-01' };
       
@@ -399,7 +451,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('searchStock', () => {
     it('should return search results from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = [
         { symbol: 'AAPL', name: 'Apple Inc.' },
@@ -432,7 +484,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getBenjaminGrahamList', () => {
     it('should return sorted and filtered Benjamin Graham list', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       MockRedis.prototype.setex = jest.fn().mockResolvedValue('OK');
       
       const mockCSVData = [
@@ -480,7 +532,7 @@ describe('Stock Controllers API Tests', () => {
     });
     
     it('should apply filter when filterBy parameter is provided', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       MockRedis.prototype.setex = jest.fn().mockResolvedValue('OK');
       
       const mockCSVData = [
@@ -526,7 +578,7 @@ describe('Stock Controllers API Tests', () => {
     });
 
     it('should handle CSV read errors', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockStream: MockStream = {
         pipe: jest.fn().mockReturnThis(),
@@ -548,7 +600,7 @@ describe('Stock Controllers API Tests', () => {
     });
     
     it('should return default page when invalid page parameter provided', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       MockRedis.prototype.setex = jest.fn().mockResolvedValue('OK');
       
       const mockCSVData = [
@@ -591,11 +643,22 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body).toHaveProperty('error');
       expect(response.body.error).toBe('Invalid filterBy format');
     });
+
+    it('should get cached data if available', async () => {
+      const cachedData = { data: [{ ticker: 'AAPL' }], pagination: { currentPage: 1, totalPages: 1 } };
+      MockRedis.prototype.get = jest.fn().mockResolvedValue(JSON.stringify(cachedData));
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(cachedData);
+
+      const response = await request(app).get('/api/get-benjamin-graham-list');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
   });
 
   describe('getDCFValue', () => {
     it('should return DCF valuation from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', intrinsicValue: 180.25, currentPrice: 150.50 };
       
@@ -625,7 +688,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getDDMValue', () => {
     it('should return DDM valuation from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { ticker: 'AAPL', intrinsicValue: 175.30, currentPrice: 150.50 };
       
@@ -655,7 +718,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('getBenjaminGrahamValue', () => {
     it('should return Benjamin Graham valuation from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       const mockData = { 
         ticker: 'AAPL', 
@@ -691,7 +754,7 @@ describe('Stock Controllers API Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle Python script parsing errors', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
         stdout: { 
@@ -717,7 +780,7 @@ describe('Stock Controllers API Tests', () => {
     });
 
     it('should handle Python script execution errors', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
         stdout: { on: jest.fn() },
@@ -743,7 +806,7 @@ describe('Stock Controllers API Tests', () => {
     });
 
     it('should handle non-zero exit codes from Python script', async () => {
-      MockRedis.prototype.get = jest.fn().mockResolvedValue(null);
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
       
       (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
         stdout: { on: jest.fn() },
@@ -762,4 +825,161 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body.error).toBe('Python script exited with code 2');
     });
   });
+
+  describe('getIntrinsicValueList', () => {
+    it('should return intrinsic value list from cache if available', async () => {
+      const cachedData = { data: [{ ticker: 'AAPL', intrinsicValue: 150.25 }], retrievedAt: new Date().toISOString() };
+      
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(cachedData);
+      
+      const response = await request(app).get('/api/get-intrinsic-value-list');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+      expect(cacheUtils.getFromCache).toHaveBeenCalledWith('intrinsicValueList');
+      expect(MongoClient.connect).not.toHaveBeenCalled();
+    });
+  
+    it('should return an error if MongoDB connection fails', async () => {
+      (cacheUtils.getFromCache as jest.Mock).mockResolvedValue(null);
+  
+      (MongoClient.connect as jest.Mock).mockRejectedValueOnce(new Error('MongoDB connection failed'));
+  
+      const response = await request(app).get('/api/get-intrinsic-value-list');
+  
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Failed to fetch data from MongoDB');
+    });
+  });
+
+
+describe('sortAndFilterData', () => {
+  const mockData = [
+    {
+      'Stock Symbol': 'AAPL',
+      'Company Name': 'Apple Inc.',
+      'Beta': 1.2,
+      'Opening Price': 145.3,
+      'DCF Value': 130.0,
+      'Percent DCF': 15.5,
+      'Percent DDM': 10.2,
+      'Percent Graham': 25.7,
+      'Percent Average': 20.1,
+      'Percent Abs DCF': 16.3,
+      'Percent Abs DDM': 12.1,
+      'Percent Abs Graham': 30.2,
+      'Percent Abs Average': 18.4,
+      'Intrinsic Value Standard Deviation': 5.0
+    },
+    {
+      'Stock Symbol': 'GOOG',
+      'Company Name': 'Google LLC',
+      'Beta': 0.8,
+      'Opening Price': 2721.0,
+      'DCF Value': 2600.0,
+      'Percent DCF': 5.0,
+      'Percent DDM': 7.2,
+      'Percent Graham': 18.1,
+      'Percent Average': 15.8,
+      'Percent Abs DCF': 6.4,
+      'Percent Abs DDM': 8.0,
+      'Percent Abs Graham': 21.5,
+      'Percent Abs Average': 14.0,
+      'Intrinsic Value Standard Deviation': 4.0
+    },
+    {
+      'Stock Symbol': 'AMZN',
+      'Company Name': 'Amazon.com Inc.',
+      'Beta': 1.1,
+      'Opening Price': 3450.5,
+      'DCF Value': 3000.0,
+      'Percent DCF': 18.3,
+      'Percent DDM': 12.5,
+      'Percent Graham': 22.4,
+      'Percent Average': 19.7,
+      'Percent Abs DCF': 19.1,
+      'Percent Abs DDM': 14.3,
+      'Percent Abs Graham': 26.3,
+      'Percent Abs Average': 17.9,
+      'Intrinsic Value Standard Deviation': 6.0
+    }
+  ];
+
+  const formatted = { data: mockData, retrievedAt: new Date().toISOString() };
+
+  it('should return data as is when sortBy is invalid or not provided', () => {
+    const result = sortAndFilterData(formatted);
+
+    expect(result.data).toEqual(mockData);
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Beta field', () => {
+    const result = sortAndFilterData(formatted, 'beta');
+
+    expect(result.data[0]['Stock Symbol']).toBe('GOOG');
+    expect(result.data[1]['Stock Symbol']).toBe('AMZN');
+    expect(result.data[2]['Stock Symbol']).toBe('AAPL');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent DCF field', () => {
+    const result = sortAndFilterData(formatted, 'percent_dcf');
+
+    expect(result.data[0]['Stock Symbol']).toBe('GOOG');
+    expect(result.data[1]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[2]['Stock Symbol']).toBe('AMZN');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should paginate data correctly for the first page', () => {
+    const result = sortAndFilterData(formatted, 'beta', '1');
+
+    expect(result.data.length).toBe(3);
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should paginate data correctly for the second page', () => {
+    const result = sortAndFilterData(formatted, 'beta', '2');
+
+    expect(result.data.length).toBe(0);
+    expect(result.currentPage).toBe(2);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should filter out items with null or undefined field values when sorting by Beta', () => {
+    const dataWithNull = [
+      ...mockData,
+      { 'Stock Symbol': 'TSLA', 'Company Name': 'Tesla', 'Beta': null, 'Opening Price': 950 }
+    ];
+    const formattedWithNull = { data: dataWithNull, retrievedAt: new Date().toISOString() };
+
+    const result = sortAndFilterData(formattedWithNull, 'beta');
+
+    expect(result.data.length).toBe(3);
+  });
+
+  it('should return an empty list if no items match the sort criteria', () => {
+    const emptyData = [{ 'Stock Symbol': 'XYZ', 'Company Name': 'Test Inc.', 'Beta': null }];
+    const formattedEmpty = { data: emptyData, retrievedAt: new Date().toISOString() };
+
+    const result = sortAndFilterData(formattedEmpty, 'beta');
+
+    expect(result.data).toEqual([]);
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(0);
+    expect(result.totalItems).toBe(0);
+  });
+});
+
+  
 });
