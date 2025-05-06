@@ -3,9 +3,9 @@ import { spawn } from 'child_process';
 import axios from 'axios';
 import csv from "csv-parser";
 import fs from "fs";
-import Redis from 'ioredis';
 import path from 'path';
 import { MongoClient } from 'mongodb';
+import { cacheUtils } from '../utils/cacheUtils';
 
 type BenjaminGrahamData = {
   "Stock Symbol": string;
@@ -17,26 +17,13 @@ type BenjaminGrahamData = {
   "Overall Value": number;
 };
 
-const redis = new Redis();
-const cacheDuration = 3600;
-
-export const cacheUtils = {
-  async getFromCache(key: string): Promise<any | null> {
-    const cachedData = await redis.get(key);
-    return cachedData ? JSON.parse(cachedData) : null;
-  },
-
-  async setInCache(key: string, data: any): Promise<void> {
-    await redis.setex(key, cacheDuration, JSON.stringify(data));
-  }
-};
-
 const executePythonScript = async (
   scriptPath: string, 
   args: string[], 
   res: Response, 
   cacheKey: string | null = null
 ): Promise<void> => {
+  
   const pythonProcess = spawn('python3', [scriptPath, ...args]);
   
   pythonProcess.stdout.on('data', async (data) => {
@@ -76,7 +63,6 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
     
     const cachedData = await cacheUtils.getFromCache(cacheKey);
     if (cachedData) {
-      console.log('Cache hit for', cacheKey);
       res.json(cachedData);
       return;
     }
@@ -89,12 +75,6 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
     
     if (scriptName === '../dataExtractor/stocks/getHistoricalData.py' && req.query.range) {
       args.push(req.query.range as string);
-    }
-    
-    if (scriptName === '../dataExtractor/stocks/getTopStock.py' && req.query.category) {
-      args.push(req.query.category as string);
-    } else if (scriptName === '../dataExtractor/stocks/getTopStock.py') {
-      args.push("most-active");
     }
 
     if (scriptName === '../dataExtractor/stocks/searchStock.py' && req.params.query) {
@@ -109,11 +89,19 @@ type ValuationData = {
   [key: string]: any;
 };
 
-const sortAndFilterData = (
+type PaginatedData = {
+  data: ValuationData[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  retrievedAt: string;
+};
+
+export const sortAndFilterData = (
   formatted: { data: ValuationData[]; retrievedAt: string },
   sortBy?: string,
   pageParam?: string
-) => {
+): PaginatedData => {
   const config: Record<
     string,
     { field: string; returnFields: string[] }
@@ -160,37 +148,48 @@ const sortAndFilterData = (
     }
   };
 
+  // Find the sort option based on the provided `sortBy`
   const sortOption = config[sortBy || ''];
-  if (!sortOption) {
-    return formatted;
-  }
 
-  const { field, returnFields } = sortOption;
-
+  // If no valid sort option, just filter the data without sorting
   const filtered = formatted.data
-    .filter(item => item[field] !== null && item[field] !== undefined)
-    .sort((a, b) => (a[field] as number) - (b[field] as number))
+    .filter(item => {
+      if (!sortOption) {
+        // If no sorting option, just check if the field exists
+        return Object.keys(item).some(key => item[key] !== null && item[key] !== undefined);
+      }
+      // If sorting is applied, filter based on the field from the sortOption
+      return item[sortOption.field] !== null && item[sortOption.field] !== undefined;
+    })
     .map(item => {
       const filteredItem: ValuationData = {};
+      const returnFields = sortOption ? sortOption.returnFields : Object.keys(item);
       returnFields.forEach(f => {
         filteredItem[f] = item[f];
       });
       return filteredItem;
     });
 
+  // If sorting is applied, sort the data
+  const sortedFilteredData = sortOption
+    ? filtered.sort((a, b) => (a[sortOption.field] as number) - (b[sortOption.field] as number))
+    : filtered;
+
+  // Pagination
   const pageSize = 10;
   const page = Math.max(parseInt(pageParam || '1'), 1);
   const startIndex = (page - 1) * pageSize;
-  const paginatedData = filtered.slice(startIndex, startIndex + pageSize);
+  const paginatedData = sortedFilteredData.slice(startIndex, startIndex + pageSize);
 
   return {
     data: paginatedData,
     currentPage: page,
-    totalPages: Math.ceil(filtered.length / pageSize),
-    totalItems: filtered.length,
+    totalPages: Math.ceil(sortedFilteredData.length / pageSize),
+    totalItems: sortedFilteredData.length,
     retrievedAt: formatted.retrievedAt
   };
 };
+
 
 
 const stockControllers = {
@@ -211,7 +210,6 @@ const stockControllers = {
 
     if (category && !validCategories.includes(category as string)) {
       handleError(res, "Invalid category parameter", 400);
-      console.log("MASUK")
       return;
     }
 
@@ -387,11 +385,10 @@ const stockControllers = {
 
     try {
       const cachedData = await cacheUtils.getFromCache(cacheKey);
-      // if (cachedData) {
-      //   res.json(cachedData);
-      //   return;
-      // }
-
+      if (cachedData) {
+        res.json(cachedData);
+        return;
+      }
       const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
       const dbName = "stock_analysis";
       const collectionName = "company_valuations";
@@ -407,14 +404,16 @@ const stockControllers = {
         data: mongoData,
         retrievedAt: new Date().toISOString()
       };
-      console.log("MASUK");
       await cacheUtils.setInCache(cacheKey, formattedData);
+
       res.json(sortAndFilterData(formattedData, req.query.sortBy as string, req.query.page as string));
     } catch (error) {
-      console.error('MongoDB Error:', error);
-      handleError(res, 'Failed to fetch data from MongoDB');
+      if (!res.headersSent) {
+        res.status(500).json({ message: 'Failed to fetch data from MongoDB' });
+      }
     }
-  }
+}
+
 };
 
 const applyFilter = (data: BenjaminGrahamData[], filterBy: string, type: "Defensive" | "Enterprising") => {
