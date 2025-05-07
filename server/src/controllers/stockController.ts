@@ -19,7 +19,7 @@ type BenjaminGrahamData = {
 
 import Redis from 'ioredis';
 const redisClient = new Redis();
-const { getFromCache, setInCache } = createCacheUtils(redisClient);
+const { getFromCache, setInCache, clearAllCache } = createCacheUtils(redisClient);
 
 const executePythonScript = async (
   scriptPath: string, 
@@ -83,6 +83,10 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
 
     if (scriptName === '../dataExtractor/stocks/searchStock.py' && req.params.query) {
       args = [req.params.query.toUpperCase()];
+    }
+
+    if (scriptName === '../dataExtractor/stocks/getTopStock.py' && req.query.category) {
+      args = [req.query.category as string];
     }
     
     await executePythonScript(scriptName, args, res, cacheKey);
@@ -152,17 +156,13 @@ export const sortAndFilterData = (
     }
   };
 
-  // Find the sort option based on the provided `sortBy`
   const sortOption = config[sortBy || ''];
 
-  // If no valid sort option, just filter the data without sorting
   const filtered = formatted.data
     .filter(item => {
       if (!sortOption) {
-        // If no sorting option, just check if the field exists
         return Object.keys(item).some(key => item[key] !== null && item[key] !== undefined);
       }
-      // If sorting is applied, filter based on the field from the sortOption
       return item[sortOption.field] !== null && item[sortOption.field] !== undefined;
     })
     .map(item => {
@@ -174,12 +174,10 @@ export const sortAndFilterData = (
       return filteredItem;
     });
 
-  // If sorting is applied, sort the data
   const sortedFilteredData = sortOption
     ? filtered.sort((a, b) => (a[sortOption.field] as number) - (b[sortOption.field] as number))
     : filtered;
 
-  // Pagination
   const pageSize = 10;
   const page = Math.max(parseInt(pageParam || '1'), 1);
   const startIndex = (page - 1) * pageSize;
@@ -208,6 +206,7 @@ const stockControllers = {
   ),
   
   getTopStocks: async (req: Request, res: Response): Promise<void> => {
+    await clearAllCache();
     const { category } = req.query;
     const validCategories = ["most-active", "trending", "gainers", "losers", "52-week-gainers", "52-week-losers"];
     const cacheKey = `topStocks:${category || 'most-active'}`;
@@ -385,7 +384,9 @@ const stockControllers = {
   ),
 
   getIntrinsicValueList: async (req: Request, res: Response): Promise<void> => {
-    const cacheKey = 'intrinsicValueList';
+    const sortBy = req.query.sortBy || 'Overall Value';
+    const page = req.query.page || '1';
+    const cacheKey = 'intrinsicValueList'+`:${sortBy}:${page}`;
     try {
       const cachedData = await getFromCache(cacheKey);
       if (cachedData) {
@@ -405,11 +406,12 @@ const stockControllers = {
 
       const formattedData = {
         data: mongoData,
-        retrievedAt: new Date().toISOString()
+        retrievedAt: getCurrentTimeEDT()
       };
-      await setInCache(cacheKey, formattedData);
-
-      res.json(sortAndFilterData(formattedData, req.query.sortBy as string, req.query.page as string));
+      
+      const sortedAndFiltereddata = sortAndFilterData(formattedData, req.query.sortBy as string, req.query.page as string);
+      await setInCache(cacheKey, sortedAndFiltereddata);
+      res.json(sortedAndFiltereddata);
     } catch (error) {
       if (!res.headersSent) {
         res.status(500).json({ message: 'Failed to fetch data from MongoDB' });
