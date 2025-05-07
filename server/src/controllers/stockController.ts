@@ -5,7 +5,7 @@ import csv from "csv-parser";
 import fs from "fs";
 import path from 'path';
 import { MongoClient } from 'mongodb';
-import { cacheUtils } from '../utils/cacheUtils';
+import { createCacheUtils } from '../utils/cacheUtils';
 
 type BenjaminGrahamData = {
   "Stock Symbol": string;
@@ -16,6 +16,10 @@ type BenjaminGrahamData = {
   "Enterprising": string;
   "Overall Value": number;
 };
+
+import Redis from 'ioredis';
+const redisClient = new Redis();
+const { getFromCache, setInCache } = createCacheUtils(redisClient);
 
 const executePythonScript = async (
   scriptPath: string, 
@@ -31,7 +35,7 @@ const executePythonScript = async (
       const parsedData = JSON.parse(data.toString());
       if (!res.headersSent) {
         if (cacheKey) {
-          await cacheUtils.setInCache(cacheKey, parsedData);
+          await setInCache(cacheKey, parsedData);
         }
         res.json(parsedData);
       }
@@ -61,7 +65,7 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
   return async (req: Request, res: Response): Promise<void> => {
     const cacheKey = getCacheKey(req);
     
-    const cachedData = await cacheUtils.getFromCache(cacheKey);
+    const cachedData = await getFromCache(cacheKey);
     if (cachedData) {
       res.json(cachedData);
       return;
@@ -213,7 +217,7 @@ const stockControllers = {
       return;
     }
 
-    const cachedData = await cacheUtils.getFromCache(cacheKey);
+    const cachedData = await getFromCache(cacheKey);
     if (cachedData) {
       res.json(cachedData);
       return;
@@ -241,7 +245,7 @@ const stockControllers = {
     const stockSymbol = req.params.symbol.toUpperCase();
     const cacheKey = `forecastData:${stockSymbol}`;
 
-    const cachedData = await cacheUtils.getFromCache(cacheKey);
+    const cachedData = await getFromCache(cacheKey);
     if (cachedData) {
       res.json(cachedData);
       return;
@@ -256,7 +260,7 @@ const stockControllers = {
     try {
       const response = await axios.get(url, { headers });
       if (!res.headersSent) {
-        await cacheUtils.setInCache(cacheKey, response.data[0]);
+        await setInCache(cacheKey, response.data[0]);
         res.json(response.data[0]);
       }
     } catch (error) {
@@ -302,7 +306,7 @@ const stockControllers = {
     }
 
     const cacheKey = `benjaminGrahamList:${sortBy}:${filterBy || ""}:${pageNumber}`;
-    const cachedData = await cacheUtils.getFromCache(cacheKey);
+    const cachedData = await getFromCache(cacheKey);
     if (cachedData) {
       res.json(cachedData);
       return;
@@ -358,7 +362,7 @@ const stockControllers = {
         retrievedAt: getCurrentTimeEDT()
       };
 
-      await cacheUtils.setInCache(cacheKey, data);
+      await setInCache(cacheKey, data);
       res.json(data);
     } catch (error) {
       handleError(res, "Failed to process CSV data");
@@ -382,9 +386,8 @@ const stockControllers = {
 
   getIntrinsicValueList: async (req: Request, res: Response): Promise<void> => {
     const cacheKey = 'intrinsicValueList';
-
     try {
-      const cachedData = await cacheUtils.getFromCache(cacheKey);
+      const cachedData = await getFromCache(cacheKey);
       if (cachedData) {
         res.json(cachedData);
         return;
@@ -404,7 +407,7 @@ const stockControllers = {
         data: mongoData,
         retrievedAt: new Date().toISOString()
       };
-      await cacheUtils.setInCache(cacheKey, formattedData);
+      await setInCache(cacheKey, formattedData);
 
       res.json(sortAndFilterData(formattedData, req.query.sortBy as string, req.query.page as string));
     } catch (error) {
