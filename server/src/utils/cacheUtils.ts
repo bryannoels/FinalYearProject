@@ -10,5 +10,9 @@ export const createCacheUtils = (redisClient: Redis) => ({
 
   async setInCache(key: string, data: any): Promise<void> {
     await redisClient.setex(key, cacheDuration, JSON.stringify(data));
+  },
+
+  async clearAllCache(): Promise<void> {
+    await redisClient.flushdb();
   }
 });
