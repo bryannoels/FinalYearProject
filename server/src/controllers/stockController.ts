@@ -25,7 +25,7 @@ const executePythonScript = async (
   scriptPath: string, 
   args: string[], 
   res: Response, 
-  cacheKey: string | null = null
+  cacheKey: string
 ): Promise<void> => {
   
   const pythonProcess = spawn('python3', [scriptPath, ...args]);
