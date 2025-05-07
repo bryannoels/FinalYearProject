@@ -1,5 +1,7 @@
 const getFromCache = jest.fn<Promise<any>, [string]>();
 const setInCache = jest.fn<Promise<void>, [string, any]>();
+let mockConnect: jest.Mock;
+let mockClient: any;
 
 jest.mock('../../../utils/cacheUtils', () => ({
   createCacheUtils: (redisClient: Redis) => ({
@@ -11,7 +13,6 @@ jest.mock('../../../utils/cacheUtils', () => ({
 import request from 'supertest';
 import express from 'express';
 import stockControllers, { sortAndFilterData } from '../../../controllers/stockController';
-import { createCacheUtils } from '../../../utils/cacheUtils';
 import Redis from 'ioredis';
 import fs from 'fs';
 import { spawn } from 'child_process';
@@ -22,6 +23,7 @@ jest.mock('ioredis');
 jest.mock('child_process');
 jest.mock('axios');
 jest.mock('fs');
+jest.mock('mongodb');
 
 
 interface MockStream {
@@ -37,24 +39,24 @@ const mockRedisClient = {
 (Redis as unknown as jest.Mock).mockImplementation(() => mockRedisClient);
 
 jest.mock('mongodb', () => {
-  const mockFind = jest.fn();
-  const mockCollection = jest.fn().mockReturnValue({
-    find: mockFind,
-  });
-  const mockDb = jest.fn().mockReturnValue({
-    collection: mockCollection,
-  });
-  const mockConnect = jest.fn().mockResolvedValue({
+  const mockToArray = jest.fn();
+  const mockFind = jest.fn().mockReturnValue({ toArray: mockToArray });
+  const mockCollection = jest.fn().mockReturnValue({ find: mockFind });
+  const mockDb = jest.fn().mockReturnValue({ collection: mockCollection });
+
+  mockConnect = jest.fn();
+  const mockClient = {
+    connect: jest.fn(),
     db: mockDb,
-    close: jest.fn().mockResolvedValue(undefined),
-  });
+    close: jest.fn(),
+  };
 
   return {
-    MongoClient: {
-      connect: mockConnect,
-    },
+    MongoClient: jest.fn(() => mockClient),
   };
 });
+
+
 
 const mockMongoData = [
   { ticker: 'AAPL', intrinsicValue: 150.25 },
@@ -64,6 +66,7 @@ const mockMongoData = [
 const mockFind = jest.fn().mockReturnValue({
   toArray: jest.fn().mockResolvedValue(mockMongoData),
 });
+
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -128,13 +131,37 @@ describe('Stock Controllers API Tests', () => {
     
     it('should return cached data if available', async () => {
       const cachedData = { ticker: 'AAPL', price: 150.25 };
-      getFromCache.mockResolvedValue(null);
+      getFromCache.mockResolvedValue(cachedData);
       setInCache.mockResolvedValue();
 
       const response = await request(app).get('/api/info/AAPL');
       
       expect(response.status).toBe(200);
       expect(response.body).toEqual(cachedData);
+    });
+
+    it('should handle errors from Python script', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'data') {
+            callback(Buffer.from('Error executing Python script'));
+          }
+        })},
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(1);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/info/AAPL');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Error executing Python script');
     });
   });
 
@@ -167,6 +194,41 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getStockProfile.py', 'AAPL']);
     });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', name: 'Apple Inc.', sector: 'Technology' };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-profile/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
+
+    it('should handle errors from Python script', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'data') {
+            callback(Buffer.from('Error executing Python script'));
+          }
+        })},
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(1);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/get-profile/AAPL');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Error executing Python script');
+    });
   });
 
   describe('getTopStocks', () => {
@@ -197,6 +259,77 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getTopStock.py', 'gainers']);
     });
+
+    it('should return cached data if available', async () => {
+      const cachedData = [{ ticker: 'AAPL' }, { ticker: 'MSFT' }];
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-top-stocks?category=gainers');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
+
+    it('should use default category "most-active" for cache key when no category is provided', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      const mockData = [{ ticker: 'AAPL' }, { ticker: 'MSFT' }];
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { 
+          on: jest.fn().mockImplementation((event: string, callback: Function) => {
+            if (event === 'data') {
+              callback(Buffer.from(JSON.stringify(mockData)));
+            }
+          })
+        },
+        stderr: { on: jest.fn() },
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(0);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/get-top-stocks?category');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockData);
+      expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getTopStock.py', 'most-active']);
+    });
+
+    it('should return error if category is invalid', async () => {
+      const response = await request(app).get('/api/get-top-stocks?category=invalid-category');
+      
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Invalid category parameter');
+    });
+
+    it('should handle errors from Python script', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'data') {
+            callback(Buffer.from('Error executing Python script'));
+          }
+        })},
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(1);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/get-top-stocks?category=gainers');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Error executing Python script');
+    });
+    
   });
 
   describe('getAnalysis', () => {
@@ -227,6 +360,41 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getAnalysis.py', 'AAPL']);
+    });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', recommendation: 'Buy', targetPrice: 180 };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/analysis/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
+
+    it('should handle errors from Python script', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'data') {
+            callback(Buffer.from('Error executing Python script'));
+          }
+        })},
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(1);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/analysis/AAPL');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Error executing Python script');
     });
   });
 
@@ -260,6 +428,35 @@ describe('Stock Controllers API Tests', () => {
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getHistoricalData.py', 'AAPL', '1y']);
     });
 
+    it('should return historical data with range 1d when no range is given', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      const mockData = { ticker: 'AAPL', data: [{ date: '2023-01-01', price: 150 }] };
+      
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { 
+          on: jest.fn().mockImplementation((event: string, callback: Function) => {
+            if (event === 'data') {
+              callback(Buffer.from(JSON.stringify(mockData)));
+            }
+          })
+        },
+        stderr: { on: jest.fn() },
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(0);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/get-historical-data/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockData);
+      expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getHistoricalData.py', 'AAPL']);
+    });
+
     it('should pass range parameter to Python script', async () => {
       getFromCache.mockResolvedValue(null);
       setInCache.mockResolvedValue();
@@ -285,6 +482,17 @@ describe('Stock Controllers API Tests', () => {
       await request(app).get('/api/get-historical-data/AAPL?range=5y');
       
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getHistoricalData.py', 'AAPL', '5y']);
+    });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', data: [{ date: '2023-01-01', price: 150 }] };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-historical-data/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
     });
   });
 
@@ -328,6 +536,18 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('error');
     });
+
+    it('should return 404 if no data is found from both API and cache', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      (axios.get as jest.MockedFunction<typeof axios.get>).mockResolvedValue({ data: null });
+      
+      const response = await request(app).get('/api/get-forecast/AAPL');
+      
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('error', 'Failed to fetch forecast data');
+    });
   });
 
   describe('getEPSData', () => {
@@ -358,6 +578,41 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getEpsData.py', 'AAPL']);
+    });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', epsHistory: [{ year: 2022, eps: 6.11 }] };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-eps/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
+
+    it('should handle errors from Python script', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      
+      (spawn as jest.MockedFunction<typeof spawn>).mockReturnValue({
+        stdout: { on: jest.fn() },
+        stderr: { on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'data') {
+            callback(Buffer.from('Error executing Python script'));
+          }
+        })},
+        on: jest.fn().mockImplementation((event: string, callback: Function) => {
+          if (event === 'close') {
+            callback(1);
+          }
+        })
+      } as unknown as ReturnType<typeof spawn>);
+      
+      const response = await request(app).get('/api/get-eps/AAPL');
+      
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Error executing Python script');
     });
   });
 
@@ -390,6 +645,17 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getPeRatioData.py', 'AAPL']);
     });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', peRatio: 25.4, industryAvg: 22.7 };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-pe-ratio/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
   });
 
   describe('getAaaCorporateBondYield', () => {
@@ -420,6 +686,17 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getAaaCorporateBondYield.py']);
+    });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { yield: 4.25, date: '2023-01-01' };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-aaa-corp-bond-yield');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
     });
   });
 
@@ -454,6 +731,20 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/searchStock.py', 'AAP']);
+    });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = [
+        { symbol: 'AAPL', name: 'Apple Inc.' },
+        { symbol: 'AAPB', name: 'Some Other Company' }
+      ];
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/search/AAP');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
     });
   });
 
@@ -633,6 +924,56 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(cachedData);
     });
+
+    it('should not apply filter if sortBy is not "Defensive" or "Enterprising"', async () => {
+      getFromCache.mockResolvedValue(null);
+      setInCache.mockResolvedValue();
+      Redis.prototype.setex = jest.fn().mockResolvedValue('OK');
+      
+      const mockCSVData = [
+        { 
+          'Stock Symbol': 'AAPL', 
+          'Company Name': 'Apple Inc.', 
+          'Defensive Value': '10', 
+          'Defensive': '1111111', 
+          'Enterprising Value': '5', 
+          'Enterprising': '1110000', 
+          'Overall Value': '15'
+        },
+        { 
+          'Stock Symbol': 'MSFT', 
+          'Company Name': 'Microsoft Corp.', 
+          'Defensive Value': '9', 
+          'Defensive': '1111110', 
+          'Enterprising Value': '7', 
+          'Enterprising': '1111000', 
+          'Overall Value': '16'
+        }
+      ];
+      
+      const mockStream: MockStream = {
+        pipe: jest.fn().mockReturnThis(),
+        on: jest.fn().mockImplementation(function(this: MockStream, event: string, callback: Function) {
+          if (event === 'data') {
+            mockCSVData.forEach(row => callback(row));
+          }
+          if (event === 'end') {
+            callback();
+          }
+          return this;
+        })
+      };
+      
+      (fs.createReadStream as jest.MockedFunction<typeof fs.createReadStream>).mockReturnValue(mockStream as unknown as fs.ReadStream);
+      
+      const response = await request(app).get('/api/get-benjamin-graham-list?sortBy=Overall&filterBy=1110000');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('data');
+      expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body.data[0]['Stock Symbol']).toBe('MSFT');
+    });
+    
   });
 
   describe('getDCFValue', () => {
@@ -664,6 +1005,17 @@ describe('Stock Controllers API Tests', () => {
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getDCFValue.py', 'AAPL']);
     });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', intrinsicValue: 180.25, currentPrice: 150.50 };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-dcf-value/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
+    });
   });
 
   describe('getDDMValue', () => {
@@ -694,6 +1046,17 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getDDMValue.py', 'AAPL']);
+    });
+    
+    it ('should return cached data if available', async () => {
+      const cachedData = { ticker: 'AAPL', intrinsicValue: 175.30, currentPrice: 150.50 };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-ddm-value/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
     });
   });
 
@@ -731,6 +1094,23 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
       expect(spawn).toHaveBeenCalledWith('python3', ['../dataExtractor/stocks/getBenjaminGrahamValue.py', 'AAPL']);
+    });
+
+    it ('should return cached data if available', async () => {
+      const cachedData = { 
+        ticker: 'AAPL', 
+        intrinsicValue: 165.75, 
+        currentPrice: 150.50,
+        defensiveCriteria: '1111110',
+        enterprisingCriteria: '1110000' 
+      };
+      getFromCache.mockResolvedValue(cachedData);
+      setInCache.mockResolvedValue();
+
+      const response = await request(app).get('/api/get-benjamin-graham-value/AAPL');
+      
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(cachedData);
     });
   });
 
@@ -823,21 +1203,69 @@ describe('Stock Controllers API Tests', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(cachedData);
       expect(getFromCache).toHaveBeenCalledWith('intrinsicValueList');
-      expect(MongoClient.connect).not.toHaveBeenCalled();
+      expect(mockConnect).not.toHaveBeenCalled();
+
     });
   
     it('should return an error if MongoDB connection fails', async () => {
       getFromCache.mockResolvedValue(null);
       setInCache.mockResolvedValue();
   
-      (MongoClient.connect as jest.Mock).mockRejectedValueOnce(new Error('MongoDB connection failed'));
+      mockConnect.mockRejectedValueOnce(new Error('MongoDB connection failed'));
   
       const response = await request(app).get('/api/get-intrinsic-value-list');
   
       expect(response.status).toBe(500);
       expect(response.body.message).toBe('Failed to fetch data from MongoDB');
     });
+
+    it('should fetch from MongoDB, cache, and return sorted/filtered data', async () => {
+      const mockMongoData = [
+        { ticker: 'AAPL', intrinsicValue: 150 },
+        { ticker: 'GOOGL', intrinsicValue: 2800 }
+      ];
+    
+      (getFromCache as jest.Mock).mockResolvedValue(null);
+      (setInCache as jest.Mock).mockResolvedValue(undefined);
+    
+      const mockToArray = jest.fn().mockResolvedValue(mockMongoData);
+      const mockFind = jest.fn(() => ({ toArray: mockToArray }));
+      const mockCollection = jest.fn(() => ({ find: mockFind }));
+      const mockDb = jest.fn(() => ({ collection: mockCollection }));
+      const mockConnect = jest.fn();
+      const mockClose = jest.fn();
+    
+      const mockClient = {
+        connect: mockConnect,
+        db: mockDb,
+        close: mockClose,
+      };
+    
+      (MongoClient as unknown as jest.Mock).mockImplementation(() => mockClient);
+    
+      const response = await request(app).get('/api/get-intrinsic-value-list?sortBy=ticker&page=1');
+    
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(expect.anything());
+      expect(getFromCache).toHaveBeenCalledWith('intrinsicValueList');
+      expect(setInCache).toHaveBeenCalledWith(
+        'intrinsicValueList',
+        expect.objectContaining({ data: mockMongoData })
+      );
+    });
+
+  it ('should return cached data if available', async () => {
+    const cachedData = { data: [{ ticker: 'AAPL', intrinsicValue: 150.25 }], retrievedAt: new Date().toISOString() };
+    
+    getFromCache.mockResolvedValue(cachedData);
+    setInCache.mockResolvedValue();
+    
+    const response = await request(app).get('/api/get-intrinsic-value-list');
+    
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(cachedData);
   });
+});
 
 
 describe('sortAndFilterData', () => {
