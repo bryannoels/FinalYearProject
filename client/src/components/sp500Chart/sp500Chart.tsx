@@ -57,7 +57,6 @@ const SP500Chart: React.FC<StockPriceChartProps> = ({ price }) => {
     }, []);
 
     useEffect(() => {
-        console.log(isChartVisible);
         if (!chartRef.current || !price || price.length === 0 || !isChartVisible) return;
         
     
@@ -280,13 +279,6 @@ const SP500Chart: React.FC<StockPriceChartProps> = ({ price }) => {
     useEffect(() => {
         setIsChartVisible(true);
     }, []);
-    
-
-    useEffect(() => {
-        console.log("Chart dimensions", dimensions);
-        console.log("Chart visible?", isChartVisible);
-    }, [dimensions, isChartVisible]);
-    
 
     return (
         <div className={`stock-chart-container animate-on-scroll ${isChartVisible ? 'visible' : ''}`}>
