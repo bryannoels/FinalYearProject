@@ -1,13 +1,27 @@
 import request from 'supertest';
-import express, { Express } from 'express';
-import router from '../../../routes/userRoute';
-import * as userControllers from '../../../controllers/userController';
+import express, { Express, Request, Response, NextFunction } from 'express';
+
+const mockGetAllUsers = jest.fn((req: Request, res: Response, next: NextFunction) => {
+  res.status(200).json([]);
+});
+
+const mockCreateUser = jest.fn((req: Request, res: Response, next: NextFunction) => {
+  res.status(201).json({ ...req.body, id: 'new-id' });
+});
+
+const mockUpdateUser = jest.fn((req: Request, res: Response, next: NextFunction) => {
+  res.status(200).json({ ...req.body, id: req.params.id });
+});
+
+const mockDeleteUser = jest.fn((req: Request, res: Response, next: NextFunction) => {
+  res.status(200).json({ message: `User ${req.params.id} deleted` });
+});
 
 jest.mock('../../../controllers/userController', () => ({
-  getAllUsers: jest.fn(),
-  createUser: jest.fn(),
-  updateUser: jest.fn(),
-  deleteUser: jest.fn(),
+  getAllUsers: mockGetAllUsers,
+  createUser: mockCreateUser,
+  updateUser: mockUpdateUser,
+  deleteUser: mockDeleteUser
 }));
 
 describe('User Routes', () => {
@@ -16,49 +30,55 @@ describe('User Routes', () => {
   beforeAll(() => {
     app = express();
     app.use(express.json());
+    const router = require('../../../routes/userRoute').default;
     app.use('/users', router);
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should call getAllUsers for GET /users', async () => {
-    await request(app).get('/users');
-    expect(userControllers.getAllUsers).toHaveBeenCalledTimes(1);
+    const response = await request(app).get('/users');
+    
+    expect(response.status).toBe(200);
+    expect(mockGetAllUsers).toHaveBeenCalledTimes(1);
   });
 
   it('should call createUser for POST /users', async () => {
     const userData = { name: 'John Doe', email: 'john.doe@example.com' };
-    await request(app)
+    
+    const response = await request(app)
       .post('/users')
-      .send(userData)
-      .expect(200);
-    expect(userControllers.createUser).toHaveBeenCalledTimes(1);
-    expect(userControllers.createUser).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.any(Function));
+      .send(userData);
+    
+    expect(response.status).toBe(201);
+    expect(mockCreateUser).toHaveBeenCalledTimes(1);
+    expect(mockCreateUser.mock.calls[0][0].body).toEqual(userData);
   });
 
   it('should call updateUser for PUT /users/:id', async () => {
     const userId = '123';
     const updatedUserData = { name: 'Jane Doe' };
-    await request(app)
+    
+    const response = await request(app)
       .put(`/users/${userId}`)
-      .send(updatedUserData)
-      .expect(200);
-    expect(userControllers.updateUser).toHaveBeenCalledTimes(1);
-    expect(userControllers.updateUser).toHaveBeenCalledWith(
-      expect.objectContaining({ params: { id: userId }, body: updatedUserData }),
-      expect.anything(),
-      expect.any(Function)
-    );
+      .send(updatedUserData);
+    
+    expect(response.status).toBe(200);
+    expect(mockUpdateUser).toHaveBeenCalledTimes(1);
+    expect(mockUpdateUser.mock.calls[0][0].params.id).toBe(userId);
+    expect(mockUpdateUser.mock.calls[0][0].body).toEqual(updatedUserData);
   });
 
   it('should call deleteUser for DELETE /users/:id', async () => {
     const userId = '456';
-    await request(app)
-      .delete(`/users/${userId}`)
-      .expect(200);
-    expect(userControllers.deleteUser).toHaveBeenCalledTimes(1);
-    expect(userControllers.deleteUser).toHaveBeenCalledWith(
-      expect.objectContaining({ params: { id: userId } }),
-      expect.anything(),
-      expect.any(Function)
-    );
+    
+    const response = await request(app)
+      .delete(`/users/${userId}`);
+    
+    expect(response.status).toBe(200);
+    expect(mockDeleteUser).toHaveBeenCalledTimes(1);
+    expect(mockDeleteUser.mock.calls[0][0].params.id).toBe(userId);
   });
 });
