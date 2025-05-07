@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import app from './app';
 
 const port = Number(process.env.PORT) || 3000;
-const uri = process.env.MONGO_URI || '';
+const uri = process.env.MONGO_USER_URI || '';
 
 console.log(`Connecting to database at ${uri}`);
 
