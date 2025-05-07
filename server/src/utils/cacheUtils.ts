@@ -1,16 +1,14 @@
-import Redis from 'ioredis'; // or wherever you initialized it
+import Redis from 'ioredis';
 
-const redis = new Redis();
 const cacheDuration = 3600;
 
-export const cacheUtils = {
+export const createCacheUtils = (redisClient: Redis) => ({
   async getFromCache(key: string): Promise<any | null> {
-    console.log(`Fetching from cache with key: ${key}`);
-    const cachedData = await redis.get(key);
+    const cachedData = await redisClient.get(key);
     return cachedData ? JSON.parse(cachedData) : null;
   },
 
   async setInCache(key: string, data: any): Promise<void> {
-    await redis.setex(key, cacheDuration, JSON.stringify(data));
+    await redisClient.setex(key, cacheDuration, JSON.stringify(data));
   }
-};
+});
