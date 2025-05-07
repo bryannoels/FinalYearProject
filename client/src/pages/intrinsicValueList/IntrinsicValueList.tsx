@@ -140,7 +140,7 @@ function IntrinsicValueList() {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.15
+      threshold: 0
     };
     
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
@@ -148,9 +148,11 @@ function IntrinsicValueList() {
         if (entry.isIntersecting) {
           const itemsToAnimate = entry.target.querySelectorAll('.value-card');
           itemsToAnimate.forEach((item, index) => {
-            setTimeout(() => {
-              item.classList.add('visible');
-            }, index * 80);
+            if (!item.classList.contains('visible')) {
+              setTimeout(() => {
+                item.classList.add('visible');
+              }, index * 200);
+            }
           });
         }
       });
