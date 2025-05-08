@@ -1,0 +1,72 @@
+[
+        {
+            "Symbol": "RLLVF",
+            "Company Name": "Relevium Technologies Inc. ",
+            "Price": "0.0060",
+            "Change": "0.0000",
+            "Change%": "0.00%"
+        },
+        {
+            "Symbol": "RGC",
+            "Company Name": "Regencell Bioscience Holdings Limited ",
+            "Price": "212.00",
+            "Change": "+22.01",
+            "Change%": "+11.58%"
+        },
+        {
+            "Symbol": "ASTS",
+            "Company Name": "AST SpaceMobile, Inc. ",
+            "Price": "25.25",
+            "Change": "-0.07",
+            "Change%": "-0.28%"
+        },
+        {
+            "Symbol": "SAFS",
+            "Company Name": "Safer Shot, Inc. ",
+            "Price": "0.0001",
+            "Change": "0.0000",
+            "Change%": "0.00%"
+        },
+        {
+            "Symbol": "RGTI",
+            "Company Name": "Rigetti Computing, Inc. ",
+            "Price": "10.31",
+            "Change": "+1.06",
+            "Change%": "+11.46%"
+        },
+        {
+            "Symbol": "QBTS",
+            "Company Name": "D-Wave Quantum Inc. ",
+            "Price": "10.42",
+            "Change": "+3.53",
+            "Change%": "+51.23%"
+        },
+        {
+            "Symbol": "RKLB",
+            "Company Name": "Rocket Lab USA, Inc. ",
+            "Price": "23.10",
+            "Change": "+0.81",
+            "Change%": "+3.63%"
+        },
+        {
+            "Symbol": "PLTR",
+            "Company Name": "Palantir Technologies Inc. ",
+            "Price": "119.15",
+            "Change": "+8.67",
+            "Change%": "+7.85%"
+        },
+        {
+            "Symbol": "SMMT",
+            "Company Name": "Summit Therapeutics Inc. ",
+            "Price": "24.65",
+            "Change": "+0.36",
+            "Change%": "+1.48%"
+        },
+        {
+            "Symbol": "VRNA",
+            "Company Name": "Verona Pharma plc ",
+            "Price": "66.26",
+            "Change": "-2.88",
+            "Change%": "-4.17%"
+        }
+    ]

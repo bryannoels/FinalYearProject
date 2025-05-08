@@ -1,0 +1,72 @@
+[
+        {
+            "Symbol": "AEXAY",
+            "Company Name": "Atos SE ",
+            "Price": "5.20",
+            "Change": "0.00",
+            "Change%": "0.00%"
+        },
+        {
+            "Symbol": "TNXP",
+            "Company Name": "Tonix Pharmaceuticals Holding Corp. ",
+            "Price": "18.94",
+            "Change": "-0.20",
+            "Change%": "-1.04%"
+        },
+        {
+            "Symbol": "HOPHF",
+            "Company Name": "Hemogenyx Pharmaceuticals Plc ",
+            "Price": "1.2400",
+            "Change": "0.0000",
+            "Change%": "0.00%"
+        },
+        {
+            "Symbol": "QXO",
+            "Company Name": "QXO, Inc. ",
+            "Price": "13.89",
+            "Change": "+0.55",
+            "Change%": "+4.12%"
+        },
+        {
+            "Symbol": "CODQL",
+            "Company Name": "Coronado Global Resources Inc. ",
+            "Price": "0.1220",
+            "Change": "0.0000",
+            "Change%": "0.00%"
+        },
+        {
+            "Symbol": "MRNA",
+            "Company Name": "Moderna, Inc. ",
+            "Price": "24.38",
+            "Change": "+0.32",
+            "Change%": "+1.33%"
+        },
+        {
+            "Symbol": "PIII",
+            "Company Name": "P3 Health Partners Inc. ",
+            "Price": "8.55",
+            "Change": "-0.07",
+            "Change%": "-0.81%"
+        },
+        {
+            "Symbol": "SRPT",
+            "Company Name": "Sarepta Therapeutics, Inc. ",
+            "Price": "36.52",
+            "Change": "-0.20",
+            "Change%": "-0.54%"
+        },
+        {
+            "Symbol": "CE",
+            "Company Name": "Celanese Corporation ",
+            "Price": "51.71",
+            "Change": "+3.26",
+            "Change%": "+6.73%"
+        },
+        {
+            "Symbol": "ACHC",
+            "Company Name": "Acadia Healthcare Company, Inc. ",
+            "Price": "24.22",
+            "Change": "+0.06",
+            "Change%": "+0.25%"
+        }
+    ]

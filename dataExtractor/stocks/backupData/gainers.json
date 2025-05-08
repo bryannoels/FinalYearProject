@@ -1,0 +1,72 @@
+[
+        {
+            "Symbol": "QBTS",
+            "Company Name": "D-Wave Quantum Inc. ",
+            "Price": "10.42",
+            "Change": "+3.53",
+            "Change%": "+51.23%"
+        },
+        {
+            "Symbol": "QDEL",
+            "Company Name": "QuidelOrtho Corporation ",
+            "Price": "36.46",
+            "Change": "+10.61",
+            "Change%": "+41.04%"
+        },
+        {
+            "Symbol": "CDE",
+            "Company Name": "Coeur Mining, Inc. ",
+            "Price": "6.97",
+            "Change": "+1.24",
+            "Change%": "+21.64%"
+        },
+        {
+            "Symbol": "MGNI",
+            "Company Name": "Magnite, Inc. ",
+            "Price": "14.89",
+            "Change": "+2.46",
+            "Change%": "+19.79%"
+        },
+        {
+            "Symbol": "BTDR",
+            "Company Name": "Bitdeer Technologies Group ",
+            "Price": "13.54",
+            "Change": "+2.19",
+            "Change%": "+19.30%"
+        },
+        {
+            "Symbol": "FA",
+            "Company Name": "First Advantage Corporation ",
+            "Price": "17.83",
+            "Change": "+2.86",
+            "Change%": "+19.10%"
+        },
+        {
+            "Symbol": "ALVO",
+            "Company Name": "Alvotech ",
+            "Price": "9.38",
+            "Change": "+1.44",
+            "Change%": "+18.14%"
+        },
+        {
+            "Symbol": "XRAY",
+            "Company Name": "DENTSPLY SIRONA Inc. ",
+            "Price": "15.91",
+            "Change": "+2.23",
+            "Change%": "+16.30%"
+        },
+        {
+            "Symbol": "TGLS",
+            "Company Name": "Tecnoglass Inc. ",
+            "Price": "82.00",
+            "Change": "+11.18",
+            "Change%": "+15.79%"
+        },
+        {
+            "Symbol": "RELY",
+            "Company Name": "Remitly Global, Inc. ",
+            "Price": "24.16",
+            "Change": "+3.07",
+            "Change%": "+14.56%"
+        }
+    ]
