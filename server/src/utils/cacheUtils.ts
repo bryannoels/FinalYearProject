@@ -14,5 +14,9 @@ export const createCacheUtils = (redisClient: Redis) => ({
 
   async clearAllCache(): Promise<void> {
     await redisClient.flushdb();
+  },
+
+  async deleteCacheByKey(key: string): Promise<void> {
+    await redisClient.del(key);
   }
 });
