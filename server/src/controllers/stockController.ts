@@ -21,6 +21,15 @@ import Redis from 'ioredis';
 const redisClient = new Redis();
 const { getFromCache, setInCache, clearAllCache, deleteCacheByKey } = createCacheUtils(redisClient);
 
+const getNumber = (value: string | number): number | null => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value.replace('%', '').trim());
+    return isNaN(parsed) ? null : parsed;
+  }
+  return null;
+};
+
 const executePythonScript = async (
   scriptPath: string, 
   args: string[], 
@@ -112,43 +121,76 @@ export const sortAndFilterData = (
 ): PaginatedData => {
   const config: Record<
     string,
-    { field: string; returnFields: string[] }
+    { field: string; returnFields: string[], filter?: (item: ValuationData) => boolean }
   > = {
     beta: {
       field: 'Beta',
-      returnFields: ['Stock Symbol', 'Company Name', 'Beta', 'Opening Price']
+      returnFields: ['Stock Symbol', 'Company Name', 'Beta', 'Opening Price'],
+      filter: (item: ValuationData) => item.Beta !== null && item.Beta !== undefined
     },
     percent_dcf: {
       field: 'Percent DCF',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent DCF']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent DCF'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent DCF']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_ddm: {
       field: 'Percent DDM',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent DDM']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent DDM'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent DDM']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_graham: {
       field: 'Percent Benjamin Graham',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Benjamin Graham']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Benjamin Graham'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent Benjamin Graham']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_average: {
       field: 'Percent Average',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Average']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Average'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent Average']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_abs_dcf: {
       field: 'Percent Abs DCF',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent Abs DCF']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent Abs DCF'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent Abs DCF']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_abs_ddm: {
       field: 'Percent Abs DDM',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent Abs DDM']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent Abs DDM'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent Abs DDM']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_abs_graham: {
       field: 'Percent Abs Benjamin Graham',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Abs Benjamin Graham']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Abs Benjamin Graham'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent Abs Benjamin Graham']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     percent_abs_average: {
       field: 'Percent Abs Average',
-      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Abs Average']
+      returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Abs Average'],
+      filter: (item: ValuationData) => {
+        const num = getNumber(item['Percent Abs Average']);
+        return num !== null && num >= -10 && num <= 10;
+      }
     },
     stddev: {
       field: 'Intrinsic Value Standard Deviation',
@@ -178,11 +220,14 @@ export const sortAndFilterData = (
     ? filtered.sort((a, b) => (a[sortOption.field] as number) - (b[sortOption.field] as number))
     : filtered;
 
+  const finalData = (sortOption && sortOption.filter)
+    ? sortedFilteredData.filter(sortOption.filter)
+    : sortedFilteredData;
+
   const pageSize = 10;
   const page = Math.max(parseInt(pageParam || '1'), 1);
   const startIndex = (page - 1) * pageSize;
-  const paginatedData = sortedFilteredData.slice(startIndex, startIndex + pageSize);
-
+  const paginatedData = finalData.slice(startIndex, startIndex + pageSize);
   return {
     data: paginatedData,
     currentPage: page,
@@ -388,10 +433,10 @@ const stockControllers = {
     const cacheKey = 'intrinsicValueList'+`:${sortBy}:${page}`;
     try {
       const cachedData = await getFromCache(cacheKey);
-      if (cachedData) {
-        res.json(cachedData);
-        return;
-      }
+      // if (cachedData) {
+      //   res.json(cachedData);
+      //   return;
+      // }
       const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
       const dbName = "stock_analysis";
       const collectionName = "company_valuations";
