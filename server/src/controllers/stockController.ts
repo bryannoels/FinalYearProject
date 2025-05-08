@@ -19,7 +19,7 @@ type BenjaminGrahamData = {
 
 import Redis from 'ioredis';
 const redisClient = new Redis();
-const { getFromCache, setInCache, clearAllCache } = createCacheUtils(redisClient);
+const { getFromCache, setInCache, clearAllCache, deleteCacheByKey } = createCacheUtils(redisClient);
 
 const executePythonScript = async (
   scriptPath: string, 
@@ -206,7 +206,6 @@ const stockControllers = {
   ),
   
   getTopStocks: async (req: Request, res: Response): Promise<void> => {
-    await clearAllCache();
     const { category } = req.query;
     const validCategories = ["most-active", "trending", "gainers", "losers", "52-week-gainers", "52-week-losers"];
     const cacheKey = `topStocks:${category || 'most-active'}`;
