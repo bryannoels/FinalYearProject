@@ -104,7 +104,7 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
                     <div className="stock-details__name">
                         {symbol}
                     </div>
-                    <button className="stock-details__add-to-portfolio" onClick={() => openAddDialog(stockData.info.name, symbol)}>
+                    <button className="stock-details__add-to-portfolio" onClick={() => openAddDialog(stockData.info?.name || "", symbol)}>
                         Add to Portfolio
                     </button>
                 </div>

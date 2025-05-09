@@ -240,7 +240,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
         };
     
         const maxPrice = Math.max(...filteredData.map(d => d.price));
-        const currentPrice = stockData.info?.price;
+        const currentPrice = stockData.info?.price || 0;
         const minPrice = Math.min(...filteredData.map(d => d.price));
 
         const drawDashedLine = (yValue: d3.NumberValue, color: string, label: string, offsetX: number, offsetY: number, drawLabel: boolean) => {

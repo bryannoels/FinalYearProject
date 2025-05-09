@@ -33,9 +33,9 @@ export const getDefensiveData = (stockData: Stock) => ({
       color: threeYearsPeRatio(stockData.peRatio) <= 15.0 ? "green" : "red",
     },
     "Price/Assets Ratio": {
-      value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) !== Infinity ? priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook).toFixed(2) : "N/A",
+      value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || Infinity.toString()) !== Infinity ? priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || Infinity.toString()).toFixed(2) : "N/A",
       description: "This measures the ratio of the stock price to the book value of the company's assets.",
-      color: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) <= 22.5 ? "green" : "red",
+      color: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || "30") <= 22.5 ? "green" : "red",
     },
     "Investor Suitability": {
       value: goodForDefensiveInvestor(stockData),
@@ -76,9 +76,9 @@ export const getEnterprisingData = (stockData: Stock) => ({
       color: "green",
     },
     "Price/Assets Ratio": {
-      value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) !== Infinity ? priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook).toFixed(2) : "N/A",
+      value: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || Infinity.toString()) !== Infinity ? priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || Infinity.toString()).toFixed(2) : "N/A",
       description: "This measures the ratio of the stock price to the book value of the company's assets.",
-      color: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) <= 18.0 ? "green" : "red",
+      color: priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || "20") <= 18.0 ? "green" : "red",
     },
     "Investor Suitability": {
       value: goodForEnterprisingInvestor(stockData),

@@ -17,10 +17,10 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield userModel_1.default.find();
-        return res.status(200).json(users);
+        res.status(200).json(users);
     }
     catch (err) {
-        return res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 exports.getAllUsers = getAllUsers;
@@ -33,10 +33,10 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             password,
             portfolio: []
         });
-        return res.status(201).json(user);
+        res.status(201).json(user);
     }
     catch (err) {
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 });
 exports.createUser = createUser;
@@ -46,12 +46,14 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const user = yield userModel_1.default.findByIdAndUpdate(id, { username, email, password }, { new: true, runValidators: true });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: 'User not found' });
         }
-        return res.status(200).json(user);
+        else {
+            res.status(200).json(user);
+        }
     }
     catch (err) {
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 });
 exports.updateUser = updateUser;
@@ -60,12 +62,14 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const user = yield userModel_1.default.findByIdAndDelete(id);
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: 'User not found' });
         }
-        return res.status(204).send();
+        else {
+            res.status(204).send();
+        }
     }
     catch (err) {
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 });
 exports.deleteUser = deleteUser;

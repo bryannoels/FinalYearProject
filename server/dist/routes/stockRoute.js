@@ -20,4 +20,5 @@ router.get('/get-benjamin-graham-list', stockController_1.default.getBenjaminGra
 router.get('/get-dcf-value/:symbol', stockController_1.default.getDCFValue);
 router.get('/get-ddm-value/:symbol', stockController_1.default.getDDMValue);
 router.get('/get-benjamin-graham-value/:symbol', stockController_1.default.getBenjaminGrahamValue);
+router.get('/get-intrinsic-value-list', stockController_1.default.getIntrinsicValueList);
 exports.default = router;

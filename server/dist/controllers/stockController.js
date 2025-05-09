@@ -12,36 +12,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stockControllerFactory = void 0;
+exports.stockControllerFactory = exports.sortAndFilterData = exports.getNumber = void 0;
 const child_process_1 = require("child_process");
 const axios_1 = __importDefault(require("axios"));
 const csv_parser_1 = __importDefault(require("csv-parser"));
 const fs_1 = __importDefault(require("fs"));
-const ioredis_1 = __importDefault(require("ioredis"));
 const path_1 = __importDefault(require("path"));
-const redis = new ioredis_1.default();
-const cacheDuration = 3600;
-const cacheUtils = {
-    getFromCache(key) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cachedData = yield redis.get(key);
-            return cachedData ? JSON.parse(cachedData) : null;
-        });
-    },
-    setInCache(key, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield redis.setex(key, cacheDuration, JSON.stringify(data));
-        });
+const mongodb_1 = require("mongodb");
+const cacheUtils_1 = require("../utils/cacheUtils");
+const ioredis_1 = __importDefault(require("ioredis"));
+const redisClient = new ioredis_1.default();
+const { getFromCache, setInCache, clearAllCache, deleteCacheByKey } = (0, cacheUtils_1.createCacheUtils)(redisClient);
+const getNumber = (value) => {
+    if (typeof value === 'number')
+        return value;
+    if (typeof value === 'string') {
+        const parsed = parseFloat(value.replace('%', '').trim());
+        return isNaN(parsed) ? null : parsed;
     }
+    return null;
 };
-const executePythonScript = (scriptPath_1, args_1, res_1, ...args_2) => __awaiter(void 0, [scriptPath_1, args_1, res_1, ...args_2], void 0, function* (scriptPath, args, res, cacheKey = null) {
+exports.getNumber = getNumber;
+const executePythonScript = (scriptPath, args, res, cacheKey) => __awaiter(void 0, void 0, void 0, function* () {
     const pythonProcess = (0, child_process_1.spawn)('python3', [scriptPath, ...args]);
     pythonProcess.stdout.on('data', (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const parsedData = JSON.parse(data.toString());
             if (!res.headersSent) {
                 if (cacheKey) {
-                    yield cacheUtils.setInCache(cacheKey, parsedData);
+                    yield setInCache(cacheKey, parsedData);
                 }
                 res.json(parsedData);
             }
@@ -67,7 +66,7 @@ const handleError = (res, message, statusCode = 500) => {
 const createPythonScriptController = (scriptName, getCacheKey) => {
     return (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const cacheKey = getCacheKey(req);
-        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        const cachedData = yield getFromCache(cacheKey);
         if (cachedData) {
             res.json(cachedData);
             return;
@@ -79,18 +78,123 @@ const createPythonScriptController = (scriptName, getCacheKey) => {
         if (scriptName === '../dataExtractor/stocks/getHistoricalData.py' && req.query.range) {
             args.push(req.query.range);
         }
-        if (scriptName === '../dataExtractor/stocks/getTopStock.py' && req.query.category) {
-            args.push(req.query.category);
-        }
-        else if (scriptName === '../dataExtractor/stocks/getTopStock.py') {
-            args.push("most-active");
-        }
         if (scriptName === '../dataExtractor/stocks/searchStock.py' && req.params.query) {
             args = [req.params.query.toUpperCase()];
         }
         yield executePythonScript(scriptName, args, res, cacheKey);
     });
 };
+const sortAndFilterData = (formatted, sortBy, pageParam) => {
+    const config = {
+        beta: {
+            field: 'Beta',
+            returnFields: ['Stock Symbol', 'Company Name', 'Beta', 'Opening Price'],
+            filter: (item) => item.Beta !== null && item.Beta !== undefined
+        },
+        percent_dcf: {
+            field: 'Percent DCF',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent DCF'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent DCF']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_ddm: {
+            field: 'Percent DDM',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent DDM'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent DDM']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_graham: {
+            field: 'Percent Benjamin Graham',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Benjamin Graham'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent Benjamin Graham']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_average: {
+            field: 'Percent Average',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Average'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent Average']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_abs_dcf: {
+            field: 'Percent Abs DCF',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DCF Value', 'Percent Abs DCF'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent Abs DCF']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_abs_ddm: {
+            field: 'Percent Abs DDM',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'DDM Value', 'Percent Abs DDM'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent Abs DDM']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_abs_graham: {
+            field: 'Percent Abs Benjamin Graham',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Benjamin Graham Value', 'Percent Abs Benjamin Graham'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent Abs Benjamin Graham']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        percent_abs_average: {
+            field: 'Percent Abs Average',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Average Value', 'Percent Abs Average'],
+            filter: (item) => {
+                const num = (0, exports.getNumber)(item['Percent Abs Average']);
+                return num !== null && num >= -10 && num <= 10;
+            }
+        },
+        stddev: {
+            field: 'Intrinsic Value Standard Deviation',
+            returnFields: ['Stock Symbol', 'Company Name', 'Opening Price', 'Intrinsic Value Standard Deviation']
+        }
+    };
+    const sortOption = config[sortBy || ''];
+    const filtered = formatted.data
+        .filter(item => {
+        if (!sortOption) {
+            return Object.keys(item).some(key => item[key] !== null && item[key] !== undefined);
+        }
+        return item[sortOption.field] !== null && item[sortOption.field] !== undefined;
+    })
+        .map(item => {
+        const filteredItem = {};
+        const returnFields = sortOption ? sortOption.returnFields : Object.keys(item);
+        returnFields.forEach(f => {
+            filteredItem[f] = item[f];
+        });
+        return filteredItem;
+    });
+    const sortedFilteredData = sortOption
+        ? filtered.sort((a, b) => a[sortOption.field] - b[sortOption.field])
+        : filtered;
+    const finalData = (sortOption && sortOption.filter)
+        ? sortedFilteredData.filter(sortOption.filter)
+        : sortedFilteredData;
+    const pageSize = 10;
+    const page = Math.max(parseInt(pageParam || '1'), 1);
+    const startIndex = (page - 1) * pageSize;
+    const paginatedData = finalData.slice(startIndex, startIndex + pageSize);
+    return {
+        data: paginatedData,
+        currentPage: page,
+        totalPages: Math.ceil(sortedFilteredData.length / pageSize),
+        totalItems: sortedFilteredData.length,
+        retrievedAt: formatted.retrievedAt
+    };
+};
+exports.sortAndFilterData = sortAndFilterData;
 const stockControllers = {
     getStockData: createPythonScriptController('../dataExtractor/stocks/getStockData.py', (req) => `stockData:${req.params.symbol.toUpperCase()}`),
     getStockProfile: createPythonScriptController('../dataExtractor/stocks/getStockProfile.py', (req) => `stockProfile:${req.params.symbol.toUpperCase()}`),
@@ -102,7 +206,7 @@ const stockControllers = {
             handleError(res, "Invalid category parameter", 400);
             return;
         }
-        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        const cachedData = yield getFromCache(cacheKey);
         if (cachedData) {
             res.json(cachedData);
             return;
@@ -114,7 +218,7 @@ const stockControllers = {
     getForecastData: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const stockSymbol = req.params.symbol.toUpperCase();
         const cacheKey = `forecastData:${stockSymbol}`;
-        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        const cachedData = yield getFromCache(cacheKey);
         if (cachedData) {
             res.json(cachedData);
             return;
@@ -127,7 +231,7 @@ const stockControllers = {
         try {
             const response = yield axios_1.default.get(url, { headers });
             if (!res.headersSent) {
-                yield cacheUtils.setInCache(cacheKey, response.data[0]);
+                yield setInCache(cacheKey, response.data[0]);
                 res.json(response.data[0]);
             }
         }
@@ -153,7 +257,7 @@ const stockControllers = {
             }
         }
         const cacheKey = `benjaminGrahamList:${sortBy}:${filterBy || ""}:${pageNumber}`;
-        const cachedData = yield cacheUtils.getFromCache(cacheKey);
+        const cachedData = yield getFromCache(cacheKey);
         if (cachedData) {
             res.json(cachedData);
             return;
@@ -200,7 +304,7 @@ const stockControllers = {
                 },
                 retrievedAt: getCurrentTimeEDT()
             };
-            yield cacheUtils.setInCache(cacheKey, data);
+            yield setInCache(cacheKey, data);
             res.json(data);
         }
         catch (error) {
@@ -209,7 +313,40 @@ const stockControllers = {
     }),
     getDCFValue: createPythonScriptController('../dataExtractor/stocks/getDCFValue.py', (req) => `dcfValue:${req.params.symbol.toUpperCase()}`),
     getDDMValue: createPythonScriptController('../dataExtractor/stocks/getDDMValue.py', (req) => `ddmValue:${req.params.symbol.toUpperCase()}`),
-    getBenjaminGrahamValue: createPythonScriptController('../dataExtractor/stocks/getBenjaminGrahamValue.py', (req) => `benjaminGrahamValue:${req.params.symbol.toUpperCase()}`)
+    getBenjaminGrahamValue: createPythonScriptController('../dataExtractor/stocks/getBenjaminGrahamValue.py', (req) => `benjaminGrahamValue:${req.params.symbol.toUpperCase()}`),
+    getIntrinsicValueList: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const sortBy = req.query.sortBy || 'Overall Value';
+        const page = req.query.page || '1';
+        const cacheKey = 'intrinsicValueList' + `:${sortBy}:${page}`;
+        try {
+            const cachedData = yield getFromCache(cacheKey);
+            if (cachedData) {
+                res.json(cachedData);
+                return;
+            }
+            const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+            const dbName = "stock_analysis";
+            const collectionName = "company_valuations";
+            const client = new mongodb_1.MongoClient(uri);
+            yield client.connect();
+            const db = client.db(dbName);
+            const collection = db.collection(collectionName);
+            const mongoData = yield collection.find({}).toArray();
+            yield client.close();
+            const formattedData = {
+                data: mongoData,
+                retrievedAt: getCurrentTimeEDT()
+            };
+            const sortedAndFiltereddata = (0, exports.sortAndFilterData)(formattedData, req.query.sortBy, req.query.page);
+            yield setInCache(cacheKey, sortedAndFiltereddata);
+            res.json(sortedAndFiltereddata);
+        }
+        catch (error) {
+            if (!res.headersSent) {
+                res.status(500).json({ message: 'Failed to fetch data from MongoDB' });
+            }
+        }
+    })
 };
 const applyFilter = (data, filterBy, type) => {
     return data.filter((row) => {

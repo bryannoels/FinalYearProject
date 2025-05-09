@@ -67,17 +67,17 @@ export function goodForDefensiveInvestor(stockData: Stock): string {
   if (isDividendStable(stockData.dividends, 20)) count++;
   if (hasEarningsIncreased(stockData.eps, "defensive") >= 4.0/3) count++;
   if (threeYearsPeRatio(stockData.peRatio) <= 15.0) count++;
-  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) <= 22.5) count++;
+  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || "Not found") <= 22.5) count++;
   return `${count} out of 7`;
 }
 
 export function goodForEnterprisingInvestor(stockData: Stock): string {
   let count = 1;
-  if (parseFloat(stockData.detail?.totalRevenue) > 0) count++;
-  if (parseFloat(stockData.detail?.currentRatio) >= 1.5) count++;
+  if (parseFloat(stockData.detail?.totalRevenue || "0") > 0) count++;
+  if (parseFloat(stockData.detail?.currentRatio || "0") >= 1.5) count++;
   if (isEarningsStable(stockData.eps, 5)) count++;
   if (isDividendStable(stockData.dividends, 1)) count++;
   if (hasEarningsIncreased(stockData.eps, "enterprising") >= 1.0) count++;
-  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook) <= 18) count++;
+  if (priceToAssetRatio(stockData.peRatio, stockData.detail?.priceToBook || "Not found") <= 18) count++;
   return `${count} out of 7`;
 }

@@ -29,7 +29,7 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
   };
 
   const [logoLoaded, setLogoLoaded] = useState(false);
-  const logoPath = `/stockLogos/${stockData.info.symbol}.png`;
+  const logoPath = `/stockLogos/${stockData.info?.symbol || ""}.png`;
 
   useEffect(() => {
     const img = new Image();
@@ -75,7 +75,7 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
         <div className="company-header">
           {logoLoaded ? (
             <div className="company-logo">
-              <img src={logoPath} alt={`${stockData.info.symbol} logo`} />
+              <img src={logoPath} alt={`${stockData.info?.symbol} logo`} />
             </div>
           ) : (
             <div className="company-icon-wrapper">
@@ -84,7 +84,7 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
           )}
           <div className="company-info">
             <h2 className="company-name">{stockData?.profile.companyName}</h2>
-            <span className="company-ticker">{stockData?.info.symbol}</span>
+            <span className="company-ticker">{stockData?.info?.symbol}</span>
           </div>
         </div>
 
