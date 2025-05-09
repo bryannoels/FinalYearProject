@@ -3,6 +3,7 @@ package-lock.json
 server/python-dependencies/*
 server/python-getPortfolioStockData-dependencies
 server/node_modules
+server/dist
 .DS_Store
 dump.rdb
 coverage
