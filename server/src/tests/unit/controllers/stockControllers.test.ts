@@ -12,7 +12,7 @@ jest.mock('../../../utils/cacheUtils', () => ({
 
 import request from 'supertest';
 import express from 'express';
-import stockControllers, { sortAndFilterData } from '../../../controllers/stockController';
+import stockControllers, { sortAndFilterData, getNumber } from '../../../controllers/stockController';
 import Redis from 'ioredis';
 import fs from 'fs';
 import { spawn } from 'child_process';
@@ -1202,7 +1202,7 @@ describe('Stock Controllers API Tests', () => {
       
       expect(response.status).toBe(200);
       expect(response.body).toEqual(cachedData);
-      expect(getFromCache).toHaveBeenCalledWith('intrinsicValueList');
+      expect(getFromCache).toHaveBeenCalledWith('intrinsicValueList:Overall Value:1');
       expect(mockConnect).not.toHaveBeenCalled();
 
     });
@@ -1247,9 +1247,9 @@ describe('Stock Controllers API Tests', () => {
     
       expect(response.status).toBe(200);
       expect(response.body).toEqual(expect.anything());
-      expect(getFromCache).toHaveBeenCalledWith('intrinsicValueList');
+      expect(getFromCache).toHaveBeenCalledWith('intrinsicValueList:ticker:1');
       expect(setInCache).toHaveBeenCalledWith(
-        'intrinsicValueList',
+        'intrinsicValueList:ticker:1',
         expect.objectContaining({ data: mockMongoData })
       );
     });
@@ -1276,14 +1276,14 @@ describe('sortAndFilterData', () => {
       'Beta': 1.2,
       'Opening Price': 145.3,
       'DCF Value': 130.0,
-      'Percent DCF': 15.5,
-      'Percent DDM': 10.2,
-      'Percent Graham': 25.7,
-      'Percent Average': 20.1,
-      'Percent Abs DCF': 16.3,
-      'Percent Abs DDM': 12.1,
-      'Percent Abs Graham': 30.2,
-      'Percent Abs Average': 18.4,
+      'Percent DCF': 5.5,
+      'Percent DDM': 3.2,
+      'Percent Benjamin Graham': 5.7,
+      'Percent Average': 3.1,
+      'Percent Abs DCF': 6.3,
+      'Percent Abs DDM': 2.1,
+      'Percent Abs Benjamin Graham': 3.2,
+      'Percent Abs Average': 8.4,
       'Intrinsic Value Standard Deviation': 5.0
     },
     {
@@ -1292,14 +1292,14 @@ describe('sortAndFilterData', () => {
       'Beta': 0.8,
       'Opening Price': 2721.0,
       'DCF Value': 2600.0,
-      'Percent DCF': 5.0,
-      'Percent DDM': 7.2,
-      'Percent Graham': 18.1,
-      'Percent Average': 15.8,
+      'Percent DCF': 3.0,
+      'Percent DDM': 4.2,
+      'Percent Benjamin Graham': 8.1,
+      'Percent Average': 5.8,
       'Percent Abs DCF': 6.4,
       'Percent Abs DDM': 8.0,
-      'Percent Abs Graham': 21.5,
-      'Percent Abs Average': 14.0,
+      'Percent Abs Benjamin Graham': 1.5,
+      'Percent Abs Average': 2.0,
       'Intrinsic Value Standard Deviation': 4.0
     },
     {
@@ -1308,14 +1308,14 @@ describe('sortAndFilterData', () => {
       'Beta': 1.1,
       'Opening Price': 3450.5,
       'DCF Value': 3000.0,
-      'Percent DCF': 18.3,
-      'Percent DDM': 12.5,
-      'Percent Graham': 22.4,
-      'Percent Average': 19.7,
-      'Percent Abs DCF': 19.1,
-      'Percent Abs DDM': 14.3,
-      'Percent Abs Graham': 26.3,
-      'Percent Abs Average': 17.9,
+      'Percent DCF': 8.3,
+      'Percent DDM': 2.5,
+      'Percent Benjamin Graham': 2.4,
+      'Percent Average': 9.7,
+      'Percent Abs DCF': 9.1,
+      'Percent Abs DDM': 4.3,
+      'Percent Abs Benjamin Graham': 6.3,
+      'Percent Abs Average': 7.9,
       'Intrinsic Value Standard Deviation': 6.0
     }
   ];
@@ -1348,6 +1348,83 @@ describe('sortAndFilterData', () => {
     expect(result.data[0]['Stock Symbol']).toBe('GOOG');
     expect(result.data[1]['Stock Symbol']).toBe('AAPL');
     expect(result.data[2]['Stock Symbol']).toBe('AMZN');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent DDM field', () => {
+    const result = sortAndFilterData(formatted, 'percent_ddm');
+
+    expect(result.data[0]['Stock Symbol']).toBe('AMZN');
+    expect(result.data[1]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[2]['Stock Symbol']).toBe('GOOG');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent Benjamin Graham field', () => {
+    const result = sortAndFilterData(formatted, 'percent_graham');
+
+    expect(result.data[0]['Stock Symbol']).toBe('AMZN');
+    expect(result.data[1]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[2]['Stock Symbol']).toBe('GOOG');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent Average field', () => {
+    const result = sortAndFilterData(formatted, 'percent_average');
+
+    expect(result.data[0]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[1]['Stock Symbol']).toBe('GOOG');
+    expect(result.data[2]['Stock Symbol']).toBe('AMZN');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent Abs DCF field', () => {
+    const result = sortAndFilterData(formatted, 'percent_abs_dcf');
+
+    expect(result.data[0]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[1]['Stock Symbol']).toBe('GOOG');
+    expect(result.data[2]['Stock Symbol']).toBe('AMZN');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent Abs DDM field', () => {
+    const result = sortAndFilterData(formatted, 'percent_abs_ddm');
+
+    expect(result.data[0]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[1]['Stock Symbol']).toBe('AMZN');
+    expect(result.data[2]['Stock Symbol']).toBe('GOOG');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent Abs Benjamin Graham field', () => {
+    const result = sortAndFilterData(formatted, 'percent_abs_graham');
+
+    expect(result.data[0]['Stock Symbol']).toBe('GOOG');
+    expect(result.data[1]['Stock Symbol']).toBe('AAPL');
+    expect(result.data[2]['Stock Symbol']).toBe('AMZN');
+    expect(result.currentPage).toBe(1);
+    expect(result.totalPages).toBe(1);
+    expect(result.totalItems).toBe(3);
+  });
+
+  it('should sort and filter data by Percent Abs Average field', () => {
+    const result = sortAndFilterData(formatted, 'percent_abs_average');
+
+    expect(result.data[0]['Stock Symbol']).toBe('GOOG');
+    expect(result.data[1]['Stock Symbol']).toBe('AMZN');
+    expect(result.data[2]['Stock Symbol']).toBe('AAPL');
     expect(result.currentPage).toBe(1);
     expect(result.totalPages).toBe(1);
     expect(result.totalItems).toBe(3);
@@ -1393,6 +1470,53 @@ describe('sortAndFilterData', () => {
     expect(result.currentPage).toBe(1);
     expect(result.totalPages).toBe(0);
     expect(result.totalItems).toBe(0);
+  });
+});
+
+describe('getNumber', () => {
+  it('should return the number when provided a number', () => {
+    expect(getNumber(5)).toBe(5);
+    expect(getNumber(0)).toBe(0);
+    expect(getNumber(-10)).toBe(-10);
+    expect(getNumber(3.14)).toBe(3.14);
+  });
+
+  it('should parse and return a number from a numeric string', () => {
+    expect(getNumber('42')).toBe(42);
+    expect(getNumber('3.14')).toBe(3.14);
+    expect(getNumber('-10')).toBe(-10);
+    expect(getNumber('0')).toBe(0);
+  });
+
+  it('should parse and return a number from a string with percentage', () => {
+    expect(getNumber('42%')).toBe(42);
+    expect(getNumber('3.14%')).toBe(3.14);
+    expect(getNumber('-10%')).toBe(-10);
+  });
+
+  it('should parse and return a number from a string with whitespace', () => {
+    expect(getNumber(' 42 ')).toBe(42);
+    expect(getNumber('  3.14  ')).toBe(3.14);
+    expect(getNumber('\t-10\n')).toBe(-10);
+  });
+
+  it('should parse and return a number from a string with percentage and whitespace', () => {
+    expect(getNumber(' 42% ')).toBe(42);
+    expect(getNumber('  3.14%  ')).toBe(3.14);
+    expect(getNumber('\t-10%\n')).toBe(-10);
+  });
+
+  it('should return null for non-numeric strings', () => {
+    expect(getNumber('abc')).toBeNull();
+    expect(getNumber('abc123')).toBeNull();
+    expect(getNumber('')).toBeNull();
+  });
+
+  it('should return null for invalid inputs', () => {
+    expect(getNumber(undefined as any)).toBeNull();
+    expect(getNumber(null as any)).toBeNull();
+    expect(getNumber({} as any)).toBeNull();
+    expect(getNumber([] as any)).toBeNull();
   });
 });
 

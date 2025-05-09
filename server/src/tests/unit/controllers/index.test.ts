@@ -8,7 +8,7 @@ describe('Database and server connection', () => {
     jest.resetModules();
     process.env = {
       ...originalEnv,
-      MONGO_URI: 'mongodb://localhost/test',
+      MONGO_USER_URI: 'mongodb://localhost/test',
       PORT: '3000',
     };
 
@@ -77,7 +77,7 @@ describe('Database and server connection', () => {
     }));
 
     process.env.PORT = '3000';
-    delete process.env.MONGO_URI;
+    delete process.env.MONGO_USER_URI;
 
     await jest.isolateModules(async () => {
       require('../../../index');
