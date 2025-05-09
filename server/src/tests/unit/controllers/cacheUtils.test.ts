@@ -2,10 +2,15 @@ import { createCacheUtils } from '../../../../src/utils/cacheUtils';
 
 const mockGet = jest.fn();
 const mockSetex = jest.fn();
+const mockFlushdb = jest.fn();
+const mockDel = jest.fn();
+
 
 const mockRedisClient = {
   get: mockGet,
-  setex: mockSetex
+  setex: mockSetex,
+  flushdb: mockFlushdb,
+  del: mockDel
 };
 
 const cacheUtils = createCacheUtils(mockRedisClient as any);
@@ -45,5 +50,22 @@ describe('cacheUtils', () => {
     await cacheUtils.setInCache(key, data);
 
     expect(mockSetex).toHaveBeenCalledWith(key, 3600, JSON.stringify(data));
+  });
+
+  it('should clear all cache', async () => {
+    mockFlushdb.mockResolvedValueOnce('OK');
+
+    await cacheUtils.clearAllCache();
+
+    expect(mockFlushdb).toHaveBeenCalledTimes(1);
+  });
+
+  it('should delete cache by key', async () => {
+    const key = 'testKey';
+    mockDel.mockResolvedValueOnce(1);
+
+    await cacheUtils.deleteCacheByKey(key);
+
+    expect(mockDel).toHaveBeenCalledWith(key);
   });
 });
