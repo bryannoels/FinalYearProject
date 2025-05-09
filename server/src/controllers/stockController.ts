@@ -21,7 +21,7 @@ import Redis from 'ioredis';
 const redisClient = new Redis();
 const { getFromCache, setInCache, clearAllCache, deleteCacheByKey } = createCacheUtils(redisClient);
 
-const getNumber = (value: string | number): number | null => {
+export const getNumber = (value: string | number): number | null => {
   if (typeof value === 'number') return value;
   if (typeof value === 'string') {
     const parsed = parseFloat(value.replace('%', '').trim());
@@ -92,10 +92,6 @@ const createPythonScriptController = (scriptName: string, getCacheKey: (req: Req
 
     if (scriptName === '../dataExtractor/stocks/searchStock.py' && req.params.query) {
       args = [req.params.query.toUpperCase()];
-    }
-
-    if (scriptName === '../dataExtractor/stocks/getTopStock.py' && req.query.category) {
-      args = [req.query.category as string];
     }
     
     await executePythonScript(scriptName, args, res, cacheKey);
@@ -433,10 +429,10 @@ const stockControllers = {
     const cacheKey = 'intrinsicValueList'+`:${sortBy}:${page}`;
     try {
       const cachedData = await getFromCache(cacheKey);
-      // if (cachedData) {
-      //   res.json(cachedData);
-      //   return;
-      // }
+      if (cachedData) {
+        res.json(cachedData);
+        return;
+      }
       const uri = process.env.MONGO_URI || 'mongodb://localhost:27017';
       const dbName = "stock_analysis";
       const collectionName = "company_valuations";
