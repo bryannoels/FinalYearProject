@@ -37,7 +37,6 @@ function StockList() {
         const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
         const response = await fetchData(url);
         const result = response;
-        console.log('Fetched stocks:', result);
         const formattedData: StockInfo[] = result.data.map(createStockObject);
         const timestamp = response.retrievedAt
 
@@ -46,7 +45,6 @@ function StockList() {
         setDateTime(timestamp);
       }
     } catch (_error) {
-      console.log('Error fetching stocks:', _error);
     } finally {
       setLoading(false);
     }

@@ -10,9 +10,9 @@ import { Dividend } from './Dividend';
 import { IntrinsicValue } from './IntrinsicValue';
 
 export type Stock = {
-    info: StockInfo;
-    profile: StockProfile;
-    detail: StockDetail;
+    info: StockInfo | null;
+    profile: StockProfile | null;
+    detail: StockDetail | null;
     price: StockPrice[];
     forecast: Forecast | null;
     analysis: StockAnalysis | null;

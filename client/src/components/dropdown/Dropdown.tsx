@@ -1,4 +1,5 @@
 import React from 'react';
+import './Dropdown.css';
 
 interface DropdownProps {
   suggestions: { ticker: string; name: string }[];
@@ -10,7 +11,7 @@ interface DropdownProps {
 
 const Dropdown: React.FC<DropdownProps> = ({ suggestions, dropdownRef, portfolioName, onItemClick, isOpen }) => {
   return (
-    <div className={`search-suggestions ${isOpen ? 'open' : ''}`} ref={dropdownRef}>
+    <div data-testid="dropdown" className={`search-suggestions ${isOpen ? 'open' : ''}`} ref={dropdownRef}>
       {suggestions.length === 0 ? (
         <div className="search-suggestion-item not-found">
           <p>Not Found</p>

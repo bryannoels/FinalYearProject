@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import User, { IUser } from '../models/userModel';
 
-const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
+const getAllUsers = async (req: Request, res: Response): Promise<void> => {
     try {
         const users = await User.find();
-        return res.status(200).json(users);
+        res.status(200).json(users);
     } catch (err: any) {
-        return res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
 
-const createUser = async (req: Request, res: Response): Promise<Response> => {
+const createUser = async (req: Request, res: Response): Promise<void> => {
     const { username, email, password } = req.body;
     try {
         const user = await User.create({
@@ -19,13 +19,13 @@ const createUser = async (req: Request, res: Response): Promise<Response> => {
             password,
             portfolio: []
         });
-        return res.status(201).json(user);
+        res.status(201).json(user);
     } catch (err: any) {
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 
-const updateUser = async (req: Request, res: Response): Promise<Response> => {
+const updateUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { username, email, password } = req.body;
     try {
@@ -35,24 +35,28 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
             { new: true, runValidators: true }
         );
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: 'User not found' });
         }
-        return res.status(200).json(user);
+        else{
+            res.status(200).json(user);
+        }
     } catch (err: any) {
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 
-const deleteUser = async (req: Request, res: Response): Promise<Response> => {
+const deleteUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     try {
         const user = await User.findByIdAndDelete(id);
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: 'User not found' });
         }
-        return res.status(204).send();
+        else{
+            res.status(204).send();
+        }
     } catch (err: any) {
-        return res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 

@@ -17,15 +17,9 @@ const MobileTabNavigation = () => {
   const tabs: TabItem[] = [
     {
       name: 'Home',
-      path: '/',
+      path: '/stocklist',
       icon: '🏠',
       activeIcon: '🏠'
-    },
-    {
-      name: 'Current Market',
-      path: '/stocklist',
-      icon: '📈',
-      activeIcon: '📈'
     },
     {
       name: 'Benjamin Graham',
@@ -34,11 +28,17 @@ const MobileTabNavigation = () => {
       activeIcon: '📚'
     },
     {
+      name: 'Intrinsic Value',
+      path: '/intrinsicValueList',
+      icon: '💰',
+      activeIcon: '💰'
+    },
+    {
       name: 'Profile',
       path: '/login',
       icon: '👤',
       activeIcon: '👤'
-    }
+    },
   ];
   
 

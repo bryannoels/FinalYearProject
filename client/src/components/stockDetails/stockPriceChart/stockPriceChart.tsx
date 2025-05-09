@@ -240,7 +240,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
         };
     
         const maxPrice = Math.max(...filteredData.map(d => d.price));
-        const currentPrice = stockData.info.price;
+        const currentPrice = stockData.info?.price || 0;
         const minPrice = Math.min(...filteredData.map(d => d.price));
 
         const drawDashedLine = (yValue: d3.NumberValue, color: string, label: string, offsetX: number, offsetY: number, drawLabel: boolean) => {
@@ -298,26 +298,29 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
                 <svg ref={chartRef} />
             </div>
             <div className="chart-tooltip" />
-            
+            { stockData.beta &&
                 <div className="beta-card">
                     <div className="beta-header">
                         <span className="beta-title">Beta</span>
                         <div className="beta-value" style={{ color: betaRisk.color }}>{beta.toFixed(2)}</div>
                     </div>
-                    <div className="beta-description">
-                        <div className="risk-level">
-                            <span>Volatility:</span>
-                            <span className="risk-badge" style={{ backgroundColor: betaRisk.color }}>{betaRisk.level}</span>
+                    
+                        <div className="beta-description">
+                            <div className="risk-level">
+                                <span>Volatility:</span>
+                                <span className="risk-badge" style={{ backgroundColor: betaRisk.color }}>{betaRisk.level}</span>
+                            </div>
+                            <p className="beta-explainer">
+                                {beta < 1 
+                                    ? "Less volatile than the market average." 
+                                    : beta > 1 
+                                        ? "More volatile than the market average." 
+                                        : "Volatility matches the market average."}
+                            </p>
                         </div>
-                        <p className="beta-explainer">
-                            {beta < 1 
-                                ? "Less volatile than the market average." 
-                                : beta > 1 
-                                    ? "More volatile than the market average." 
-                                    : "Volatility matches the market average."}
-                        </p>
-                    </div>
+                   
                 </div>
+            }
         </div>
     );
 };

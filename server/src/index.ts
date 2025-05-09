@@ -1,34 +1,20 @@
-import dotenv from 'dotenv';
-import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import userRoutes from '../src/routes/userRoute';
-import stockRoutes from '../src/routes/stockRoute';
 import mongoose from 'mongoose';
-
+import app from './app';
+import dotenv from 'dotenv';
 dotenv.config();
 
-const app = express();
+const port = Number(process.env.PORT) || 3000;
+const uri = process.env.MONGO_USER_URI || '';
 
-app.use(express.json());
-app.use(cors());
+console.log(`Connecting to database at ${uri} and port ${port}`);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(req.path, req.method);
-  next();
-});
-
-app.use('/api/users/', userRoutes);
-app.use('/api/stocks/', stockRoutes);
-
-mongoose.connect(process.env.MONGO_URI as string)
+mongoose.connect(uri)
   .then(() => {
     console.log('Connected to database');
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
   })
   .catch(() => {
-    console.log('Connection failed');
+    console.log(`Connection to ${uri} failed`);
   });
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});

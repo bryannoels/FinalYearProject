@@ -30,9 +30,19 @@ jobs:
           node-version: 20.x
           cache: 'yarn'
 
-      - run: yarn install
+      - name: Install client dependencies
+        run: yarn install
         working-directory: ./client
 
-      - run: yarn build
+      - name: Build client
+        run: yarn build
         working-directory: ./client
+
+      - name: Install server dependencies
+        run: yarn install
+        working-directory: ./server
+
+      - name: Build server
+        run: yarn build
+        working-directory: ./server
         
