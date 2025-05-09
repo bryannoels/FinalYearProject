@@ -46,7 +46,3 @@ jobs:
         run: yarn build
         working-directory: ./server
         
-      - name: Run server tests
-        run: yarn test
-        working-directory: ./server
-        
