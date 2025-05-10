@@ -31,6 +31,7 @@ export const fetchStockDetails = async (
         ]);
         
         const stockInfo = process.env.NODE_ENV === 'development' ? stockInfoResp : JSON.parse(stockInfoResp);
+        
         const currentStock = {
             name: stockInfo.companyName,
             symbol,
@@ -38,7 +39,7 @@ export const fetchStockDetails = async (
             change: parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose),
             percentChange: ((parseFloat(stockInfo.currentPrice) - parseFloat(stockInfo.previousClose)) / parseFloat(stockInfo.previousClose)) * 100,
         };
-    
+        
         const initialStockData: Stock = {
             info: currentStock,
             detail: stockInfo,
@@ -66,7 +67,7 @@ export const fetchStockDetails = async (
             timeZoneName: 'short',
             timeZone: 'America/New_York',
           });  
-    
+        
         setStockData(initialStockData);
         setDateTime(currentTimestamp);
         setLoading(false);
@@ -81,12 +82,12 @@ export const fetchStockDetails = async (
             fetchData(`${API_BASE_URL}/get-ddm-value/${symbol}`),
             fetchData(`${API_BASE_URL}/get-benjamin-graham-value/${symbol}`),
         ]).then(results => {
-            const [forecastData, analysisData, epsData, peRatioData, bondYieldData, dfcData, ddmData, bgData] = results.map(result =>
+            const [forecastData, analysisData, epsData, peRatioData, bondYieldData, dcfData, ddmData, bgData] = results.map(result =>
                 result.status === "fulfilled" ? result.value : null
             );
 
             const intrinsicValue = {
-                DCF: dfcData,
+                DCF: dcfData,
                 DDM: ddmData,
                 BenjaminGraham: bgData
             };
@@ -106,9 +107,8 @@ export const fetchStockDetails = async (
                 beta: initialStockData.beta,
                 intrinsicValue: intrinsicValue
             };
-    
+            
             setStockData(newData);
-    
             setCachedData(`stock_${symbol}`, {
                 data: newData,
                 timestamp: currentTimestamp,
@@ -118,7 +118,7 @@ export const fetchStockDetails = async (
     } catch (err: any) {
         setError(err.message || 'An error occurred while fetching stock data');
         setLoading(false);
-    }    
+    }
 
     const endTime = performance.now();
     console.log(`UI updated in ${endTime - startTime} ms`);

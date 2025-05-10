@@ -8,6 +8,10 @@ import { StockInfo } from '../../types/StockInfo';
 import { SearchResult } from '../../types/SearchResult';
 import './StockList.css';
 
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000/api/stocks'
+    : 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock';
+
 function StockList() {
   const categories = ['most-active', 'trending', 'gainers', 'losers', '52-week-gainers', '52-week-losers'];
   const [category, setCategory] = useState<string>('most-active');
@@ -29,16 +33,18 @@ function StockList() {
     try {
       const cacheKey = `stocks_${category}`;
       const cachedStocks = getCachedData(cacheKey);
+      console.log('Cached stocks:', cachedStocks);
   
       if (cachedStocks) {
         setMarketStockList(cachedStocks.data);
         setDateTime(cachedStocks.timestamp);
       } else {
-        const url = `http://localhost:8000/api/stocks/get-top-stocks?category=${encodeURIComponent(category)}`;
+        const url = `${API_BASE_URL}/get-top-stocks?category=${encodeURIComponent(category)}`;
         const response = await fetchData(url);
         const result = response;
         const formattedData: StockInfo[] = result.data.map(createStockObject);
-        const timestamp = response.retrievedAt
+        const timestamp = result.retrievedAt
+        console.log('timestamp:', timestamp);
 
         setCachedData(cacheKey, { data: formattedData, timestamp: timestamp });
         setMarketStockList(formattedData);

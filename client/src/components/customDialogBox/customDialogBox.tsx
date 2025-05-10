@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import './customDialogBox.css';
+import './CustomDialogBox.css';
 
 interface CustomDialogBoxProps {
     isOpen: boolean;

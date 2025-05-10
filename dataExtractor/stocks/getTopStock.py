@@ -84,14 +84,7 @@ def lambda_handler(event, context):
     category = event.get('queryStringParameters', {}).get('category', 'most-active')
     stocks = get_top_stocks(category)
    
-    return {
-       'statusCode': 200,
-       'headers': {
-           'Content-Type': 'application/json',
-           'Access-Control-Allow-Origin': '*'
-       },
-       'body': json.dumps(stocks, indent=2)
-    }
+    return stocks
 
 if __name__ == "__main__":
    category = sys.argv[1]

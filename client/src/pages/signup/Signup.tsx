@@ -61,7 +61,7 @@ function Signup() {
       </div>
     )}
     <div className="content">
-      <a href="/" className="logo"><img src={labaLogo} alt="Laba logo" /></a>
+      <a href="/" className="logo-signup"><img src={labaLogo} alt="Laba logo" /></a>
       <div className="container__form">
         <label className="message__welcome">Welcome To LABA!</label>
         <form onSubmit={userSignUp}>
