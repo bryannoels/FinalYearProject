@@ -10,7 +10,7 @@ import { searchStocks } from '../utils/searchStocks';
 import Dropdown from '../../components/dropdown/Dropdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
-import CustomDialogBox from '../../components/customDialogBox/customDialogBox';
+import CustomDialogBox from '../../components/customDialogBox/CustomDialogBox';
 import './portfolio.css';
 
 export function Portfolio(){

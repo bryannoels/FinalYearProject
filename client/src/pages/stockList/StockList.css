@@ -21,11 +21,10 @@
     position: sticky;
     top: 0;
     z-index: 20;
-    background-color: var(--light-gray);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    justify-self: center;
     height: fit-content;
   }
   
@@ -50,7 +49,7 @@
   
   .dashboard__search {
     width: 100%;
-    padding: 14px 40px;
+    padding: 0.8rem 1.5rem;
     border-radius: 20px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);

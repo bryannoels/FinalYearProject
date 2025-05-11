@@ -5,6 +5,10 @@ import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 import IntrinsicValueListItem from '../../components/intrinsicValueListItem/IntrinsicValueListItem';
 import './IntrinsicValueList.css';
 
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000/api/stocks'
+    : 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock';
+
 interface ValuationDataItem {
   [key: string]: any;
   'Stock Symbol': string;
@@ -65,7 +69,7 @@ function IntrinsicValueList() {
         setDateTime(cachedStocks.timestamp);
         setTotalPages(cachedStocks.data.pagination.totalPages || 1);
       } else {
-        const url = `http://localhost:8000/api/stocks/get-intrinsic-value-list?sortBy=${encodeURIComponent(sortByParam)}&page=${encodeURIComponent(pageParam)}`;
+        const url = `${API_BASE_URL}/get-intrinsic-value-list?sortBy=${encodeURIComponent(sortByParam)}&page=${encodeURIComponent(pageParam)}`;
         const response = await fetchData(url);
         
         setStockList(response.data);

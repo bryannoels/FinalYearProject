@@ -8,6 +8,10 @@ import { BenjaminGrahamStockList } from '../../types/BenjaminGrahamStockList';
 import { createBenjaminGrahamStockObject } from '../utils/utils';
 import './BenjaminGrahamList.css';
 
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000/api/stocks'
+    : 'https://dbvvd06r01.execute-api.ap-southeast-1.amazonaws.com/api/stock';
+
 function BenjaminGrahamList() {
   const [sortBy, setSortBy] = useState('Overall');
   const [filterBy, setFilterBy] = useState('0000000');
@@ -32,9 +36,8 @@ function BenjaminGrahamList() {
         setDateTime(cachedStocks.timestamp);
         setTotalPages(cachedStocks.data.pagination.totalPages || 1);
       } else {
-        const url = `http://localhost:8000/api/stocks/get-benjamin-graham-list?sortBy=${encodeURIComponent(sortBy)}&filterBy=${encodeURIComponent(filterBy)}&page=${encodeURIComponent(page)}`;
+        const url = `${API_BASE_URL}/get-benjamin-graham-list?sortBy=${encodeURIComponent(sortBy)}&filterBy=${encodeURIComponent(filterBy)}&page=${encodeURIComponent(page)}`;
         const response = await fetchData(url);
-        
         const formattedData: BenjaminGrahamStockInfo[] = response.data.map(createBenjaminGrahamStockObject);
         
         const totalPages = response.pagination.totalPages || 1;
