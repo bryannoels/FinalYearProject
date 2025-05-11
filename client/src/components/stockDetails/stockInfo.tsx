@@ -5,7 +5,7 @@ import DashboardItem from '../../components/dashboardItem/DashboardItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { fetchPortfolioData } from '../../pages/utils/fetchData';
-import CustomDialogBox from '../customDialogBox/CustomDialogBox';
+import CustomDialogBox from '../aCustomDialogBox/CustomDialogBox';
 import LoadingSpinner from '../../components/loadingSpinner/LoadingSpinner';
 
 interface StockInfoProps {
