@@ -17,7 +17,6 @@ import AIRecommendation from "../pages/aiRecommendation/aiRecommendation";
 export const router = createBrowserRouter(
     createRoutesFromElements(
       <>
-      {/* Routes using the Layout */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="stocklist" element={<StockList />} />
@@ -27,7 +26,6 @@ export const router = createBrowserRouter(
         <Route path="aiRecommendation" element={<AIRecommendation />} />
       </Route>
 
-      {/* Unique route without Layout */}
       <Route path="/" element={<LayoutUnique />}>
         <Route path="login" element={<Login />} />
       </Route>

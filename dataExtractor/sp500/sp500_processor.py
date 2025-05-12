@@ -14,7 +14,6 @@ if "Symbol" not in df.columns:
 
 results = []
 
-# Initialize counter
 counter = 1
 
 for symbol in df["Symbol"].tolist():

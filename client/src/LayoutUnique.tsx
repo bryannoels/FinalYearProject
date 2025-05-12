@@ -20,7 +20,6 @@ const Layout = () => {
     <AuthProvider>
       <div>
         <ScrollToTop />
-        {/* {!_login && <_Banner />} */}
         <Outlet />
       </div>
     </AuthProvider>

@@ -150,7 +150,6 @@
     }
 }
 
-/* For smaller screens adjustment */
 @media (max-width: 412px) {
     .spinner-container {
         width: 100px;

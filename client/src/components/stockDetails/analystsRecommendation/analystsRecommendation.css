@@ -1,6 +1,4 @@
-/* ===== ANALYSTS RECOMMENDATION SECTION STYLES ===== */
 :root {
-    /* Color variables */
     --color-background: #f8f9fa;
     --color-card: #ffffff;
     --color-text-primary: #212529;
@@ -16,15 +14,12 @@
     --color-verdict-hold: var(--color-blue);
     --color-verdict-sell: var(--color-red);
     --color-shadow: rgba(0, 0, 0, 0.08);
-    
-    /* Spacing and sizing */
     --border-radius: 16px;
     --border-radius-sm: 8px;
     --card-padding: 20px;
     --transition-speed: 0.3s;
   }
   
-  /* Main container styles */
   .stock-details__recommendation {
     max-width: 100%;
     margin: 0px;
@@ -55,7 +50,6 @@
     border-radius: 2px;
   }
   
-  /* ===== VERDICT SECTION ===== */
   .stock-details__analysis {
     background-color: var(--color-card);
     border-radius: var(--border-radius) var(--border-radius) var(--border-radius-sm) var(--border-radius-sm);
@@ -185,7 +179,6 @@
     letter-spacing: 0.5px;
   }
   
-  /* ===== FORECAST SECTION ===== */
   .stock-details__forecast {
     background-color: var(--color-card);
     border-radius: var(--border-radius-sm);
@@ -279,7 +272,6 @@
     color: var(--color-red);
   }
   
-  /* ===== RATINGS SECTION ===== */
   .stock-details__analysts__divider {
     border: none;
     height: 1px;
@@ -372,7 +364,6 @@
     font-size: 14px;
   }
   
-  /* Animations and responsive styles */
   @keyframes fadeInUp {
     from {
       opacity: 0;

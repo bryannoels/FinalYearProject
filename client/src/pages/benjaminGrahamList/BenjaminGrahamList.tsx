@@ -135,7 +135,6 @@ function BenjaminGrahamList() {
   };
 
   useEffect(() => {
-    // Set up intersection observer for scroll animations
     const observerOptions = {
         root: null,
         rootMargin: '0px',
@@ -149,7 +148,7 @@ function BenjaminGrahamList() {
                 itemsToAnimate.forEach((item, index) => {
                     setTimeout(() => {
                         item.classList.add('visible');
-                    }, index * 100); // Stagger the animations
+                    }, index * 100);
                 });
             }
         });

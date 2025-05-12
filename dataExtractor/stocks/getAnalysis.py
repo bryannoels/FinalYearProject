@@ -67,7 +67,6 @@ def process_stock_analysis(stock_symbol):
         "ratings": analysis_data
     }
 
-# for lambda func: LABA-python-stock-get-analysis
 def lambda_handler(event, context):
     stock_symbol = event.get("stock_symbol")
 

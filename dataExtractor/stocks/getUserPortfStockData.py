@@ -1,4 +1,3 @@
-# Used by lambda func: LABA-python-users-get-portfolio-stock-data
 import yfinance as yf
 import sys
 import json

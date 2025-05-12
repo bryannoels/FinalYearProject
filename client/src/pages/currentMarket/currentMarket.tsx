@@ -14,7 +14,6 @@ export const CurrentMarket: React.FC<CurrentMarketProps> = ({ marketStockList, l
     const listRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
-        // Set up intersection observer for scroll animations
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -28,7 +27,7 @@ export const CurrentMarket: React.FC<CurrentMarketProps> = ({ marketStockList, l
                     itemsToAnimate.forEach((item, index) => {
                         setTimeout(() => {
                             item.classList.add('visible');
-                        }, index * 100); // Stagger the animations
+                        }, index * 100);
                     });
                 }
             });

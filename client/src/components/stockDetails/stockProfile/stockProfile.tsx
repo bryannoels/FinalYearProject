@@ -43,7 +43,6 @@ const StockProfile: React.FC<StockProfileProps> = ({ stockData }) => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          // Delay the animation of items for a staggered effect
           setTimeout(() => {
             setAnimateItems(true);
           }, 300);

@@ -27,10 +27,8 @@ const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({
       ? 7 
       : 14;
     
-    // Calculate percentage for score visualization
     const scorePercentage = (displayValue / totalValue) * 100;
     
-    // Determine color class based on score percentage
     const getScoreColorClass = () => {
       if (scorePercentage >= 75) return 'score-excellent';
       if (scorePercentage >= 50) return 'score-good';
@@ -51,10 +49,8 @@ const BenjaminGrahamItem: React.FC<BenjaminGrahamItemProps> = ({
                          style={{"--progress": `${scorePercentage}%`} as React.CSSProperties}>
                         <span className="score-value">{displayValue}</span>
                         <svg className="score-ring" viewBox="0 0 36 36">
-                            {/* Circle path starts at top (12 o'clock position) */}
                             <path className="score-background"
                                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            {/* Progress starts at top and moves clockwise */}
                             <path className="score-progress"
                                   strokeDasharray={`${scorePercentage}, 100`}
                                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />

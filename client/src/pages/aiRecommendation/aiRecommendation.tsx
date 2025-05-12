@@ -157,7 +157,6 @@ function AIRecommendation() {
                 <option className="AI-recommend-form-dropdown-options" value="Energy">Energy</option>
                 <option className="AI-recommend-form-dropdown-options" value="Consumer Goods">Consumer Goods</option>
                 <option className="AI-recommend-form-dropdown-options" value="Any">Any</option>
-                {/* You can add more sectors here */}
               </select>
             </div>
             <div className="AI-recommend-form-horizon">

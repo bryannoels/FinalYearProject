@@ -48,7 +48,6 @@ def get_eps_data(stock_symbol):
     else:
         return {"error": f"Failed to retrieve the webpage. Status code: {response.status_code}"}
 
-# for lambda func: LABA-python-stocks-get-eps-data
 def lambda_handler(event, context):
     stock_symbol = event.get("stock_symbol")
     eps_data = get_eps_data(stock_symbol)

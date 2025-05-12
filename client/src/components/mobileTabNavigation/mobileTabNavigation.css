@@ -84,12 +84,10 @@
     z-index: -1;
   }
   
-  /* Add this to your existing layout styles */
   body {
-    padding-bottom: 64px; /* Add padding to accommodate the tab bar */
+    padding-bottom: 64px;
   }
   
-  /* Animation for tab click */
   @keyframes tabPulse {
     0% { transform: scale(1); }
     50% { transform: scale(0.92); }

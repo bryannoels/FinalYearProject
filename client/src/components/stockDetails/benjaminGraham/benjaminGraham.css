@@ -6,7 +6,6 @@
     color: #333;
   }
   
-  /* Header Styles */
   .investor-type-header {
     text-align: center;
     margin-bottom: 24px;
@@ -39,14 +38,12 @@
     padding: 0 8px;
   }
   
-  /* Cards Grid */
   .criteria-cards {
     display: flex;
     flex-direction: column;
     gap: 30px;
   }
   
-  /* Card Styles */
   .criteria-card {
     background: white;
     border-radius: 12px;
@@ -76,7 +73,6 @@
     border-left: 4px solid #e76f51;
   }
   
-  /* Card Header */
   .card-header {
     padding: 16px;
     display: flex;
@@ -197,7 +193,6 @@
     font-size: 14px;
   }
   
-  /* Progress Bar */
   .progress-bar {
     position: absolute;
     bottom: 0;
@@ -214,7 +209,6 @@
     background-color: #e76f51;
   }
   
-  /* Animations */
   @keyframes pulse {
     0% {
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -247,7 +241,6 @@
     animation: pulse-negative 2s infinite;
   }
   
-  /* Media queries */
   @media (max-width: 350px) {
     .card-title h3 {
       font-size: 14px;

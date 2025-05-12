@@ -146,7 +146,7 @@ const EPSChart: React.FC<EPSChartProps> = ({ stockData }) => {
                 return Math.min(30, nextX - (x(new Date(d.Year, 0, 1)) as number));
             })
             .attr("fill", d => d.EPS < 0 ? "#FF0000" : "#008000")
-            .attr("rx", 3) // Rounded corners
+            .attr("rx", 3)
             .attr("ry", 3)
             .style("transform-origin", d => `${x(new Date(d.Year, 0, 1))}px ${d.EPS < 0 ? y(0) : y(d.EPS)}px`)
             .style("transform", "scaleY(0)")

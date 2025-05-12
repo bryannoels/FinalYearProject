@@ -31,7 +31,6 @@ const IntrinsicValueComponent: React.FC<IntrinsicValueProps> = ({ stockData }) =
   
   if (!stockData.intrinsicValue) return null;
   
-  // Helper function to format currency
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { 
       style: 'currency', 
@@ -47,7 +46,6 @@ const IntrinsicValueComponent: React.FC<IntrinsicValueProps> = ({ stockData }) =
         <p className="ticker-symbol">{stockData.intrinsicValue.DCF?.Symbol || stockData.intrinsicValue.DDM?.Symbol || stockData.intrinsicValue.BenjaminGraham?.Symbol}</p>
       </div>
 
-      {/* DCF Model */}
       {stockData.intrinsicValue.DCF && (
         <div className="valuation-card dcf-card animate-on-scroll slide-right">
           <div className="card-header">
@@ -85,7 +83,6 @@ const IntrinsicValueComponent: React.FC<IntrinsicValueProps> = ({ stockData }) =
         </div>
       )}
 
-      {/* DDM Model */}
       {stockData.intrinsicValue.DDM && (
         <div className="valuation-card ddm-card animate-on-scroll slide-left">
           <div className="card-header">
@@ -119,7 +116,6 @@ const IntrinsicValueComponent: React.FC<IntrinsicValueProps> = ({ stockData }) =
         </div>
       )}
 
-      {/* Benjamin Graham Model */}
       {stockData.intrinsicValue.BenjaminGraham && (
         <div className="valuation-card graham-card animate-on-scroll slide-right">
           <div className="card-header">

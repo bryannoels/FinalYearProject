@@ -110,7 +110,6 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
                 .style("opacity", 1);
         }
 
-        // Render the axes with animation
         const xAxis = svg.append("g")
             .attr("transform", `translate(0,${height - margin.bottom})`)
             .attr("class", "x-axis")
@@ -141,7 +140,6 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
             .duration(800)
             .style("opacity", 1);
 
-        // Create bars with staggered animation
         svg.selectAll(".bar")
             .data(sortedData)
             .enter().append("rect")
@@ -156,7 +154,7 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
                 return Math.min(30, nextX - (x(new Date(d.Year, 0, 1)) as number));
             })
             .attr("fill", d => d.PE_Ratio < 0 ? "#FF0000" : "#008000")
-            .attr("rx", 3) // Rounded corners
+            .attr("rx", 3)
             .attr("ry", 3)
             .style("transform-origin", d => `${x(new Date(d.Year, 0, 1))}px ${d.PE_Ratio < 0 ? y(0) : y(d.PE_Ratio)}px`)
             .style("transform", "scaleY(0)")
@@ -177,14 +175,12 @@ const PERatioChart: React.FC<PERatioChartProps> = ({ stockData }) => {
                 peRatioTooltip.classed('hidden', true);
             });
 
-        // Animate bars with a staggered delay
         svg.selectAll(".bar")
             .transition()
             .delay((_d, i) => i * 100)
             .duration(800)
             .style("transform", "scaleY(1)");
 
-        // Add mean line
         if (peStats.avg !== 0) {
             svg.append("line")
                 .attr("x1", margin.left)

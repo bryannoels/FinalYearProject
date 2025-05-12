@@ -79,7 +79,7 @@ describe('App Configuration', () => {
       
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ route: 'stock' });
-  }, 10000); // Increased timeout for this test since it was timing out
+  }, 10000);
 
   it('should return 404 for non-existent routes', async () => {
     const response = await request(app)

@@ -3,7 +3,7 @@ import { Stock } from '../../../types/Stock';
 import StockVerdict from './stockVerdict';
 import StockForecast from './stockForecast';
 import StockRatings from './stockRatings';
-import './analystsRecommendation.css'; // Import the unified CSS file
+import './analystsRecommendation.css';
 
 interface AnalystsRecommendationProps {
   stockData: Stock | null;

@@ -20,16 +20,15 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData, investorType
   const toggleCardExpansion = (label: string) => {
     setExpandedCards(prev => {
       if (prev.includes(label)) {
-        return prev.filter(item => item !== label); // Remove the label if it's already expanded
+        return prev.filter(item => item !== label);
       } else {
-        return [...prev, label]; // Add the label if it's not in the list
+        return [...prev, label];
       }
     });
   };
 
   return (
     <div className="benjamin-graham-container">
-      {/* Header */}
       <div className="investor-type-header">
         <div className={`investor-badge ${investorType}`}>
           {investorType === "defensive" ? "Defensive Investor" : "Enterprising Investor"} Analysis
@@ -39,7 +38,6 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData, investorType
         </p>
       </div>
 
-      {/* Cards Grid */}
       <div className="criteria-cards">
         {Object.entries(data).map(([label, { value, description, color }]) => {
           const isExpanded = expandedCards.includes(label);
@@ -69,7 +67,6 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData, investorType
                 </div>
               </div>
 
-              {/* Card Content (expandable) */}
               <div className={`card-content ${isExpanded ? 'expanded' : ''}`}>
                 {isExpanded && (
                   <div className="criteria-description">
@@ -79,7 +76,6 @@ const BenjaminGraham: React.FC<BenjaminGrahamProps> = ({ stockData, investorType
                 )}
               </div>
 
-              {/* Progress Bar */}
               <div
                 className={`progress-bar ${isPassed ? 'passed' : 'failed'}`}
                 style={{ width: isPassed ? '100%' : '30%' }}

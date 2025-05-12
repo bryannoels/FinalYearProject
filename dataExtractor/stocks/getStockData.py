@@ -41,7 +41,6 @@ def get_stock_data(stock_symbol):
     stock_data['totalDebt'] = stock_info.get('totalDebt', None)
     stock_data['debtToEquity'] = stock_info.get('debtToEquity', None)
 
-    # Clean up growthRate if it's NaN
     if isinstance(stock_data['growthRate'], float) and math.isnan(stock_data['growthRate']):
         stock_data['growthRate'] = None
 

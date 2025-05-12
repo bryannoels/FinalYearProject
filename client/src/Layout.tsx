@@ -24,7 +24,6 @@ const Layout = () => {
       <div>
         <ScrollToTop />
         <Navbar />
-        {/* {!_login && <_Banner />} */}
         <Outlet />
         <MobileTabNavigation />
       </div>

@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import { getAllUsers, createUser, updateUser, deleteUser } from '../../../controllers/userController';
 import User from '../../../models/userModel';
 
-// Mock Mongoose Model
 jest.mock('../../../models/userModel');
 
 const mockedUserModel = User as jest.Mocked<typeof User>;

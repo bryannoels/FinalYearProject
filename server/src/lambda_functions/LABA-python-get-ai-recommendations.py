@@ -9,7 +9,6 @@ import math
 
 s3 = boto3.client('s3')
 
-# Set OpenAI API key from env var in lambda function
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 def get_number(value):
@@ -18,7 +17,6 @@ def get_number(value):
     except (TypeError, ValueError):
         return None
 
-# Helper: top 10 sorting and filtering, to be used as reference for GPT
 def sort_and_filter_data(formatted, sort_by):
     config = {
         'percent_graham': {
@@ -29,7 +27,6 @@ def sort_and_filter_data(formatted, sort_by):
         'stddev': {
             'field': 'Intrinsic Value Standard Deviation',
             'return_fields': ['Stock Symbol', 'Company Name', 'Opening Price', 'Intrinsic Value Standard Deviation']
-            # No filter in this case
         }
     }
 
@@ -59,7 +56,6 @@ def sort_and_filter_data(formatted, sort_by):
         'retrievedAt': formatted.get('retrievedAt', datetime.utcnow().isoformat())
     }
 
-# Helper: load company_valuations.csv from S3 and parse
 def load_csv_from_s3(bucket, key):
     response = s3.get_object(Bucket=bucket, Key=key)
     content = response['Body'].read().decode('utf-8')

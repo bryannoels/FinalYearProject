@@ -37,7 +37,6 @@ def get_historical_data(stock_symbol, range_param):
     
     return stock_data
 
-# for lambda func: LABA-python-stocks-get-hist-data
 def lambda_handler(event, context):
     stock_symbol = event.get("stock_symbol")
     range_param = event.get("range_param") if event.get("range_param") else '1d'

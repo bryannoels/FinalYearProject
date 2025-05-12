@@ -103,7 +103,7 @@ const StockPriceChart: React.FC<StockPriceChartProps> = ({ stockData }) => {
                 .attr("transform", `translate(0,${height - margin.bottom})`)
                 .attr("class", "x-axis")
                 .attr("color", "var(--primary-light-dark)")
-                .call(d3.axisBottom(x).ticks(d3.timeMinute.every(60))) // Change to 30-minute ticks
+                .call(d3.axisBottom(x).ticks(d3.timeMinute.every(60)))
                 .style("opacity", 0)
                 .transition()
                 .duration(800)

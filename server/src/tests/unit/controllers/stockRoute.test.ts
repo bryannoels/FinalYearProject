@@ -1,7 +1,6 @@
 import request from 'supertest';
 import express, { Express, Request, Response } from 'express';
 
-// Mock the controller functions with proper typing
 const mockGetStockData = jest.fn((req: Request, res: Response) => res.json({}));
 const mockGetStockProfile = jest.fn((req: Request, res: Response) => res.json({}));
 const mockGetTopStocks = jest.fn((req: Request, res: Response) => res.json({}));
@@ -18,7 +17,6 @@ const mockGetDDMValue = jest.fn((req: Request, res: Response) => res.json({}));
 const mockGetBenjaminGrahamValue = jest.fn((req: Request, res: Response) => res.json({}));
 const mockGetIntrinsicValueList = jest.fn((req: Request, res: Response) => res.json({}));
 
-// Mock the controller module
 jest.mock('../../../controllers/stockController', () => {
   return {
     getStockData: mockGetStockData,
