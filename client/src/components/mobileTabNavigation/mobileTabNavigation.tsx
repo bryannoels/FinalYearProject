@@ -34,10 +34,10 @@ const MobileTabNavigation = () => {
       activeIcon: '💰'
     },
     {
-      name: 'Profile',
-      path: '/login',
-      icon: '👤',
-      activeIcon: '👤'
+      name: 'AI',
+      path: '/aiRecommendation',
+      icon: '🧠',
+      activeIcon: '🧠'
     },
   ];
   
