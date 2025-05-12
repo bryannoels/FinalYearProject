@@ -56,7 +56,7 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, stockData }) => {
         setDialogType("add");
         setConfirmDisabled(true);
         setDialogOpen(true);
-      };
+    };
     
     const handlePortfolioChange = (portfolioName: string) => {
         setSelectedPortfolio(portfolioName);

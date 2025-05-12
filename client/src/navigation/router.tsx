@@ -12,6 +12,7 @@ import StockDetails from "../pages/stockDetails/StockDetails";
 import StockList from "../pages/stockList/StockList";
 import BenjaminGrahamList from "../pages/benjaminGrahamList/BenjaminGrahamList";
 import IntrinsicValueList from "../pages/intrinsicValueList/IntrinsicValueList";
+import AIRecommendation from "../pages/aiRecommendation/aiRecommendation";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -23,6 +24,7 @@ export const router = createBrowserRouter(
         <Route path="benjamingrahamlist" element={<BenjaminGrahamList />} />
         <Route path="stock/:symbol" element={<StockDetails />} />
         <Route path="intrinsicvaluelist" element={<IntrinsicValueList />} />
+        <Route path="aiRecommendation" element={<AIRecommendation />} />
       </Route>
 
       {/* Unique route without Layout */}

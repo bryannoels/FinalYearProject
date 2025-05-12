@@ -457,7 +457,7 @@ const stockControllers = {
         res.status(500).json({ message: 'Failed to fetch data from MongoDB' });
       }
     }
-}
+  }
 
 };
 
